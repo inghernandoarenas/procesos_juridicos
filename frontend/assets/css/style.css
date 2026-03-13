@@ -1,0 +1,234 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:Arial; background:#f4f4f4; }
+.container { display:flex; min-height:100vh; }
+.sidebar { width:250px; background:#2c3e50; color:white; padding:20px; }
+.sidebar h2 { margin-bottom:20px; font-size:18px; }
+.sidebar ul { list-style:none; }
+.sidebar ul li { margin-bottom:10px; }
+.sidebar ul li a { color:white; text-decoration:none; padding:8px 12px; display:block; border-radius:4px; }
+.sidebar ul li a:hover { background:#34495e; }
+.main-content { flex:1; display:flex; flex-direction:column; }
+.header { background:white; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; justify-content:space-between; }
+.content { flex:1; padding:20px; background:#f9f9f9; }
+.footer { background:white; padding:15px; text-align:center; }
+table { width:100%; border-collapse:collapse; background:white; }
+table th { background:#3498db; color:white; padding:12px; text-align:left; }
+table td { padding:10px; border-bottom:1px solid #ddd; }
+.btn { padding:8px 12px; border:none; border-radius:4px; cursor:pointer; text-decoration:none; display:inline-block; margin:2px; }
+.btn-primary { background:#3498db; color:white; }
+.btn-edit { background:#f39c12; color:white; }
+.btn-delete { background:#e74c3c; color:white; }
+.btn-view { background:#2ecc71; color:white; }
+.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
+.close { position:absolute; right:20px; top:10px; font-size:28px; cursor:pointer; }
+.form-group { margin-bottom:15px; }
+.form-group label { display:block; margin-bottom:5px; font-weight:bold; }
+.form-group input, .form-group select, .form-group textarea { width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; }
+.page-header { display:flex; justify-content:space-between; margin-bottom:20px; }
+.modal-content {
+    background: white;
+    margin: 5% auto;
+    padding: 20px;
+    width: 60%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 5px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
+        max-height: 70vh;
+    }
+}
+
+/* Mejora para formularios largos dentro del modal */
+.modal-content form {
+    max-height: calc(70vh - 100px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Scroll personalizado (opcional, solo para que se vea más bonito) */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+/* Dashboard */
+.dashboard {
+    padding: 20px;
+}
+
+.dashboard h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-card h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 16px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.stat-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.stat-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.3s;
+}
+
+.stat-item:hover {
+    background: #f5f5f5;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-item strong {
+    color: #3498db;
+    font-size: 14px;
+}
+
+.stat-item small {
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+.sin-datos {
+    color: #95a5a6;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+
+/* Estados con colores */
+.estado-activo {
+    color: #f39c12; /* naranja */
+    font-weight: bold;
+}
+
+.estado-espera {
+    color: #3498db; /* azul */
+    font-weight: bold;
+}
+
+.estado-vencido {
+    color: #e74c3c; /* rojo */
+    font-weight: bold;
+}
+
+.estado-finalizado {
+    color: #2ecc71; /* verde */
+    font-weight: bold;
+}
+
+/* Para las tarjetas del dashboard */
+.stat-item {
+    padding: 15px;
+    border-left: 4px solid transparent;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.stat-item:hover {
+    transform: translateX(5px);
+}
+
+/* Colores de borde según urgencia */
+.stat-item.urgente {
+    border-left-color: #e74c3c;
+    background: #fef5f5;
+}
+
+.stat-item.atencion {
+    border-left-color: #f39c12;
+    background: #fff8e7;
+}
+
+.stat-item.normal {
+    border-left-color: #2ecc71;
+    background: #f0fff4;
+}
+
+/* Badges para días */
+.dias-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.dias-rojo {
+    background: #e74c3c;
+    color: white;
+}
+
+.dias-naranja {
+    background: #f39c12;
+    color: white;
+}
+
+.dias-verde {
+    background: #2ecc71;
+    color: white;
+}
+
+/* Para la tabla de procesos */
+.estado-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+
+.estado-badge.activo { background: #f39c12; color: white; }
+.estado-badge.espera { background: #3498db; color: white; }
+.estado-badge.vencido { background: #e74c3c; color: white; }
+.estado-badge.finalizado { background: #2ecc71; color: white; }
