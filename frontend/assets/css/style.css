@@ -228,6 +228,14 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
     display: inline-block;
 }
 
+.btn-info {
+    background: #00bcd4;
+    color: white;
+}
+.btn-info:hover {
+    background: #00acc1;
+}
+
 .estado-badge.activo { background: #f39c12; color: white; }
 .estado-badge.espera { background: #3498db; color: white; }
 .estado-badge.vencido { background: #e74c3c; color: white; }

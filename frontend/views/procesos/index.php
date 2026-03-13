@@ -108,6 +108,28 @@
     </div>
 </div>
 
+
+<!-- Modal Actuaciones -->
+<div id="modalActuaciones" class="modal">
+    <div class="modal-content" style="width: 80%; max-width: 1000px;">
+        <span class="close" onclick="cerrarModalActuaciones()">&times;</span>
+        <h3>Actuaciones del Proceso</h3>
+        <div id="procesoInfo"></div>
+        
+        <table id="tablaActuaciones">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Actuación</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+
 <script>
 function cargarProcesos() {
     fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list')
@@ -125,7 +147,9 @@ function cargarProcesos() {
                         <td>${p.estado}</td>
                         <td>${p.fecha_vencimiento || 'N/A'}</td>
                         <td>
-                            <button class="btn btn-view" onclick="verProceso(${p.id})">Ver</button>
+                            <button class="btn btn-view" onclick="verProceso(${p.id})">Detalles</button>
+                            <button class="btn btn-view" onclick="verActuaciones(${p.id})">Detalles</button>
+                            <button class="btn btn-info" onclick="verActuaciones(${p.id})">Actuaciones</button>
                             <button class="btn btn-edit" onclick="editarProceso(${p.id})">Editar</button>
                             <button class="btn btn-primary" onclick="abrirModalAnexos(${p.id})">Anexos</button>
                             <button class="btn btn-delete" onclick="eliminarProceso(${p.id})">Eliminar</button>
@@ -178,6 +202,47 @@ function guardarProceso(event) {
             cargarProcesos();
         }
     });
+}
+
+function verActuaciones(procesoId) {
+    // Primero obtenemos datos del proceso
+    fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${procesoId}`)
+        .then(response => response.json())
+        .then(proceso => {
+            document.getElementById('procesoInfo').innerHTML = `
+                <p><strong>Radicado:</strong> ${proceso.numero_radicado} | 
+                <strong>Cliente:</strong> ${proceso.nombre} ${proceso.apellido}</p>
+                <hr>
+            `;
+        });
+    
+    // Luego cargamos las actuaciones
+    fetch(`/procesos_juridicos/backend/controllers/ActuacionController.php?action=list&proceso_id=${procesoId}`)
+        .then(response => response.json())
+        .then(data => {
+            let tbody = document.querySelector('#tablaActuaciones tbody');
+            tbody.innerHTML = '';
+            
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No hay actuaciones registradas</td></tr>';
+            } else {
+                data.forEach(a => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${a.fecha}</td>
+                            <td>${a.actuacion}</td>
+                            <td>${a.observaciones || ''}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            document.getElementById('modalActuaciones').style.display = 'block';
+        });
+}
+
+function cerrarModalActuaciones() {
+    document.getElementById('modalActuaciones').style.display = 'none';
 }
 
 function editarProceso(id) {
