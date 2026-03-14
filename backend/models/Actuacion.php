@@ -22,8 +22,8 @@ class Actuacion {
 
     public function create($data) {
         $query = "INSERT INTO " . $this->table . " 
-                  (proceso_id, fecha, actuacion, observaciones) 
-                  VALUES (:proceso_id, :fecha, :actuacion, :observaciones)";
+                (proceso_id, id_api, fecha, actuacion, observaciones) 
+                VALUES (:proceso_id, :id_api, :fecha, :actuacion, :observaciones)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
@@ -33,6 +33,14 @@ class Actuacion {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
+    }
+
+    public function getByIdApi($id_api) {
+        $query = "SELECT id FROM " . $this->table . " WHERE id_api = :id_api LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_api', $id_api);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

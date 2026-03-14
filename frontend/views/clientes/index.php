@@ -72,9 +72,9 @@ function cargarClientes() {
                         <td>${cliente.email || ''}</td>
                         <td>${cliente.telefono || ''}</td>
                         <td>
-                            <button class="btn btn-view" onclick="verCliente(${cliente.id})">Ver</button>
-                            <button class="btn btn-edit" onclick="editarCliente(${cliente.id})">Editar</button>
-                            <button class="btn btn-delete" onclick="eliminarCliente(${cliente.id})">Eliminar</button>
+                            <button class="btn-icon" onclick="verCliente(${cliente.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarCliente(${cliente.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarCliente(${cliente.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;

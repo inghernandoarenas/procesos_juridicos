@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Actuacion.php';
 
+file_put_contents('debug_log.txt', "Inicio sincronización\n", FILE_APPEND);
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $actuacion = new Actuacion();
 
