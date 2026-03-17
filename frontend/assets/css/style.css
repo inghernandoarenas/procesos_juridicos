@@ -162,14 +162,14 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 38px;  /* Aumentado de 24px a 28px */
-    margin: 0 14px;    /* Un poco más de margen */
-    padding: 16px;    /* Más área de clic */
+    font-size: 20px;  
+    margin: 0 2px;    
+    padding: 4px;    
     position: relative;
     color: #555;
     transition: all 0.2s;
-    width: 68px;      /* Aumentado de 42px a 48px */
-    height: 68px;     /* Aumentado de 42px a 48px */
+    width: 22px;
+    height: 22px;    
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -178,7 +178,7 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
 
 .btn-icon:hover {
     background: #f0f0f0;
-    transform: scale(1.5); /* Un poco más de efecto */
+    transform: scale(1.15); 
 }
 
 .btn-icon:hover .fa-eye { color: #2ecc71; }

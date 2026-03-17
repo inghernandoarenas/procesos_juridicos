@@ -39,13 +39,8 @@
             
             <div class="form-group">
                 <label>Tipo de Proceso:</label>
-                <select id="tipo_proceso" name="tipo_proceso" required>
-                    <option value="">Seleccione</option>
-                    <option value="Civil">Civil</option>
-                    <option value="Penal">Penal</option>
-                    <option value="Laboral">Laboral</option>
-                    <option value="Administrativo">Administrativo</option>
-                    <option value="Familia">Familia</option>
+                <select id="tipo_proceso_id" name="tipo_proceso_id" required>
+                    <option value="">Seleccione tipo</option>
                 </select>
             </div>
             
@@ -56,14 +51,11 @@
             
             <div class="form-group">
                 <label>Estado:</label>
-                <select id="estado" name="estado" required>
-                    <option value="Activo">Activo</option>
-                    <option value="En espera">En espera</option>
-                    <option value="Vencido">Vencido</option>
-                    <option value="Finalizado">Finalizado</option>
+                <select id="estado_proceso_id" name="estado_proceso_id" required>
+                    <option value="">Seleccione estado</option>
                 </select>
-            </div>
-            
+            </div>            
+
             <div class="form-group">
                 <label>Fecha de Inicio:</label>
                 <input type="date" id="fecha_inicio" name="fecha_inicio" required>
@@ -255,6 +247,8 @@ function cargarClientesSelect() {
 
 function abrirModalProceso() {
     cargarClientesSelect();
+    cargarTiposProceso();
+    cargarEstadosProceso();
     document.getElementById('formProceso').reset();
     document.getElementById('procesoId').value = '';
     document.getElementById('modalProcesoTitle').textContent = 'Nuevo Proceso';
@@ -287,6 +281,8 @@ function guardarProceso(event) {
 
 function editarProceso(id) {
     cargarClientesSelect();
+    cargarTiposProceso();
+    cargarEstadosProceso();
     
     fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
         .then(response => response.json())
@@ -294,9 +290,16 @@ function editarProceso(id) {
             document.getElementById('procesoId').value = p.id;
             document.getElementById('cliente_id').value = p.cliente_id;
             document.getElementById('numero_radicado').value = p.numero_radicado;
-            document.getElementById('tipo_proceso').value = p.tipo_proceso;
+            
+            // Asignar los nuevos campos de IDs
+            document.getElementById('tipo_proceso_id').value = p.tipo_proceso_id;
+            document.getElementById('estado_proceso_id').value = p.estado_proceso_id;
+            
+            // Estos campos legacy los mantienes por si acaso
+            //document.getElementById('tipo_proceso').value = p.tipo_proceso;
+            //document.getElementById('estado').value = p.estado;
+            
             document.getElementById('descripcion').value = p.descripcion || '';
-            document.getElementById('estado').value = p.estado;
             document.getElementById('fecha_inicio').value = p.fecha_inicio;
             document.getElementById('fecha_vencimiento').value = p.fecha_vencimiento || '';
             document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
@@ -416,6 +419,30 @@ function eliminarAnexo(id, procesoId) {
             if(data.success) cargarAnexos(procesoId);
         });
     }
+}
+
+function cargarTiposProceso() {
+    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getTipos')
+        .then(response => response.json())
+        .then(data => {
+            let select = document.getElementById('tipo_proceso_id');
+            select.innerHTML = '<option value="">Seleccione tipo</option>';
+            data.forEach(t => {
+                select.innerHTML += `<option value="${t.id}">${t.nombre}</option>`;
+            });
+        });
+}
+
+function cargarEstadosProceso() {
+    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getEstados')
+        .then(response => response.json())
+        .then(data => {
+            let select = document.getElementById('estado_proceso_id');
+            select.innerHTML = '<option value="">Seleccione estado</option>';
+            data.forEach(e => {
+                select.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
+            });
+        });
 }
 
 // Cargar procesos al entrar
