@@ -35,10 +35,16 @@ class Proceso {
     }
 
     public function getById($id) {
-        $query = "SELECT p.*, c.nombre, c.apellido 
-                  FROM " . $this->table . " p 
-                  JOIN clientes c ON p.cliente_id = c.id 
-                  WHERE p.id = :id";
+        $query = "SELECT p.*, 
+                c.nombre, c.apellido,
+                tp.nombre as tipo_proceso_nombre,
+                ep.nombre as estado_proceso_nombre,
+                ep.color as estado_color
+                FROM " . $this->table . " p 
+                JOIN clientes c ON p.cliente_id = c.id 
+                LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
+                LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                WHERE p.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();

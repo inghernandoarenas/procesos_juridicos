@@ -79,24 +79,45 @@
     </div>
 </div>
 
+<!-- Modal Anexos -->
 <div id="modalAnexos" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="width: 80%; max-width: 900px;">
         <span class="close" onclick="cerrarModalAnexos()">&times;</span>
-        <h3>Administrar Anexos</h3>
-        <input type="hidden" id="anexoProcesoId">
         
-        <form id="formAnexo" onsubmit="subirAnexo(event)" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>Seleccionar archivo:</label>
-                <input type="file" id="archivo" name="archivo" required>
+        <div style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;">Administrar Anexos</h3>
             </div>
-            <button type="submit" class="btn btn-primary">Subir Archivo</button>
-        </form>
+        </div>
         
-        <hr>
+        <!-- Formulario de subida -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: #2c3e50;">Subir nuevo archivo</h4>
+            <form id="formAnexo" onsubmit="subirAnexo(event)" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-end;">
+                <input type="hidden" id="anexoProcesoId" name="proceso_id">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: #555;">Seleccionar archivo:</label>
+                    <input type="file" id="archivo" name="archivo" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Subir Archivo</button>
+            </form>
+        </div>
         
-        <h4>Archivos subidos</h4>
-        <div id="listaAnexos"></div>
+        <!-- Lista de archivos en tabla -->
+        <h4 style="margin-bottom: 15px; color: #2c3e50;">Archivos subidos</h4>
+        <table id="tablaAnexos" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding: 12px; background: #3498db; color: white;">Nombre del archivo</th>
+                    <th style="text-align: left; padding: 12px; background: #3498db; color: white;">Tipo</th>
+                    <th style="text-align: left; padding: 12px; background: #3498db; color: white;">Fecha subida</th>
+                    <th style="text-align: center; padding: 12px; background: #3498db; color: white;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="listaAnexos">
+                <!-- Se llena vía JavaScript -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -104,11 +125,16 @@
 <div id="modalActuaciones" class="modal">
     <div class="modal-content" style="width: 80%; max-width: 1000px;">
         <span class="close" onclick="cerrarModalActuaciones()">&times;</span>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>Actuaciones del Proceso</h3>
-            <button class="btn btn-primary" onclick="sincronizarRama()" id="btnSincronizar">Actualizar</button>
+        
+        <!-- Título y botón debajo de la X, con margen superior -->
+        <div style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Actuaciones del Proceso</h3>
+                <button class="btn btn-primary" onclick="sincronizarRama()" id="btnSincronizar">Actualizar</button>
+            </div>
         </div>
-        <div id="procesoInfo"></div>
+        
+        <div id="procesoInfo" style="margin-bottom: 15px;"></div>
         
         <table id="tablaActuaciones">
             <thead>
@@ -185,15 +211,15 @@ function sincronizarRama() {
     .then(response => response.json())
     .then(data => {
         if(data.success) {
-            //alert(data.message);
+            alert(data.message);
             cargarActuaciones(procesoActual);
         } else {
-            //alert('Error: ' + data.message);
+            alert('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error detallado:', error);
-        //alert('Error: ' + error.message);
+        alert('Error: ' + error.message);
     })
     .finally(() => {
         btn.disabled = false;
@@ -314,14 +340,56 @@ function verProceso(id) {
         .then(response => response.json())
         .then(p => {
             let html = `
-                <p><strong>ID:</strong> ${p.id}</p>
-                <p><strong>Radicado:</strong> ${p.numero_radicado}</p>
-                <p><strong>Cliente:</strong> ${p.nombre} ${p.apellido}</p>
-                <p><strong>Tipo:</strong> ${p.tipo_proceso_nombre || p.tipo_proceso}</p>
-                <p><strong>Descripción:</strong> ${p.descripcion || 'N/A'}</p>
-                <p><strong>Estado:</strong> ${p.estado_proceso_nombre || p.estado}</p>
-                <p><strong>Fecha inicio:</strong> ${p.fecha_inicio}</p>
-                <p><strong>Fecha vencimiento:</strong> ${p.fecha_vencimiento || 'N/A'}</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px;">
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">ID Proceso</strong>
+                        <span style="font-size: 16px;">${p.id}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Radicado</strong>
+                        <span style="font-size: 16px; font-weight: bold; color: #3498db;">${p.numero_radicado}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Cliente</strong>
+                        <span style="font-size: 16px;">${p.nombre} ${p.apellido}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Tipo de Proceso</strong>
+                        <span style="font-size: 16px;">${p.tipo_proceso_nombre || p.tipo_proceso}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Estado</strong>
+                        <span style="font-size: 16px; padding: 4px 8px; border-radius: 4px; 
+                              background: ${p.estado_color || '#3498db'}; color: white; display: inline-block;">
+                            ${p.estado_proceso_nombre || p.estado}
+                        </span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Fecha Inicio</strong>
+                        <span style="font-size: 16px;">${p.fecha_inicio}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Fecha Vencimiento</strong>
+                        <span style="font-size: 16px; ${p.fecha_vencimiento && new Date(p.fecha_vencimiento) < new Date() ? 'color: #e74c3c; font-weight: bold;' : ''}">
+                            ${p.fecha_vencimiento || 'N/A'}
+                        </span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Descripción</strong>
+                        <span style="font-size: 14px; line-height: 1.5;">${p.descripcion || 'Sin descripción'}</span>
+                    </div>
+                    
+                    <div style="grid-column: span 2; text-align: right; margin-top: 10px; color: #7f8c8d; font-size: 12px;">
+                        Creado: ${p.created_at || 'N/A'}
+                    </div>
+                </div>
             `;
             document.getElementById('detalleProceso').innerHTML = html;
             document.getElementById('modalVerProceso').style.display = 'block';
@@ -364,23 +432,47 @@ function cargarAnexos(procesoId) {
     fetch(`/procesos_juridicos/backend/controllers/AnexoController.php?action=list&proceso_id=${procesoId}`)
         .then(response => response.json())
         .then(data => {
-            let div = document.getElementById('listaAnexos');
+            let tbody = document.getElementById('listaAnexos');
+            
             if(data.length === 0) {
-                div.innerHTML = '<p>No hay archivos subidos</p>';
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 30px; color: #7f8c8d; background: #f9f9f9;">
+                            No hay archivos subidos
+                        </td>
+                    </tr>
+                `;
                 return;
             }
             
-            let html = '<ul>';
+            let html = '';
             data.forEach(a => {
+                // Formatear fecha
+                let fecha = new Date(a.fecha_subida).toLocaleDateString('es-CO', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
                 html += `
-                    <li>
-                        ${a.nombre_archivo} 
-                        <button class="btn btn-delete" onclick="eliminarAnexo(${a.id}, ${procesoId})">Eliminar</button>
-                    </li>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px;">
+                            <i class="fas fa-file" style="color: #3498db; margin-right: 8px;"></i>
+                            ${a.nombre_archivo}
+                        </td>
+                        <td style="padding: 12px;">${a.tipo_archivo || 'Desconocido'}</td>
+                        <td style="padding: 12px;">${fecha}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button class="btn-icon" onclick="eliminarAnexo(${a.id}, ${procesoId})" data-tooltip="Eliminar archivo">
+                                <i class="fas fa-trash" style="color: #e74c3c;"></i>
+                            </button>
+                        </td>
+                    </tr>
                 `;
             });
-            html += '</ul>';
-            div.innerHTML = html;
+            tbody.innerHTML = html;
         });
 }
 
@@ -390,7 +482,6 @@ function subirAnexo(event) {
     let procesoId = document.getElementById('anexoProcesoId').value;
     let formData = new FormData(document.getElementById('formAnexo'));
     formData.append('action', 'upload');
-    formData.append('proceso_id', procesoId);
     
     fetch('/procesos_juridicos/backend/controllers/AnexoController.php', {
         method: 'POST',
