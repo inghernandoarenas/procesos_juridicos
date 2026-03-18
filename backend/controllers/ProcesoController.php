@@ -48,10 +48,10 @@
         $data = [
             ':id' => $_POST['id'],
             ':cliente_id' => $_POST['cliente_id'],
+            ':tipo_proceso_id' => $_POST['tipo_proceso_id'] ?: null,
+            ':estado_proceso_id' => $_POST['estado_proceso_id'] ?: null,
             ':numero_radicado' => $_POST['numero_radicado'],
-            ':tipo_proceso' => $_POST['tipo_proceso'],
             ':descripcion' => $_POST['descripcion'],
-            ':estado' => $_POST['estado'],
             ':fecha_inicio' => $_POST['fecha_inicio'],
             ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null
         ];

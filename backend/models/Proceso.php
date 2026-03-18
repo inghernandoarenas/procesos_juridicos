@@ -11,10 +11,16 @@ class Proceso {
     }
 
     public function getAll() {
-        $query = "SELECT p.*, c.nombre, c.apellido 
-                  FROM " . $this->table . " p 
-                  JOIN clientes c ON p.cliente_id = c.id 
-                  ORDER BY p.id ASC";
+        $query = "SELECT p.*, 
+                c.nombre, c.apellido,
+                tp.nombre as tipo_proceso_nombre,
+                ep.nombre as estado_proceso_nombre,
+                ep.color as estado_color
+                FROM " . $this->table . " p 
+                JOIN clientes c ON p.cliente_id = c.id 
+                LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
+                LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                ORDER BY p.id ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -41,17 +47,18 @@ class Proceso {
 
     public function create($data) {
         $query = "INSERT INTO " . $this->table . " 
-                  (cliente_id, numero_radicado, tipo_proceso, descripcion, estado, fecha_inicio, fecha_vencimiento) 
-                  VALUES (:cliente_id, :numero_radicado, :tipo_proceso, :descripcion, :estado, :fecha_inicio, :fecha_vencimiento)";
+                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento) 
+                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
 
     public function update($data) {
         $query = "UPDATE " . $this->table . " 
-                  SET cliente_id=:cliente_id, numero_radicado=:numero_radicado, tipo_proceso=:tipo_proceso, 
-                      descripcion=:descripcion, estado=:estado, fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento 
-                  WHERE id=:id";
+                SET cliente_id=:cliente_id, tipo_proceso_id=:tipo_proceso_id, estado_proceso_id=:estado_proceso_id, 
+                    numero_radicado=:numero_radicado, descripcion=:descripcion, 
+                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento 
+                WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }

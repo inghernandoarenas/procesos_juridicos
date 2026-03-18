@@ -218,8 +218,8 @@ function cargarProcesos() {
                         <td>${p.id}</td>
                         <td>${p.numero_radicado}</td>
                         <td>${p.nombre} ${p.apellido}</td>
-                        <td>${p.tipo_proceso}</td>
-                        <td>${p.estado}</td>
+                        <td>${p.tipo_proceso_nombre || p.tipo_proceso}</td>
+                        <td>${p.estado_proceso_nombre || p.estado}</td>
                         <td>${p.fecha_vencimiento || 'N/A'}</td>
                         <td>
                             <button class="btn-icon" onclick="verProceso(${p.id})" data-tooltip="Ver detalles"><i class="fas fa-eye"></i></button>
@@ -234,7 +234,7 @@ function cargarProcesos() {
 }
 
 function cargarClientesSelect() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
+    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('cliente_id');
@@ -246,13 +246,16 @@ function cargarClientesSelect() {
 }
 
 function abrirModalProceso() {
-    cargarClientesSelect();
-    cargarTiposProceso();
-    cargarEstadosProceso();
-    document.getElementById('formProceso').reset();
-    document.getElementById('procesoId').value = '';
-    document.getElementById('modalProcesoTitle').textContent = 'Nuevo Proceso';
-    document.getElementById('modalProceso').style.display = 'block';
+    Promise.all([
+        cargarClientesSelect(),
+        cargarTiposProceso(),
+        cargarEstadosProceso()
+    ]).then(() => {
+        document.getElementById('formProceso').reset();
+        document.getElementById('procesoId').value = '';
+        document.getElementById('modalProcesoTitle').textContent = 'Nuevo Proceso';
+        document.getElementById('modalProceso').style.display = 'block';
+    });
 }
 
 function cerrarModalProceso() {
@@ -279,33 +282,32 @@ function guardarProceso(event) {
     });
 }
 
+
 function editarProceso(id) {
-    cargarClientesSelect();
-    cargarTiposProceso();
-    cargarEstadosProceso();
-    
-    fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
-        .then(response => response.json())
-        .then(p => {
-            document.getElementById('procesoId').value = p.id;
-            document.getElementById('cliente_id').value = p.cliente_id;
-            document.getElementById('numero_radicado').value = p.numero_radicado;
-            
-            // Asignar los nuevos campos de IDs
-            document.getElementById('tipo_proceso_id').value = p.tipo_proceso_id;
-            document.getElementById('estado_proceso_id').value = p.estado_proceso_id;
-            
-            // Estos campos legacy los mantienes por si acaso
-            //document.getElementById('tipo_proceso').value = p.tipo_proceso;
-            //document.getElementById('estado').value = p.estado;
-            
-            document.getElementById('descripcion').value = p.descripcion || '';
-            document.getElementById('fecha_inicio').value = p.fecha_inicio;
-            document.getElementById('fecha_vencimiento').value = p.fecha_vencimiento || '';
-            document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
-            document.getElementById('modalProceso').style.display = 'block';
-        });
+    // Primero cargar todos los selects en paralelo
+    Promise.all([
+        cargarClientesSelect(),
+        cargarTiposProceso(),
+        cargarEstadosProceso()
+    ]).then(() => {
+        // Cuando los selects estén listos, obtener datos del proceso
+        return fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`);
+    })
+    .then(response => response.json())
+    .then(p => {
+        document.getElementById('procesoId').value = p.id;
+        document.getElementById('cliente_id').value = p.cliente_id;
+        document.getElementById('numero_radicado').value = p.numero_radicado;
+        document.getElementById('tipo_proceso_id').value = p.tipo_proceso_id;
+        document.getElementById('estado_proceso_id').value = p.estado_proceso_id;
+        document.getElementById('descripcion').value = p.descripcion || '';
+        document.getElementById('fecha_inicio').value = p.fecha_inicio;
+        document.getElementById('fecha_vencimiento').value = p.fecha_vencimiento || '';
+        document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
+        document.getElementById('modalProceso').style.display = 'block';
+    });
 }
+
 
 function verProceso(id) {
     fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
@@ -315,9 +317,9 @@ function verProceso(id) {
                 <p><strong>ID:</strong> ${p.id}</p>
                 <p><strong>Radicado:</strong> ${p.numero_radicado}</p>
                 <p><strong>Cliente:</strong> ${p.nombre} ${p.apellido}</p>
-                <p><strong>Tipo:</strong> ${p.tipo_proceso}</p>
+                <p><strong>Tipo:</strong> ${p.tipo_proceso_nombre || p.tipo_proceso}</p>
                 <p><strong>Descripción:</strong> ${p.descripcion || 'N/A'}</p>
-                <p><strong>Estado:</strong> ${p.estado}</p>
+                <p><strong>Estado:</strong> ${p.estado_proceso_nombre || p.estado}</p>
                 <p><strong>Fecha inicio:</strong> ${p.fecha_inicio}</p>
                 <p><strong>Fecha vencimiento:</strong> ${p.fecha_vencimiento || 'N/A'}</p>
             `;
@@ -422,7 +424,7 @@ function eliminarAnexo(id, procesoId) {
 }
 
 function cargarTiposProceso() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getTipos')
+    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getTipos')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('tipo_proceso_id');
@@ -434,7 +436,7 @@ function cargarTiposProceso() {
 }
 
 function cargarEstadosProceso() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getEstados')
+    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getEstados')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('estado_proceso_id');
