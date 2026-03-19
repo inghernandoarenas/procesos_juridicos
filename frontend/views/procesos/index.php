@@ -1,5 +1,14 @@
 <script>
-    // Función para obtener headers con token
+
+// Para procesos
+let paginaActualProcesos = 1;
+let totalPaginasProcesos = 1;
+
+// Para clientes
+let paginaActualClientes = 1;
+let totalPaginasClientes = 1;
+
+// Función para obtener headers con token
 function getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -40,6 +49,21 @@ function fetchWithAuth(url, options = {}) {
     <button class="btn btn-primary" onclick="abrirModalProceso()">Nuevo Proceso</button>
 </div>
 
+<!-- Campo de búsqueda -->
+<div style="margin-bottom: 20px; display: flex; gap: 10px; max-width: 500px;">
+    <div style="flex: 1; position: relative;">
+        <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+        <input type="text" id="buscarProcesos" placeholder="Buscar por radicado, cliente, tipo o descripción..." 
+               style="width: 100%; padding: 12px 12px 12px 40px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+    </div>
+    <button class="btn btn-primary" onclick="buscarProcesos()" style="padding: 0 25px;">
+        <i class="fas fa-search"></i> Buscar
+    </button>
+    <button class="btn btn-secondary" onclick="limpiarBusqueda()" style="padding: 0 20px; background: #95a5a6;">
+        <i class="fas fa-times"></i> Limpiar
+    </button>
+</div>
+
 <table id="tablaProcesos">
     <thead>
         <tr>
@@ -54,6 +78,8 @@ function fetchWithAuth(url, options = {}) {
     </thead>
     <tbody></tbody>
 </table>
+<!-- Paginación Procesos -->
+<div id="paginacionProcesos" class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;"></div>
 
 <div id="modalProceso" class="modal">
     <div class="modal-content">
@@ -269,13 +295,20 @@ function cerrarModalActuaciones() {
 }
 
 // ========== FUNCIONES DE PROCESOS ==========
-function cargarProcesos() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list')
+
+// funcion cargarProcesos con paginado
+function cargarProcesos(pagina = 1) {
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=${pagina}`)
         .then(response => response.json())
-        .then(data => {
+        .then(result => {
+            // Guardar datos de paginación
+            paginaActualProcesos = result.pagina;
+            totalPaginasProcesos = result.total_paginas;
+            
+            // Renderizar tabla
             let tbody = document.querySelector('#tablaProcesos tbody');
             tbody.innerHTML = '';
-            data.forEach(p => {
+            result.data.forEach(p => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${p.id}</td>
@@ -289,10 +322,14 @@ function cargarProcesos() {
                             <button class="btn-icon" onclick="verActuaciones(${p.id})" data-tooltip="Actuaciones"><i class="fas fa-history"></i></button>
                             <button class="btn-icon" onclick="editarProceso(${p.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
                             <button class="btn-icon" onclick="abrirModalAnexos(${p.id})" data-tooltip="Anexos"><i class="fas fa-paperclip"></i></button>
-                            <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>                        </td>
+                            <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tr>
                 `;
             });
+            
+            // Renderizar controles de paginación
+            renderPaginacionProcesos();
         });
 }
 
@@ -340,7 +377,7 @@ function guardarProceso(event) {
     .then(data => {
         if(data.success) {
             cerrarModalProceso();
-            cargarProcesos();
+            cargarProcesos(1);
         }
     });
 }
@@ -445,7 +482,7 @@ function eliminarProceso(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) cargarProcesos();
+            if(data.success) cargarProcesos(1);
         });
     }
 }
@@ -575,6 +612,35 @@ function cargarEstadosProceso() {
         });
 }
 
+
+function renderPaginacionProcesos() {
+    let container = document.getElementById('paginacionProcesos');
+    if (!container) return;
+    
+    let html = '';
+    
+    // Botón anterior
+    html += `<button class="pagination-btn" onclick="cambiarPaginaProcesos(${paginaActualProcesos - 1})" ${paginaActualProcesos <= 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+    
+    // Información de página
+    html += `<span class="pagination-info">Página ${paginaActualProcesos} de ${totalPaginasProcesos}</span>`;
+    
+    // Botón siguiente
+    html += `<button class="pagination-btn" onclick="cambiarPaginaProcesos(${paginaActualProcesos + 1})" ${paginaActualProcesos >= totalPaginasProcesos ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+    
+    container.innerHTML = html;
+}
+
+function cambiarPaginaProcesos(pagina) {
+    if (pagina >= 1 && pagina <= totalPaginasProcesos) {
+        cargarProcesos(pagina);
+    }
+}
+
 // Cargar procesos al entrar
-cargarProcesos();
+cargarProcesos(1);
 </script>

@@ -1,5 +1,14 @@
 <script>
-    // Función para obtener headers con token
+
+// Para procesos
+let paginaActualProcesos = 1;
+let totalPaginasProcesos = 1;
+
+// Para clientes
+let paginaActualClientes = 1;
+let totalPaginasClientes = 1;
+
+// Función para obtener headers con token
 function getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -54,6 +63,8 @@ function fetchWithAuth(url, options = {}) {
     </thead>
     <tbody></tbody>
 </table>
+<!-- Paginación Clientes -->
+<div id="paginacionClientes" class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;"></div>
 
 <div id="modalCliente" class="modal">
     <div class="modal-content">
@@ -95,13 +106,19 @@ function fetchWithAuth(url, options = {}) {
 </div>
 
 <script>
-function cargarClientes() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php?action=list')
+
+function cargarClientes(pagina = 1) {
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ClienteController.php?action=list&pagina=${pagina}`)
         .then(response => response.json())
-        .then(data => {
+        .then(result => {
+            // Guardar datos de paginación
+            paginaActualClientes = result.pagina;
+            totalPaginasClientes = result.total_paginas;
+            
+            // Renderizar tabla
             let tbody = document.querySelector('#tablaClientes tbody');
             tbody.innerHTML = '';
-            data.forEach(cliente => {
+            result.data.forEach(cliente => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${cliente.id}</td>
@@ -117,6 +134,9 @@ function cargarClientes() {
                     </tr>
                 `;
             });
+            
+            // Renderizar controles de paginación
+            renderPaginacionClientes();
         });
 }
 
@@ -146,7 +166,7 @@ function guardarCliente(event) {
     .then(data => {
         if(data.success) {
             cerrarModalCliente();
-            cargarClientes();
+            cargarClientes(1);
         }
     });
 }
@@ -228,7 +248,7 @@ function eliminarCliente(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) cargarClientes();
+            if(data.success) cargarClientes(1);
         });
     }
 }
@@ -237,6 +257,34 @@ function cerrarModalVer() {
     document.getElementById('modalVerCliente').style.display = 'none';
 }
 
+function renderPaginacionClientes() {
+    let container = document.getElementById('paginacionClientes');
+    if (!container) return;
+    
+    let html = '';
+    
+    // Botón anterior
+    html += `<button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes - 1})" ${paginaActualClientes <= 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+    
+    // Información de página
+    html += `<span class="pagination-info">Página ${paginaActualClientes} de ${totalPaginasClientes}</span>`;
+    
+    // Botón siguiente
+    html += `<button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes + 1})" ${paginaActualClientes >= totalPaginasClientes ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+    
+    container.innerHTML = html;
+}
+
+function cambiarPaginaClientes(pagina) {
+    if (pagina >= 1 && pagina <= totalPaginasClientes) {
+        cargarClientes(pagina);
+    }
+}
+
 // Cargar clientes al entrar a la página
-cargarClientes();
+cargarClientes(1);
 </script>

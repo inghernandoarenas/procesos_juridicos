@@ -18,7 +18,12 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $proceso = new Proceso();
 
 if($action == 'list') {
-    echo json_encode($proceso->getAll());
+    $pagina = $_GET['pagina'] ?? 1;
+    $por_pagina = 6;
+    $inicio = ($pagina - 1) * $por_pagina;
+    
+    $resultado = $proceso->getAllPaginated($inicio, $por_pagina);
+    echo json_encode($resultado);
     exit;
 }
 

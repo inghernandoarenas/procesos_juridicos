@@ -98,5 +98,37 @@ class Proceso {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllPaginated($inicio, $por_pagina) {
+        $query = "SELECT p.*, 
+                c.nombre, c.apellido,
+                tp.nombre as tipo_proceso_nombre,
+                ep.nombre as estado_proceso_nombre,
+                ep.color as estado_color
+                FROM " . $this->table . " p 
+                JOIN clientes c ON p.cliente_id = c.id 
+                LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
+                LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                ORDER BY p.id ASC 
+                LIMIT :inicio, :por_pagina";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindParam(':por_pagina', $por_pagina, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Obtener total de registros
+        $total = $this->conn->query("SELECT COUNT(*) as total FROM " . $this->table)->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        return [
+            'data' => $data,
+            'total' => $total,
+            'pagina' => ($inicio / $por_pagina) + 1,
+            'por_pagina' => $por_pagina,
+            'total_paginas' => ceil($total / $por_pagina)
+        ];
+    }
 }
 ?>
