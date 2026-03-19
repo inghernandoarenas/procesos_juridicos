@@ -21,26 +21,31 @@ $token = $_COOKIE['token'] ?? ''; // Si usaras cookies
         })();
     </script>
 </head>
+
 <body>
     <?php
-    // Determinar qué vista cargar
-    $view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
+        $view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
 
-    switch ($view) {
-        case 'clientes':
-            $content = 'views/clientes/index.php';
-            break;
-        case 'procesos':
-            $content = 'views/procesos/index.php';
-            break;
-        case 'dashboard':
-        default:
-            $content = 'views/dashboard/index.php';
-            break;
-    }
+        switch ($view) {
+            case 'clientes':
+                $content = 'views/clientes/index.php';
+                break;
+            case 'procesos':
+                $content = 'views/procesos/index.php';
+                break;
+            case 'tipos_proceso':
+                $content = 'views/parametrizacion/tipos_proceso.php';
+                break;
+            case 'estados_proceso':
+                $content = 'views/parametrizacion/estados_proceso.php';
+                break;
+            case 'dashboard':
+            default:
+                $content = 'views/dashboard/index.php';
+                break;
+        }
 
-    // Incluir el layout (que contiene sidebar, header, footer y el contenido)
-    include 'layouts/main_layout.php';
+        include 'layouts/main_layout.php';
     ?>
 </body>
 </html>

@@ -11,10 +11,38 @@ class TipoProceso {
     }
 
     public function getAll() {
-        $query = "SELECT * FROM " . $this->table . " WHERE activo = 1 ORDER BY nombre";
+        $query = "SELECT * FROM " . $this->table . " WHERE activo = 1 ORDER BY id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getById($id) {
+        $query = "SELECT * FROM " . $this->table . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function create($data) {
+        $query = "INSERT INTO " . $this->table . " (nombre, descripcion) VALUES (:nombre, :descripcion)";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute($data);
+    }
+
+    public function update($data) {
+        $query = "UPDATE " . $this->table . " SET nombre = :nombre, descripcion = :descripcion WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute($data);
+    }
+
+    public function delete($id) {
+        // Soft delete - solo desactivar
+        $query = "UPDATE " . $this->table . " SET activo = 0 WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
     }
 }
 ?>

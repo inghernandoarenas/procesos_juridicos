@@ -283,3 +283,28 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
 .btn-secondary:hover {
     background: #7f8c8d;
 }
+
+/* Mejoras para el menú con iconos */
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+}
+
+.sidebar ul li a i {
+    font-size: 16px;
+    color: rgba(255,255,255,0.8);
+}
+
+.sidebar ul li a:hover i {
+    color: white;
+}
+
+.sidebar .submenu li a {
+    padding-left: 30px;
+    font-size: 14px;
+}
+
+.sidebar .submenu li a i {
+    font-size: 14px;
+}

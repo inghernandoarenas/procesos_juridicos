@@ -12,9 +12,39 @@
         <div class="sidebar">
             <h2>Menú</h2>
             <ul>
-                <li><a href="/procesos_juridicos/frontend/index.php?view=dashboard">Dashboard</a></li>
-                <li><a href="/procesos_juridicos/frontend/index.php?view=clientes">Clientes</a></li>
-                <li><a href="/procesos_juridicos/frontend/index.php?view=procesos">Procesos</a></li>
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=dashboard">
+                        <i class="fas fa-tachometer-alt" style="margin-right: 10px; width: 20px;"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=procesos">
+                        <i class="fas fa-gavel" style="margin-right: 10px; width: 20px;"></i> Procesos
+                    </a>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a href="#" onclick="toggleSubmenu(event)">
+                        <i class="fas fa-cog" style="margin-right: 10px; width: 20px;"></i> Parametrización 
+                        <i class="fas fa-chevron-down" style="float: right;"></i>
+                    </a>
+                    <ul class="submenu" style="display: none; padding-left: 15px;">
+                        <li>
+                            <a href="/procesos_juridicos/frontend/index.php?view=clientes">
+                                <i class="fas fa-users" style="margin-right: 10px; width: 20px;"></i> Clientes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/procesos_juridicos/frontend/index.php?view=tipos_proceso">
+                                <i class="fas fa-tags" style="margin-right: 10px; width: 20px;"></i> Tipos de Proceso
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/procesos_juridicos/frontend/index.php?view=estados_proceso">
+                                <i class="fas fa-chart-pie" style="margin-right: 10px; width: 20px;"></i> Estados de Proceso
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
 
@@ -61,3 +91,64 @@
     </div>
 </body>
 </html>
+
+<script>
+function toggleSubmenu(event) {
+    event.preventDefault();
+    const submenu = event.currentTarget.nextElementSibling;
+    const icon = event.currentTarget.querySelector('i');
+    
+    if (submenu.style.display === 'none') {
+        submenu.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    } else {
+        submenu.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    }
+}
+
+// Mantener submenu abierto si estamos en una página de parametrización
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const view = urlParams.get('view');
+    
+    if (view === 'clientes' || view === 'tipos_proceso' || view === 'estados_proceso') {
+        const submenu = document.querySelector('.submenu');
+        const icon = document.querySelector('.has-submenu i');
+        if (submenu) {
+            submenu.style.display = 'block';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
+    }
+});
+</script>
+
+<style>
+.sidebar ul li.menu-item {
+    position: relative;
+}
+
+.sidebar ul li.menu-item a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar ul li.menu-item .submenu {
+    list-style: none;
+    margin-top: 5px;
+}
+
+.sidebar ul li.menu-item .submenu li a {
+    padding: 8px 12px;
+    font-size: 14px;
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar ul li.menu-item .submenu li a:hover {
+    background: rgba(255,255,255,0.2);
+}
+</style>
