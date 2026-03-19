@@ -19,10 +19,11 @@ $proceso = new Proceso();
 
 if($action == 'list') {
     $pagina = $_GET['pagina'] ?? 1;
+    $buscar = $_GET['buscar'] ?? '';
     $por_pagina = 6;
     $inicio = ($pagina - 1) * $por_pagina;
     
-    $resultado = $proceso->getAllPaginated($inicio, $por_pagina);
+    $resultado = $proceso->getAllPaginated($inicio, $por_pagina, $buscar);
     echo json_encode($resultado);
     exit;
 }

@@ -296,9 +296,31 @@ function cerrarModalActuaciones() {
 
 // ========== FUNCIONES DE PROCESOS ==========
 
+// Variable para guardar el término de búsqueda actual
+let terminoBusqueda = '';
+
+function buscarProcesos() {
+    const termino = document.getElementById('buscarProcesos').value.trim();
+    terminoBusqueda = termino;
+    paginaActualProcesos = 1; // Resetear a primera página
+    cargarProcesos(1, termino);
+}
+
+function limpiarBusqueda() {
+    document.getElementById('buscarProcesos').value = '';
+    terminoBusqueda = '';
+    paginaActualProcesos = 1;
+    cargarProcesos(1, '');
+}
+
 // funcion cargarProcesos con paginado
-function cargarProcesos(pagina = 1) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=${pagina}`)
+function cargarProcesos(pagina = 1, buscar = '') {
+    let url = `/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=${pagina}`;
+    if (buscar) {
+        url += `&buscar=${encodeURIComponent(buscar)}`;
+    }
+    
+    fetchWithAuth(url)
         .then(response => response.json())
         .then(result => {
             // Guardar datos de paginación
@@ -308,6 +330,13 @@ function cargarProcesos(pagina = 1) {
             // Renderizar tabla
             let tbody = document.querySelector('#tablaProcesos tbody');
             tbody.innerHTML = '';
+            
+            if (result.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No se encontraron procesos</td></tr>';
+                document.getElementById('paginacionProcesos').innerHTML = '';
+                return;
+            }
+            
             result.data.forEach(p => {
                 tbody.innerHTML += `
                     <tr>
@@ -377,7 +406,7 @@ function guardarProceso(event) {
     .then(data => {
         if(data.success) {
             cerrarModalProceso();
-            cargarProcesos(1);
+            cargarProcesos(1, terminoBusqueda);
         }
     });
 }
@@ -482,7 +511,7 @@ function eliminarProceso(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) cargarProcesos(1);
+            if(data.success) cargarProcesos(1, terminoBusqueda);
         });
     }
 }
@@ -637,10 +666,25 @@ function renderPaginacionProcesos() {
 
 function cambiarPaginaProcesos(pagina) {
     if (pagina >= 1 && pagina <= totalPaginasProcesos) {
-        cargarProcesos(pagina);
+        cargarProcesos(pagina, terminoBusqueda);
     }
 }
 
+document.getElementById('buscarProcesos').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        buscarProcesos();
+    }
+});
+
+// Debounce para búsqueda automática (opcional)
+let timeoutId;
+document.getElementById('buscarProcesos').addEventListener('input', function() {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+        buscarProcesos();
+    }, 500); // Busca 500ms después de dejar de escribir
+});
+
 // Cargar procesos al entrar
-cargarProcesos(1);
+cargarProcesos(1, '');
 </script>

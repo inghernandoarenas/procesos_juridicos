@@ -99,8 +99,9 @@ class Proceso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllPaginated($inicio, $por_pagina) {
-        $query = "SELECT p.*, 
+    public function getAllPaginated($inicio, $por_pagina, $buscar = '') {
+        // Consulta base
+        $sql = "SELECT p.*, 
                 c.nombre, c.apellido,
                 tp.nombre as tipo_proceso_nombre,
                 ep.nombre as estado_proceso_nombre,
@@ -108,26 +109,67 @@ class Proceso {
                 FROM " . $this->table . " p 
                 JOIN clientes c ON p.cliente_id = c.id 
                 LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
-                LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
-                ORDER BY p.id ASC 
-                LIMIT :inicio, :por_pagina";
+                LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id";
         
-        $stmt = $this->conn->prepare($query);
+        // Agregar condición de búsqueda si hay término
+        $params = [];
+        if(!empty($buscar)) {
+            $sql .= " WHERE p.numero_radicado LIKE :buscar 
+                    OR c.nombre LIKE :buscar 
+                    OR c.apellido LIKE :buscar 
+                    OR CONCAT(c.nombre, ' ', c.apellido) LIKE :buscar
+                    OR tp.nombre LIKE :buscar
+                    OR p.descripcion LIKE :buscar";
+            $buscarParam = "%$buscar%";
+            $params[':buscar'] = $buscarParam;
+        }
+        
+        // Agregar orden y paginación
+        $sql .= " ORDER BY p.id ASC LIMIT :inicio, :por_pagina";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        // Bind parámetros de búsqueda
+        if(!empty($buscar)) {
+            $stmt->bindParam(':buscar', $buscarParam);
+        }
+        
+        // Bind parámetros de paginación
         $stmt->bindParam(':inicio', $inicio, PDO::PARAM_INT);
         $stmt->bindParam(':por_pagina', $por_pagina, PDO::PARAM_INT);
-        $stmt->execute();
         
+        $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Obtener total de registros
-        $total = $this->conn->query("SELECT COUNT(*) as total FROM " . $this->table)->fetch(PDO::FETCH_ASSOC)['total'];
+        // Obtener total de registros (con la misma búsqueda)
+        $sqlCount = "SELECT COUNT(*) as total 
+                    FROM " . $this->table . " p 
+                    JOIN clientes c ON p.cliente_id = c.id 
+                    LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id";
+        
+        if(!empty($buscar)) {
+            $sqlCount .= " WHERE p.numero_radicado LIKE :buscar 
+                        OR c.nombre LIKE :buscar 
+                        OR c.apellido LIKE :buscar 
+                        OR CONCAT(c.nombre, ' ', c.apellido) LIKE :buscar
+                        OR tp.nombre LIKE :buscar
+                        OR p.descripcion LIKE :buscar";
+        }
+        
+        $stmtCount = $this->conn->prepare($sqlCount);
+        if(!empty($buscar)) {
+            $stmtCount->bindParam(':buscar', $buscarParam);
+        }
+        $stmtCount->execute();
+        $total = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
         
         return [
             'data' => $data,
             'total' => $total,
             'pagina' => ($inicio / $por_pagina) + 1,
             'por_pagina' => $por_pagina,
-            'total_paginas' => ceil($total / $por_pagina)
+            'total_paginas' => ceil($total / $por_pagina),
+            'buscar' => $buscar
         ];
     }
 }
