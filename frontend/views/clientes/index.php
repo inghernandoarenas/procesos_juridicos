@@ -1,3 +1,41 @@
+<script>
+    // Función para obtener headers con token
+function getHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+}
+
+// Función para hacer fetch con token
+function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = '/procesos_juridicos/frontend/login.php';
+        return Promise.reject('No token');
+    }
+    
+    options.headers = {
+        ...options.headers,
+        'Authorization': 'Bearer ' + token
+    };
+    
+    return fetch(url, options)
+        .then(response => {
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/procesos_juridicos/frontend/login.php';
+                return Promise.reject('Unauthorized');
+            }
+            return response;
+        });
+}
+</script>
+
+
 <div class="page-header">
     <h2>Gestión de Clientes</h2>
     <button class="btn btn-primary" onclick="abrirModalCliente()">Nuevo Cliente</button>
@@ -49,16 +87,16 @@
 </div>
 
 <div id="modalVerCliente" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 600px;">
         <span class="close" onclick="cerrarModalVer()">&times;</span>
-        <h3>Detalles del Cliente</h3>
+        <h3 style="margin-bottom: 20px;">Detalles del Cliente</h3>
         <div id="detalleCliente"></div>
     </div>
 </div>
 
 <script>
 function cargarClientes() {
-    fetch('/procesos_juridicos/backend/controllers/ClienteController.php?action=list')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php?action=list')
         .then(response => response.json())
         .then(data => {
             let tbody = document.querySelector('#tablaClientes tbody');
@@ -100,7 +138,7 @@ function guardarCliente(event) {
     let id = document.getElementById('clienteId').value;
     formData.append('action', id ? 'update' : 'create');
     
-    fetch('/procesos_juridicos/backend/controllers/ClienteController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php', {
         method: 'POST',
         body: formData
     })
@@ -114,7 +152,7 @@ function guardarCliente(event) {
 }
 
 function editarCliente(id) {
-    fetch(`/procesos_juridicos/backend/controllers/ClienteController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ClienteController.php?action=get&id=${id}`)
         .then(response => response.json())
         .then(cliente => {
             document.getElementById('clienteId').value = cliente.id;
@@ -129,16 +167,49 @@ function editarCliente(id) {
 }
 
 function verCliente(id) {
-    fetch(`/procesos_juridicos/backend/controllers/ClienteController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ClienteController.php?action=get&id=${id}`)
         .then(response => response.json())
         .then(cliente => {
             let html = `
-                <p><strong>ID:</strong> ${cliente.id}</p>
-                <p><strong>Nombre:</strong> ${cliente.nombre} ${cliente.apellido}</p>
-                <p><strong>Email:</strong> ${cliente.email || 'N/A'}</p>
-                <p><strong>Teléfono:</strong> ${cliente.telefono || 'N/A'}</p>
-                <p><strong>Dirección:</strong> ${cliente.direccion || 'N/A'}</p>
-                <p><strong>Fecha registro:</strong> ${cliente.created_at}</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px;">
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">ID Cliente</strong>
+                        <span style="font-size: 16px;">${cliente.id}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Nombre Completo</strong>
+                        <span style="font-size: 18px; font-weight: bold; color: #3498db;">${cliente.nombre} ${cliente.apellido}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Email</strong>
+                        <span style="font-size: 14px;">
+                            <i class="fas fa-envelope" style="color: #3498db; margin-right: 5px;"></i>
+                            ${cliente.email || 'N/A'}
+                        </span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Teléfono</strong>
+                        <span style="font-size: 14px;">
+                            <i class="fas fa-phone" style="color: #27ae60; margin-right: 5px;"></i>
+                            ${cliente.telefono || 'N/A'}
+                        </span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Dirección</strong>
+                        <span style="font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #e74c3c; margin-right: 5px;"></i>
+                            ${cliente.direccion || 'N/A'}
+                        </span>
+                    </div>
+                    
+                    <div style="grid-column: span 2; text-align: right; margin-top: 10px; color: #7f8c8d; font-size: 12px;">
+                        <i class="fas fa-calendar-alt"></i> Cliente desde: ${new Date(cliente.created_at).toLocaleDateString('es-CO')}
+                    </div>
+                </div>
             `;
             document.getElementById('detalleCliente').innerHTML = html;
             document.getElementById('modalVerCliente').style.display = 'block';
@@ -151,7 +222,7 @@ function eliminarCliente(id) {
         formData.append('action', 'delete');
         formData.append('id', id);
         
-        fetch('/procesos_juridicos/backend/controllers/ClienteController.php', {
+        fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php', {
             method: 'POST',
             body: formData
         })

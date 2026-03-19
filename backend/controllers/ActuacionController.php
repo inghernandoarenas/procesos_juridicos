@@ -1,7 +1,19 @@
 <?php
 require_once __DIR__ . '/../models/Actuacion.php';
+require_once __DIR__ . '/../libs/auth.php';
 
-file_put_contents('debug_log.txt', "Inicio sincronización\n", FILE_APPEND);
+// Verificar token (excepto para opciones públicas si las hubiera)
+
+/*$acciones_publicas = ['login']; // si tuvieras acciones públicas
+
+if(!in_array($action, $acciones_publicas)) {
+    $usuario = verificarToken();
+    // $usuario contiene los datos del usuario autenticado
+    // Podrías usarlo para auditoría
+}
+*/
+
+//file_put_contents('debug_log.txt', "Inicio sincronización\n", FILE_APPEND);
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $actuacion = new Actuacion();
 

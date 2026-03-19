@@ -1,3 +1,40 @@
+<script>
+    // Función para obtener headers con token
+function getHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+}
+
+// Función para hacer fetch con token
+function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = '/procesos_juridicos/frontend/login.php';
+        return Promise.reject('No token');
+    }
+    
+    options.headers = {
+        ...options.headers,
+        'Authorization': 'Bearer ' + token
+    };
+    
+    return fetch(url, options)
+        .then(response => {
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/procesos_juridicos/frontend/login.php';
+                return Promise.reject('Unauthorized');
+            }
+            return response;
+        });
+}
+</script>
+
 <div class="page-header">
     <h2>Gestión de Procesos</h2>
     <button class="btn btn-primary" onclick="abrirModalProceso()">Nuevo Proceso</button>
@@ -158,7 +195,7 @@ function verActuaciones(procesoId) {
     procesoActual = procesoId;
     
     // Primero obtenemos datos del proceso
-    fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${procesoId}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${procesoId}`)
         .then(response => response.json())
         .then(proceso => {
             document.getElementById('procesoInfo').innerHTML = `
@@ -173,7 +210,7 @@ function verActuaciones(procesoId) {
 }
 
 function cargarActuaciones(procesoId) {
-    fetch(`/procesos_juridicos/backend/controllers/ActuacionController.php?action=list&proceso_id=${procesoId}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ActuacionController.php?action=list&proceso_id=${procesoId}`)
         .then(response => response.json())
         .then(data => {
             let tbody = document.querySelector('#tablaActuaciones tbody');
@@ -204,7 +241,7 @@ function sincronizarRama() {
     formData.append('action', 'sincronizar');
     formData.append('proceso_id', procesoActual);
     
-    fetch('/procesos_juridicos/backend/controllers/SincronizarRamaController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarRamaController.php', {
         method: 'POST',
         body: formData
     })
@@ -233,7 +270,7 @@ function cerrarModalActuaciones() {
 
 // ========== FUNCIONES DE PROCESOS ==========
 function cargarProcesos() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list')
         .then(response => response.json())
         .then(data => {
             let tbody = document.querySelector('#tablaProcesos tbody');
@@ -260,7 +297,7 @@ function cargarProcesos() {
 }
 
 function cargarClientesSelect() {
-    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
+    return fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('cliente_id');
@@ -295,7 +332,7 @@ function guardarProceso(event) {
     let id = document.getElementById('procesoId').value;
     formData.append('action', id ? 'update' : 'create');
     
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php', {
         method: 'POST',
         body: formData
     })
@@ -317,7 +354,7 @@ function editarProceso(id) {
         cargarEstadosProceso()
     ]).then(() => {
         // Cuando los selects estén listos, obtener datos del proceso
-        return fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`);
+        return fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`);
     })
     .then(response => response.json())
     .then(p => {
@@ -336,7 +373,7 @@ function editarProceso(id) {
 
 
 function verProceso(id) {
-    fetch(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
         .then(response => response.json())
         .then(p => {
             let html = `
@@ -402,7 +439,7 @@ function eliminarProceso(id) {
         formData.append('action', 'delete');
         formData.append('id', id);
         
-        fetch('/procesos_juridicos/backend/controllers/ProcesoController.php', {
+        fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php', {
             method: 'POST',
             body: formData
         })
@@ -429,7 +466,7 @@ function cerrarModalAnexos() {
 }
 
 function cargarAnexos(procesoId) {
-    fetch(`/procesos_juridicos/backend/controllers/AnexoController.php?action=list&proceso_id=${procesoId}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/AnexoController.php?action=list&proceso_id=${procesoId}`)
         .then(response => response.json())
         .then(data => {
             let tbody = document.getElementById('listaAnexos');
@@ -483,7 +520,7 @@ function subirAnexo(event) {
     let formData = new FormData(document.getElementById('formAnexo'));
     formData.append('action', 'upload');
     
-    fetch('/procesos_juridicos/backend/controllers/AnexoController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', {
         method: 'POST',
         body: formData
     })
@@ -503,7 +540,7 @@ function eliminarAnexo(id, procesoId) {
         formData.append('id', id);
         formData.append('proceso_id', procesoId);
         
-        fetch('/procesos_juridicos/backend/controllers/AnexoController.php', {
+        fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', {
             method: 'POST',
             body: formData
         })
@@ -515,7 +552,7 @@ function eliminarAnexo(id, procesoId) {
 }
 
 function cargarTiposProceso() {
-    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getTipos')
+    return fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getTipos')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('tipo_proceso_id');
@@ -527,7 +564,7 @@ function cargarTiposProceso() {
 }
 
 function cargarEstadosProceso() {
-    return fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getEstados')
+    return fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getEstados')
         .then(response => response.json())
         .then(data => {
             let select = document.getElementById('estado_proceso_id');

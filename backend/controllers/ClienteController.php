@@ -1,5 +1,17 @@
 <?php
 require_once __DIR__ . '/../models/Cliente.php';
+require_once __DIR__ . '/../libs/auth.php';
+
+// Verificar token (excepto para opciones públicas si las hubiera)
+/*
+$acciones_publicas = ['login']; // si tuvieras acciones públicas
+
+if(!in_array($action, $acciones_publicas)) {
+    $usuario = verificarToken();
+    // $usuario contiene los datos del usuario autenticado
+    // Podrías usarlo para auditoría
+}
+*/
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $cliente = new Cliente();

@@ -1,3 +1,41 @@
+<script>
+    // Función para obtener headers con token
+function getHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+    };
+}
+
+// Función para hacer fetch con token
+function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = '/procesos_juridicos/frontend/login.php';
+        return Promise.reject('No token');
+    }
+    
+    options.headers = {
+        ...options.headers,
+        'Authorization': 'Bearer ' + token
+    };
+    
+    return fetch(url, options)
+        .then(response => {
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/procesos_juridicos/frontend/login.php';
+                return Promise.reject('Unauthorized');
+            }
+            return response;
+        });
+}
+</script>
+
+
 <div class="dashboard">
     <h2>Dashboard</h2>
     
@@ -16,7 +54,7 @@
 
 <script>
 function cargarProximosVencer() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=proximosVencer')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=proximosVencer')
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('proximosVencer');
@@ -66,7 +104,7 @@ function cargarProximosVencer() {
 }
 
 function cargarEnEspera() {
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=enEspera')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=enEspera')
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('enEspera');
