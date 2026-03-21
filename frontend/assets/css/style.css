@@ -284,27 +284,46 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
     background: #7f8c8d;
 }
 
-/* Mejoras para el menú con iconos */
-.sidebar ul li a {
-    display: flex;
-    align-items: center;
-    padding: 10px 12px;
+
+/* Tooltips para dashboard */
+.stat-item[data-tooltip] {
+    position: relative;
+    cursor: help;
 }
 
-.sidebar ul li a i {
-    font-size: 16px;
-    color: rgba(255,255,255,0.8);
-}
-
-.sidebar ul li a:hover i {
+.stat-item[data-tooltip]:hover:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: #2c3e50;
     color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-line;
+    min-width: 280px;
+    max-width: 350px;
+    z-index: 1000;
+    margin-bottom: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    pointer-events: none;
+    text-align: left;
+    font-weight: normal;
+    word-wrap: break-word;
+    text-align: left;
 }
 
-.sidebar .submenu li a {
-    padding-left: 30px;
-    font-size: 14px;
-}
-
-.sidebar .submenu li a i {
-    font-size: 14px;
+.stat-item[data-tooltip]:hover:before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 20px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #2c3e50 transparent transparent transparent;
+    margin-bottom: -4px;
+    z-index: 1000;
+    pointer-events: none;
 }

@@ -86,7 +86,11 @@ function fetchWithAuth(url, options = {}) {
             </div>
             <div class="form-group">
                 <label>Teléfono:</label>
-                <input type="text" id="telefono" name="telefono">
+                <input type="text" id="telefono" name="telefono" 
+                    pattern="[0-9]{7,10}" 
+                    title="Ingrese un número de 7 a 10 dígitos (solo números)"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    maxlength="10">
             </div>
             <div class="form-group">
                 <label>Dirección:</label>

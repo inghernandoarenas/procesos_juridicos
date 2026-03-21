@@ -20,7 +20,7 @@ class Proceso {
                 JOIN clientes c ON p.cliente_id = c.id 
                 LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
                 LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
-                ORDER BY p.id ASC";
+                ORDER BY p.id DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -125,7 +125,7 @@ class Proceso {
         }
         
         // Agregar orden y paginación
-        $sql .= " ORDER BY p.id ASC LIMIT :inicio, :por_pagina";
+        $sql .= " ORDER BY p.id DESC LIMIT :inicio, :por_pagina";
         
         $stmt = $this->conn->prepare($sql);
         

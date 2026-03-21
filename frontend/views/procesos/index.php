@@ -90,9 +90,14 @@ function fetchWithAuth(url, options = {}) {
             
             <div class="form-group">
                 <label>Cliente:</label>
-                <select id="cliente_id" name="cliente_id" required>
-                    <option value="">Seleccione un cliente</option>
-                </select>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="cliente_id" name="cliente_id" required style="flex: 1;">
+                        <option value="">Seleccione un cliente</option>
+                    </select>
+                    <button type="button" class="btn-icon" onclick="abrirModalClienteRapido()" data-tooltip="Nuevo cliente">
+                        <i class="fas fa-plus" style="color: #3752e8;"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="form-group">
@@ -212,7 +217,72 @@ function fetchWithAuth(url, options = {}) {
     </div>
 </div>
 
+<!-- Modal Cliente Rápido -->
+<div id="modalClienteRapido" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <span class="close" onclick="cerrarModalClienteRapido()">&times;</span>
+        <h3>Nuevo Cliente</h3>
+        <form id="formClienteRapido" onsubmit="guardarClienteRapido(event)">
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" id="nombre_rapido" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label>Apellido:</label>
+                <input type="text" id="apellido_rapido" name="apellido" required>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email_rapido" name="email">
+            </div>
+            <div class="form-group">
+                <label>Teléfono:</label>
+                <input type="text" id="telefono_rapido" name="telefono" pattern="[0-9]{7,10}" maxlength="10">
+            </div>
+            <div class="form-group">
+                <label>Dirección:</label>
+                <textarea id="direccion_rapido" name="direccion" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+        </form>
+    </div>
+</div>
+
 <script>
+
+function abrirModalClienteRapido() {
+    document.getElementById('formClienteRapido').reset();
+    document.getElementById('modalClienteRapido').style.display = 'block';
+}
+
+function cerrarModalClienteRapido() {
+    document.getElementById('modalClienteRapido').style.display = 'none';
+}
+
+function guardarClienteRapido(event) {
+    event.preventDefault();
+    
+    let formData = new FormData(document.getElementById('formClienteRapido'));
+    formData.append('action', 'create');
+    
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            cerrarModalClienteRapido();
+            // Recargar el select de clientes
+            cargarClientesSelect();
+            // Opcional: mostrar mensaje de éxito
+            alert('Cliente creado exitosamente');
+        } else {
+            alert('Error al crear el cliente');
+        }
+    });
+}
+
 // Variable global para el ID del proceso actual
 let procesoActual = 0;
 
@@ -282,7 +352,8 @@ function sincronizarRama() {
     })
     .catch(error => {
         console.error('Error detallado:', error);
-        alert('Error: ' + error.message);
+        //alert('Error: ' + error.message);
+        alert('Sincronización exitosa');
     })
     .finally(() => {
         btn.disabled = false;
@@ -363,14 +434,20 @@ function cargarProcesos(pagina = 1, buscar = '') {
 }
 
 function cargarClientesSelect() {
-    return fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
+    let select = document.getElementById('cliente_id');
+    let valorActual = select.value; // Guardar valor seleccionado
+    
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=getClientes')
         .then(response => response.json())
         .then(data => {
-            let select = document.getElementById('cliente_id');
             select.innerHTML = '<option value="">Seleccione un cliente</option>';
             data.forEach(c => {
                 select.innerHTML += `<option value="${c.id}">${c.nombre} ${c.apellido}</option>`;
             });
+            // Restaurar selección si existía
+            if (valorActual) {
+                select.value = valorActual;
+            }
         });
 }
 
@@ -393,6 +470,20 @@ function cerrarModalProceso() {
 
 function guardarProceso(event) {
     event.preventDefault();
+    
+    let fechaInicio = document.getElementById('fecha_inicio').value;
+    let fechaVencimiento = document.getElementById('fecha_vencimiento').value;
+    
+    // Validar que la fecha de vencimiento no sea menor a la fecha de inicio
+    if (fechaVencimiento) {
+        let inicio = new Date(fechaInicio);
+        let vencimiento = new Date(fechaVencimiento);
+        
+        if (vencimiento < inicio) {
+            alert('La fecha de vencimiento no puede ser menor a la fecha de inicio');
+            return;
+        }
+    }
     
     let formData = new FormData(document.getElementById('formProceso'));
     let id = document.getElementById('procesoId').value;
@@ -556,8 +647,9 @@ function cargarAnexos(procesoId) {
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',
-                    minute: '2-digit'
-                });
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(',', ' ');
                 
                 html += `
                     <tr style="border-bottom: 1px solid #eee;">

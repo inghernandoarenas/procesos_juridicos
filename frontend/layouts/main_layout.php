@@ -127,28 +127,21 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-.sidebar ul li.menu-item {
-    position: relative;
-}
-
-.sidebar ul li.menu-item a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sidebar ul li.menu-item .submenu {
+/* Alinear submenús a la izquierda */
+.sidebar .submenu {
+    padding-left: 25px !important;
     list-style: none;
-    margin-top: 5px;
 }
 
-.sidebar ul li.menu-item .submenu li a {
+.sidebar .submenu li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 12px;
-    font-size: 14px;
-    background: rgba(255,255,255,0.1);
 }
 
-.sidebar ul li.menu-item .submenu li a:hover {
-    background: rgba(255,255,255,0.2);
+.sidebar .submenu li a i {
+    width: 20px;
+    text-align: center;
 }
 </style>

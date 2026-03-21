@@ -1,3 +1,48 @@
+<style>
+    /* Tooltips para dashboard */
+.stat-item[data-tooltip] {
+    position: relative;
+    cursor: help;
+}
+
+.stat-item[data-tooltip]:hover:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: #2c3e50;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-line;
+    min-width: 280px;
+    max-width: 350px;
+    z-index: 1000;
+    margin-bottom: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    pointer-events: none;
+    text-align: left;
+    font-weight: normal;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+.stat-item[data-tooltip]:hover:before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 20px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #2c3e50 transparent transparent transparent;
+    margin-bottom: -4px;
+    z-index: 1000;
+    pointer-events: none;
+}
+</style>
+
 <script>
     // Función para obtener headers con token
 function getHeaders() {
@@ -53,8 +98,9 @@ function fetchWithAuth(url, options = {}) {
 </div>
 
 <script>
+
 function cargarProximosVencer() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=proximosVencer')
+    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=proximosVencer')
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('proximosVencer');
@@ -67,10 +113,8 @@ function cargarProximosVencer() {
             data.forEach(p => {
                 let fechaVenc = new Date(p.fecha_vencimiento);
                 let hoy = new Date();
-                let diffTime = fechaVenc - hoy;
-                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let diffDays = Math.ceil((fechaVenc - hoy) / (1000 * 60 * 60 * 24));
                 
-                // Clase según urgencia
                 let claseUrgencia = 'normal';
                 let claseDias = 'dias-verde';
                 if(diffDays <= 3) {
@@ -81,21 +125,26 @@ function cargarProximosVencer() {
                     claseDias = 'dias-naranja';
                 }
                 
-                // Clase para el estado
-                let claseEstado = 'estado-activo';
-                if(p.estado === 'En espera') claseEstado = 'estado-espera';
-                else if(p.estado === 'Vencido') claseEstado = 'estado-vencido';
-                else if(p.estado === 'Finalizado') claseEstado = 'estado-finalizado';
+                // Tooltip con información detallada
+                let tooltip = `
+                    📋 Radicado: ${p.numero_radicado}
+                    👤 Cliente: ${p.nombre} ${p.apellido}
+                    📝 Tipo: ${p.tipo_proceso}
+                    📅 Inicio: ${p.fecha_inicio}
+                    ⚠️ Vence: ${p.fecha_vencimiento}
+                    📊 Estado: ${p.estado}
+                    ${p.descripcion ? '📄 Desc: ' + p.descripcion.substring(0, 100) : ''}
+                `;
                 
                 html += `
-                    <div class="stat-item ${claseUrgencia}">
+                     <div class="stat-item ${claseUrgencia}" data-tooltip="${tooltip}">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <strong>${p.numero_radicado}</strong>
                             <span class="dias-badge ${claseDias}">${diffDays} días</span>
                         </div>
                         <div>${p.nombre} ${p.apellido}</div>
                         <div><small>Vence: ${p.fecha_vencimiento}</small></div>
-                        <div><span class="${claseEstado}">${p.estado}</span></div>
+                        <div><span class="${p.estado === 'Activo' ? 'estado-activo' : 'estado-espera'}">${p.estado}</span></div>
                     </div>
                 `;
             });
@@ -104,7 +153,7 @@ function cargarProximosVencer() {
 }
 
 function cargarEnEspera() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php?action=enEspera')
+    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=enEspera')
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('enEspera');
@@ -115,8 +164,19 @@ function cargarEnEspera() {
             
             let html = '';
             data.forEach(p => {
+                // Tooltip con información detallada
+                let tooltip = `
+                    📋 Radicado: ${p.numero_radicado}
+                    👤 Cliente: ${p.nombre} ${p.apellido}
+                    📝 Tipo: ${p.tipo_proceso}
+                    📅 Inicio: ${p.fecha_inicio}
+                    📅 Vence: ${p.fecha_vencimiento || 'No definida'}
+                    ⏳ Estado: ${p.estado}
+                    ${p.descripcion ? '📄 Desc: ' + p.descripcion.substring(0, 100) : ''}
+                `;
+                
                 html += `
-                    <div class="stat-item">
+                    <div class="stat-item" data-tooltip="${tooltip}">
                         <strong>${p.numero_radicado}</strong>
                         <div>${p.nombre} ${p.apellido}</div>
                         <div><small>${p.tipo_proceso}</small></div>
