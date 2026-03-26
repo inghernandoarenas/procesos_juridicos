@@ -28,6 +28,19 @@ class Actuacion {
         return $stmt->execute($data);
     }
 
+    public function createAndGetId($data) {
+        $query = "INSERT INTO " . $this->table . " 
+                (proceso_id, id_api, fecha, actuacion, observaciones) 
+                VALUES (:proceso_id, :id_api, :fecha, :actuacion, :observaciones)";
+        $stmt = $this->conn->prepare($query);
+        
+        if($stmt->execute($data)) {
+            return $this->conn->lastInsertId();
+        }
+        
+        return false;
+    }
+    
     public function delete($id) {
         $query = "DELETE FROM " . $this->table . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
@@ -41,6 +54,24 @@ class Actuacion {
         $stmt->bindParam(':id_api', $id_api);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function existeActuacion($id_api, $proceso_id) {
+        $query = "SELECT id FROM " . $this->table . " WHERE id_api = :id_api AND proceso_id = :proceso_id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_api', $id_api);
+        $stmt->bindParam(':proceso_id', $proceso_id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUltimasPorProceso($proceso_id, $limite = 5) {
+        $query = "SELECT * FROM " . $this->table . " WHERE proceso_id = :proceso_id ORDER BY fecha DESC LIMIT :limite";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':proceso_id', $proceso_id);
+        $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
