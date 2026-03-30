@@ -1,7 +1,5 @@
 <?php
-// Verificar token vía PHP también (segunda capa de seguridad)
-$token = $_COOKIE['token'] ?? ''; // Si usaras cookies
-// Por ahora dejamos solo JS pero podríamos validar aquí también
+$token = $_COOKIE['token'] ?? '';
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,16 +10,12 @@ $token = $_COOKIE['token'] ?? ''; // Si usaras cookies
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/procesos_juridicos/frontend/assets/css/style.css">
     <script>
-        // Verificar token al cargar la página
         (function() {
             const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/procesos_juridicos/frontend/login.php';
-            }
+            if (!token) window.location.href = '/procesos_juridicos/frontend/login.php';
         })();
     </script>
 </head>
-
 <body>
     <?php
         $view = isset($_GET['view']) ? $_GET['view'] : 'dashboard';
@@ -38,6 +32,12 @@ $token = $_COOKIE['token'] ?? ''; // Si usaras cookies
                 break;
             case 'estados_proceso':
                 $content = 'views/parametrizacion/estados_proceso.php';
+                break;
+            case 'usuarios':
+                $content = 'views/parametrizacion/usuarios.php';
+                break;
+            case 'notificaciones':
+                $content = 'views/parametrizacion/notificaciones.php';
                 break;
             case 'dashboard':
             default:

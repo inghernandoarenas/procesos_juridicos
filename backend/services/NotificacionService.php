@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/EmailService.php';
-require_once __DIR__ . '/../models/Notificacion.php';
+require_once __DIR__ . '/../models/NotificacionConfig.php';
 
 // WhatsApp es opcional: solo se carga si el archivo existe
 if (file_exists(__DIR__ . '/WhatsAppService.php')) {
@@ -14,7 +14,7 @@ class NotificacionService {
 
     public function __construct() {
         $this->emailService      = new EmailService();
-        $this->notificacionModel = new Notificacion();
+        $this->notificacionModel = new NotificacionConfig();
 
         // WhatsApp solo si está disponible
         $this->whatsappService = class_exists('WhatsAppService')
