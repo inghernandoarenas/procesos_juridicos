@@ -93,6 +93,12 @@ if($action == 'enEspera') {
     exit;
 }
 
+
+if($action == 'sinMovimiento') {
+    echo json_encode($proceso->getSinMovimiento());
+    exit;
+}
+
 if($action == 'getTipos') {
     require_once __DIR__ . '/../models/TipoProceso.php';
     $tipo = new TipoProceso();

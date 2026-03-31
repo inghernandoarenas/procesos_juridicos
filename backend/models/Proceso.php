@@ -77,14 +77,11 @@ class Proceso {
     }
 
     public function getProximosVencer() {
-        $query = "SELECT p.*, c.nombre, c.apellido,
-                         tp.nombre AS tipo_proceso,
-                         ep.nombre AS estado
-                  FROM " . $this->table . " p
-                  JOIN clientes c ON p.cliente_id = c.id
-                  LEFT JOIN tipos_proceso  tp ON p.tipo_proceso_id  = tp.id
-                  LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
-                  WHERE p.fecha_vencimiento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)
+        $query = "SELECT p.*, c.nombre, c.apellido 
+                  FROM " . $this->table . " p 
+                  JOIN clientes c ON p.cliente_id = c.id 
+                  WHERE p.estado != 'Finalizado' 
+                  AND p.fecha_vencimiento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)
                   ORDER BY p.fecha_vencimiento ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -92,14 +89,10 @@ class Proceso {
     }
 
     public function getEnEspera() {
-        $query = "SELECT p.*, c.nombre, c.apellido,
-                         tp.nombre AS tipo_proceso,
-                         ep.nombre AS estado
-                  FROM " . $this->table . " p
-                  JOIN clientes c ON p.cliente_id = c.id
-                  LEFT JOIN tipos_proceso  tp ON p.tipo_proceso_id  = tp.id
-                  LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
-                  WHERE ep.nombre = 'En espera'
+        $query = "SELECT p.*, c.nombre, c.apellido 
+                  FROM " . $this->table . " p 
+                  JOIN clientes c ON p.cliente_id = c.id 
+                  WHERE p.estado = 'En espera'
                   ORDER BY p.fecha_vencimiento ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -179,5 +172,31 @@ class Proceso {
             'buscar' => $buscar
         ];
     }
+
+    public function getSinMovimiento() {
+        $query = "SELECT
+                    p.id, p.numero_radicado, p.fecha_inicio,
+                    c.nombre, c.apellido,
+                    tp.nombre AS tipo_proceso,
+                    ep.nombre AS estado,
+                    ep.color  AS estado_color,
+                    MAX(a.fecha) AS ultima_actuacion,
+                    DATEDIFF(CURDATE(), MAX(a.fecha)) AS dias_sin_movimiento
+                  FROM procesos p
+                  JOIN clientes c        ON p.cliente_id        = c.id
+                  LEFT JOIN tipos_proceso   tp ON p.tipo_proceso_id   = tp.id
+                  LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                  LEFT JOIN actuaciones a     ON a.proceso_id         = p.id
+                  GROUP BY p.id, p.numero_radicado, p.fecha_inicio,
+                           c.nombre, c.apellido,
+                           tp.nombre, ep.nombre, ep.color
+                  HAVING dias_sin_movimiento >= 30
+                      OR ultima_actuacion IS NULL
+                  ORDER BY dias_sin_movimiento DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 ?>

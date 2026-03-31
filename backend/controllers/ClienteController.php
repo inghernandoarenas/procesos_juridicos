@@ -57,6 +57,13 @@ if($action == 'update') {
     exit;
 }
 
+
+if($action == 'resumen') {
+    $id = $_GET['id'] ?? 0;
+    echo json_encode($cliente->getResumen($id));
+    exit;
+}
+
 if($action == 'delete') {
     $id = $_POST['id'] ?? 0;
     echo json_encode(['success' => $cliente->delete($id)]);

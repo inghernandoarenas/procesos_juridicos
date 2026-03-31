@@ -64,6 +64,58 @@ class Cliente {
             'por_pagina' => $por_pagina,
             'total_paginas' => ceil($total / $por_pagina)
         ];
-    }   
+    }
+
+    public function getResumen($id) {
+        // Conteos por estado
+        $query = "SELECT
+                    COUNT(p.id) AS total_procesos,
+                    SUM(CASE WHEN ep.nombre = 'Activo'    THEN 1 ELSE 0 END) AS activos,
+                    SUM(CASE WHEN ep.nombre = 'En espera' THEN 1 ELSE 0 END) AS en_espera,
+                    SUM(CASE WHEN ep.nombre = 'Finalizado' THEN 1 ELSE 0 END) AS finalizados,
+                    SUM(CASE WHEN p.fecha_vencimiento BETWEEN CURDATE()
+                             AND DATE_ADD(CURDATE(), INTERVAL 15 DAY) THEN 1 ELSE 0 END) AS proximos_vencer
+                  FROM clientes c
+                  LEFT JOIN procesos p        ON p.cliente_id        = c.id
+                  LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                  WHERE c.id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $conteos = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Últimas 5 actuaciones de cualquier proceso del cliente
+        $query2 = "SELECT a.fecha, a.actuacion, a.observaciones, p.numero_radicado
+                   FROM actuaciones a
+                   JOIN procesos p ON a.proceso_id = p.id
+                   WHERE p.cliente_id = :id
+                   ORDER BY a.fecha DESC, a.created_at DESC
+                   LIMIT 5";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(':id', $id);
+        $stmt2->execute();
+        $actuaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+        // Lista de procesos con su estado
+        $query3 = "SELECT p.id, p.numero_radicado, p.fecha_vencimiento,
+                          tp.nombre AS tipo_proceso,
+                          ep.nombre AS estado, ep.color AS estado_color
+                   FROM procesos p
+                   LEFT JOIN tipos_proceso   tp ON p.tipo_proceso_id   = tp.id
+                   LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                   WHERE p.cliente_id = :id
+                   ORDER BY p.fecha_vencimiento ASC";
+        $stmt3 = $this->conn->prepare($query3);
+        $stmt3->bindParam(':id', $id);
+        $stmt3->execute();
+        $procesos = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'conteos'     => $conteos,
+            'actuaciones' => $actuaciones,
+            'procesos'    => $procesos,
+        ];
+    }
+
 }
 ?>

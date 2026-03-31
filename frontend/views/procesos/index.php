@@ -1,5 +1,124 @@
 <style>
 /* ══════════════════════════════════════════
+   ANEXOS
+══════════════════════════════════════════ */
+.anexos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+    padding: 4px 2px;
+}
+.anexo-card {
+    background: #fff;
+    border: 1px solid #e8ecef;
+    border-radius: 10px;
+    padding: 16px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: box-shadow .2s, transform .2s;
+    position: relative;
+    cursor: default;
+}
+.anexo-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    transform: translateY(-2px);
+}
+.anexo-icono {
+    font-size: 40px;
+    line-height: 1;
+}
+.anexo-nombre {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    word-break: break-all;
+    line-height: 1.4;
+    max-height: 36px;
+    overflow: hidden;
+}
+.anexo-meta {
+    font-size: 10px;
+    color: #95a5a6;
+    text-align: center;
+    line-height: 1.6;
+}
+.anexo-acciones {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+.anexo-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity .2s;
+}
+.anexo-btn:hover { opacity: .8; }
+.anexo-btn.descargar { background: #eaf4fd; color: #2980b9; }
+.anexo-btn.eliminar  { background: #fdecea; color: #e74c3c; }
+
+.anexo-tipo-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+/* Zona de drop */
+.upload-zone {
+    border: 2px dashed #d0d7de;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    margin-bottom: 20px;
+    background: #fafbfc;
+}
+.upload-zone:hover, .upload-zone.dragover {
+    border-color: #3498db;
+    background: #eaf4fd;
+}
+.upload-zone i { font-size: 32px; color: #bdc3c7; margin-bottom: 8px; display: block; }
+.upload-zone p { font-size: 13px; color: #7f8c8d; margin: 0; }
+.upload-zone small { font-size: 11px; color: #bdc3c7; }
+.upload-zone input[type=file] { display: none; }
+
+.anexos-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #bdc3c7;
+}
+.anexos-empty i { font-size: 48px; display: block; margin-bottom: 12px; }
+.anexos-empty p { font-size: 14px; }
+
+.subiendo-progress {
+    display: none;
+    background: #eaf4fd;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #2980b9;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ══════════════════════════════════════════
    TIMELINE DE ACTUACIONES
 ══════════════════════════════════════════ */
 .timeline-wrap {
@@ -257,38 +376,39 @@ function fetchWithAuth(url, options = {}) {
 
 <!-- ══ MODAL ANEXOS ══════════════════════════════════════════ -->
 <div id="modalAnexos" class="modal">
-    <div class="modal-content" style="width:80%;max-width:900px">
+    <div class="modal-content" style="width:85%;max-width:950px">
         <span class="close" onclick="cerrarModalAnexos()">&times;</span>
+
         <div style="margin-top:30px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-                <h3 style="margin:0">Administrar Anexos</h3>
-            </div>
-        </div>
-        <div style="background:#f8f9fa;padding:20px;border-radius:8px;margin-bottom:25px">
-            <h4 style="margin-top:0;margin-bottom:15px;color:#2c3e50">Subir nuevo archivo</h4>
-            <form id="formAnexo" onsubmit="subirAnexo(event)" enctype="multipart/form-data"
-                  style="display:flex;gap:15px;align-items:flex-end">
-                <input type="hidden" id="anexoProcesoId" name="proceso_id">
-                <div style="flex:1">
-                    <label style="display:block;margin-bottom:5px;font-weight:bold;font-size:13px;color:#555">Seleccionar archivo:</label>
-                    <input type="file" id="archivo" name="archivo" required
-                           style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                <div>
+                    <h3 style="margin:0">Documentos del Proceso</h3>
+                    <p id="anexosSubtitulo" style="margin:4px 0 0;font-size:13px;color:#7f8c8d"></p>
                 </div>
-                <button type="submit" class="btn btn-primary" style="padding:10px 20px">Subir Archivo</button>
-            </form>
+            </div>
+
+            <input type="hidden" id="anexoProcesoId" name="proceso_id">
+
+            <!-- Barra de progreso subida -->
+            <div class="subiendo-progress" id="subiendoProgress">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Subiendo archivo, por favor espere...</span>
+            </div>
+
+            <!-- Zona de drop / clic para subir -->
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('archivoInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p><strong>Haz clic aquí</strong> o arrastra un archivo para subirlo</p>
+                <small>PDF, Word, Excel, imágenes y más — máx. 10MB</small>
+                <form id="formAnexo">
+                    <input type="file" id="archivoInput" name="archivo"
+                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.zip,.rar,.txt">
+                </form>
+            </div>
+
+            <!-- Grid de archivos -->
+            <div id="listaAnexos"></div>
         </div>
-        <h4 style="margin-bottom:15px;color:#2c3e50">Archivos subidos</h4>
-        <table id="tablaAnexos" style="width:100%;border-collapse:collapse">
-            <thead>
-                <tr>
-                    <th style="text-align:left;padding:12px;background:#3498db;color:white">Nombre del archivo</th>
-                    <th style="text-align:left;padding:12px;background:#3498db;color:white">Tipo</th>
-                    <th style="text-align:left;padding:12px;background:#3498db;color:white">Fecha subida</th>
-                    <th style="text-align:center;padding:12px;background:#3498db;color:white">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="listaAnexos"></tbody>
-        </table>
     </div>
 </div>
 
@@ -477,6 +597,7 @@ function cargarProcesos(pagina = 1, buscar = '') {
                         <button class="btn-icon" onclick="verActuaciones(${p.id})" data-tooltip="Timeline"><i class="fas fa-stream"></i></button>
                         <button class="btn-icon" onclick="editarProceso(${p.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
                         <button class="btn-icon" onclick="abrirModalAnexos(${p.id})" data-tooltip="Anexos"><i class="fas fa-paperclip"></i></button>
+                        <button class="btn-icon" onclick="abrirReporte(${p.id})" data-tooltip="Generar reporte PDF"><i class="fas fa-file-pdf" style="color:#e74c3c"></i></button>
                         <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
@@ -601,54 +722,133 @@ function eliminarProceso(id) {
 }
 
 // ── Anexos ────────────────────────────────────────────────────
+function getIconoAnexo(tipo, nombre) {
+    const t = (tipo || '').toLowerCase();
+    const n = (nombre || '').toLowerCase();
+    if (t.includes('pdf') || n.endsWith('.pdf'))
+        return { icono: '📄', color: '#e74c3c', badge: 'PDF',   bg: '#fdecea', fg: '#e74c3c' };
+    if (t.includes('word') || n.endsWith('.doc') || n.endsWith('.docx'))
+        return { icono: '📝', color: '#2980b9', badge: 'Word',  bg: '#eaf4fd', fg: '#2980b9' };
+    if (t.includes('excel') || t.includes('spreadsheet') || n.endsWith('.xls') || n.endsWith('.xlsx'))
+        return { icono: '📊', color: '#27ae60', badge: 'Excel', bg: '#eafaf1', fg: '#27ae60' };
+    if (t.includes('image') || n.match(/\.(jpg|jpeg|png|gif|webp)$/))
+        return { icono: '🖼️', color: '#8e44ad', badge: 'IMG',   bg: '#f5eef8', fg: '#8e44ad' };
+    if (t.includes('zip') || t.includes('rar') || n.match(/\.(zip|rar|7z)$/))
+        return { icono: '🗜️', color: '#f39c12', badge: 'ZIP',   bg: '#fef9ec', fg: '#f39c12' };
+    if (t.includes('text') || n.endsWith('.txt'))
+        return { icono: '📃', color: '#7f8c8d', badge: 'TXT',   bg: '#f2f3f4', fg: '#7f8c8d' };
+    return     { icono: '📁', color: '#3498db', badge: 'FILE',  bg: '#eaf4fd', fg: '#3498db' };
+}
+
 function abrirModalAnexos(id) {
     document.getElementById('anexoProcesoId').value = id;
     document.getElementById('modalAnexos').style.display = 'block';
     cargarAnexos(id);
+
+    // Drag & drop
+    const zone = document.getElementById('uploadZone');
+    zone.ondragover = e => { e.preventDefault(); zone.classList.add('dragover'); };
+    zone.ondragleave = () => zone.classList.remove('dragover');
+    zone.ondrop = e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) subirArchivo(file, id);
+    };
+
+    // Cambio en input file
+    document.getElementById('archivoInput').onchange = e => {
+        const file = e.target.files[0];
+        if (file) subirArchivo(file, id);
+    };
 }
 
-function cerrarModalAnexos() { document.getElementById('modalAnexos').style.display = 'none'; }
+function cerrarModalAnexos() {
+    document.getElementById('modalAnexos').style.display = 'none';
+    document.getElementById('archivoInput').value = '';
+}
+
+function subirArchivo(file, procesoId) {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+        alert('El archivo supera el límite de 10MB');
+        return;
+    }
+    const progress = document.getElementById('subiendoProgress');
+    progress.style.display = 'flex';
+
+    const fd = new FormData();
+    fd.append('action', 'upload');
+    fd.append('proceso_id', procesoId);
+    fd.append('archivo', file);
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', { method:'POST', body:fd })
+        .then(r => r.json())
+        .then(data => {
+            progress.style.display = 'none';
+            document.getElementById('archivoInput').value = '';
+            if (data.success) cargarAnexos(procesoId);
+            else alert('Error al subir el archivo');
+        })
+        .catch(() => { progress.style.display = 'none'; });
+}
 
 function cargarAnexos(procesoId) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/AnexoController.php?action=list&proceso_id=${procesoId}`)
         .then(r => r.json())
         .then(data => {
-            const tbody = document.getElementById('listaAnexos');
+            const contenedor = document.getElementById('listaAnexos');
+            const subtitulo  = document.getElementById('anexosSubtitulo');
+
+            subtitulo.textContent = data.length === 0
+                ? 'Sin documentos adjuntos'
+                : `${data.length} documento${data.length !== 1 ? 's' : ''} adjunto${data.length !== 1 ? 's' : ''}`;
+
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:#7f8c8d">No hay archivos subidos</td></tr>';
+                contenedor.innerHTML = `
+                    <div class="anexos-empty">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No hay documentos adjuntos para este proceso</p>
+                    </div>`;
                 return;
             }
-            tbody.innerHTML = data.map(a => {
+
+            contenedor.innerHTML = `<div class="anexos-grid">${data.map(a => {
+                const info  = getIconoAnexo(a.tipo_archivo, a.nombre_archivo);
                 const fecha = new Date(a.fecha_subida).toLocaleDateString('es-CO',
-                    {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).replace(',',' ');
-                return `<tr style="border-bottom:1px solid #eee">
-                    <td style="padding:12px"><i class="fas fa-file" style="color:#3498db;margin-right:8px"></i>${a.nombre_archivo}</td>
-                    <td style="padding:12px">${a.tipo_archivo||'Desconocido'}</td>
-                    <td style="padding:12px">${fecha}</td>
-                    <td style="padding:12px;text-align:center">
-                        <button class="btn-icon" onclick="eliminarAnexo(${a.id},${procesoId})" data-tooltip="Eliminar">
-                            <i class="fas fa-trash" style="color:#e74c3c"></i>
+                    { day:'2-digit', month:'short', year:'numeric' });
+                const nombre = a.nombre_archivo.length > 22
+                    ? a.nombre_archivo.substring(0, 20) + '…'
+                    : a.nombre_archivo;
+
+                return `
+                <div class="anexo-card">
+                    <span class="anexo-tipo-badge"
+                          style="background:${info.bg};color:${info.fg}">
+                        ${info.badge}
+                    </span>
+                    <div class="anexo-icono">${info.icono}</div>
+                    <div class="anexo-nombre" title="${a.nombre_archivo}">${nombre}</div>
+                    <div class="anexo-meta">${fecha}</div>
+                    <div class="anexo-acciones">
+                        <a href="/procesos_juridicos/${a.ruta_archivo}" target="_blank"
+                           class="anexo-btn descargar" download="${a.nombre_archivo}">
+                            <i class="fas fa-download"></i> Ver
+                        </a>
+                        <button class="anexo-btn eliminar"
+                                onclick="eliminarAnexo(${a.id}, ${procesoId})">
+                            <i class="fas fa-trash"></i>
                         </button>
-                    </td>
-                </tr>`;
-            }).join('');
+                    </div>
+                </div>`;
+            }).join('')}</div>`;
         });
 }
 
-function subirAnexo(event) {
-    event.preventDefault();
-    const pid = document.getElementById('anexoProcesoId').value;
-    const fd  = new FormData(document.getElementById('formAnexo'));
-    fd.append('action','upload');
-    fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', { method:'POST', body:fd })
-        .then(r => r.json())
-        .then(data => { if (data.success) { document.getElementById('formAnexo').reset(); cargarAnexos(pid); } });
-}
-
 function eliminarAnexo(id, procesoId) {
-    if (confirm('¿Eliminar este archivo?')) {
+    if (confirm('¿Eliminar este documento?')) {
         const fd = new FormData();
-        fd.append('action','delete'); fd.append('id',id); fd.append('proceso_id',procesoId);
+        fd.append('action','delete'); fd.append('id', id); fd.append('proceso_id', procesoId);
         fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', { method:'POST', body:fd })
             .then(r => r.json())
             .then(data => { if (data.success) cargarAnexos(procesoId); });
@@ -721,6 +921,11 @@ document.getElementById('buscarProcesos').addEventListener('input', function() {
 document.getElementById('buscarProcesos').addEventListener('keyup', e => {
     if (e.key === 'Enter') buscarProcesos();
 });
+
+// ── Reporte PDF ──────────────────────────────────────────────
+function abrirReporte(id) {
+    window.open(`/procesos_juridicos/backend/reportes/reporte_proceso.php?id=${id}`, '_blank');
+}
 
 // ── Init ──────────────────────────────────────────────────────
 cargarProcesos(1, '');
