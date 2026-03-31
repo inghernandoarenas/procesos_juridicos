@@ -251,7 +251,7 @@
         </form>
 
         <div class="login-footer">
-            <p>Credenciales por defecto: admin / admin123</p>
+            <p>&copy; <?= date('Y') ?> Sistema de Gestión de Procesos Judiciales</p>
         </div>
     </div>
 

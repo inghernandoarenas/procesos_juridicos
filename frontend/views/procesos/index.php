@@ -536,11 +536,11 @@ function sincronizarRama() {
     fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarRamaController.php', { method:'POST', body:fd })
         .then(r => r.json())
         .then(data => {
-            alert(data.success ? data.message : 'Error: ' + data.message);
+            toast(data.success ? data.message : 'Error: ' + data.message, data.success ? 'success' : 'error', 4000);
             cargarTimeline(procesoActual);
         })
         .catch(() => {
-            alert('Sincronización completada');
+            toast('Sincronización completada');
             cargarTimeline(procesoActual);
         })
         .finally(() => {
@@ -641,7 +641,7 @@ function guardarProceso(event) {
     fd.append('action', document.getElementById('procesoId').value ? 'update' : 'create');
     fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php', { method:'POST', body:fd })
         .then(r => r.json())
-        .then(data => { if (data.success) { cerrarModalProceso(); cargarProcesos(1, terminoBusqueda); } });
+        .then(data => { if (data.success) { cerrarModalProceso(); cargarProcesos(1, terminoBusqueda); toast('Proceso guardado correctamente'); } else { toast('Error al guardar el proceso','error'); } });
 }
 
 function editarProceso(id) {
@@ -717,7 +717,7 @@ function eliminarProceso(id) {
         fd.append('action','delete'); fd.append('id', id);
         fetchWithAuth('/procesos_juridicos/backend/controllers/ProcesoController.php', { method:'POST', body:fd })
             .then(r => r.json())
-            .then(data => { if (data.success) cargarProcesos(1, terminoBusqueda); });
+            .then(data => { if (data.success) { cargarProcesos(1, terminoBusqueda); toast('Proceso eliminado','info'); } });
     }
 }
 
@@ -870,8 +870,8 @@ function guardarClienteRapido(event) {
     fetchWithAuth('/procesos_juridicos/backend/controllers/ClienteController.php', { method:'POST', body:fd })
         .then(r => r.json())
         .then(data => {
-            if (data.success) { cerrarModalClienteRapido(); cargarClientesSelect(); alert('Cliente creado exitosamente'); }
-            else alert('Error al crear el cliente');
+            if (data.success) { cerrarModalClienteRapido(); cargarClientesSelect(); toast('Cliente creado exitosamente'); }
+            else { toast('Error al crear el cliente','error'); }
         });
 }
 

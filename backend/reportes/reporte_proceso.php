@@ -2,6 +2,21 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Proceso.php';
 require_once __DIR__ . '/../models/Actuacion.php';
+require_once __DIR__ . '/../libs/JWT.php';
+
+// Verificar sesión — el token viaja en la URL para reportes
+$token = $_GET['token'] ?? '';
+if (empty($token)) {
+    http_response_code(401);
+    die('<h2 style="font-family:Arial;color:#e74c3c;text-align:center;margin-top:100px">
+         ⚠️ Acceso no autorizado. Por favor inicie sesión.</h2>');
+}
+$payload = JWT::decode($token);
+if (!$payload) {
+    http_response_code(401);
+    die('<h2 style="font-family:Arial;color:#e74c3c;text-align:center;margin-top:100px">
+         ⚠️ Sesión expirada. Por favor inicie sesión nuevamente.</h2>');
+}
 
 $id = $_GET['id'] ?? 0;
 if (!$id) { echo "Proceso no encontrado"; exit; }

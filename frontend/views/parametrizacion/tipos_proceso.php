@@ -169,10 +169,7 @@ function guardarTipo(event) {
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success) {
-            cerrarModalTipo();
-            cargarTipos();
-        }
+        if(data.success) { cerrarModalTipo(); cargarTipos(); toast('Tipo guardado correctamente'); }
     });
 }
 
@@ -231,7 +228,7 @@ function eliminarTipo(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) cargarTipos();
+            if(data.success) { cargarTipos(); toast('Tipo eliminado','info'); }
         });
     }
 }

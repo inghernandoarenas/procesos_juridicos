@@ -53,6 +53,11 @@
                                 <i class="fas fa-bell" style="margin-right:10px;width:20px"></i> Notificaciones
                             </a>
                         </li>
+                        <li>
+                            <a href="/procesos_juridicos/frontend/index.php?view=log_notificaciones">
+                                <i class="fas fa-list-alt" style="margin-right:10px;width:20px"></i> Log Notificaciones
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -94,6 +99,24 @@
             </div>
         </div>
     </div>
+    <!-- Toast container global -->
+    <div id="toast-container"></div>
+
+    <script>
+    // ── Toast global ──────────────────────────────────────────
+    function toast(mensaje, tipo = 'success', duracion = 3500) {
+        const iconos = { success: '✅', error: '❌', info: 'ℹ️' };
+        const contenedor = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = `toast ${tipo}`;
+        el.innerHTML = `<span>${iconos[tipo] || '✅'}</span><span>${mensaje}</span>`;
+        contenedor.appendChild(el);
+        setTimeout(() => {
+            el.style.animation = 'toastOut .3s ease forwards';
+            setTimeout(() => el.remove(), 300);
+        }, duracion);
+    }
+    </script>
 </body>
 </html>
 
@@ -111,7 +134,7 @@ function toggleSubmenu(event) {
 // Mantener submenú abierto si estamos en parametrización
 document.addEventListener('DOMContentLoaded', function() {
     const view = new URLSearchParams(window.location.search).get('view');
-    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones'];
+    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','log_notificaciones'];
 
     if (vistasParametrizacion.includes(view)) {
         const submenu = document.querySelector('.submenu');

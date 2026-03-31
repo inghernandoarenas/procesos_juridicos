@@ -38,25 +38,34 @@ if(empty($actuaciones)) {
     exit;
 }
 
-// Guardar actuaciones
-$actuacionModel = new Actuacion();
+// Guardar actuaciones y notificar
+$actuacionModel    = new Actuacion();
+require_once __DIR__ . '/../services/NotificacionService.php';
+$notificacionService = new NotificacionService();
 $contador = 0;
 
 foreach($actuaciones as $act) {
-    // Verificar si ya existe por id_api
     $existe = $actuacionModel->getByIdApi($act['id']);
-    
+
     if(!$existe) {
         $data = [
-            ':proceso_id' => $proceso_id,
-            ':id_api' => $act['id'],
-            ':fecha' => $act['fecha'],
-            ':actuacion' => $act['actuacion'],
+            ':proceso_id'    => $proceso_id,
+            ':id_api'        => $act['id'],
+            ':fecha'         => $act['fecha'],
+            ':actuacion'     => $act['actuacion'],
             ':observaciones' => $act['observaciones']
         ];
-        
-        if($actuacionModel->create($data)) {
+
+        $nuevoId = $actuacionModel->createAndGetId($data);
+        if($nuevoId) {
             $contador++;
+            // Notificar igual que el cron automático
+            try {
+                $act['id'] = $nuevoId;
+                $notificacionService->notificarNuevaActuacion($proceso, $act);
+            } catch(Exception $e) {
+                // No interrumpir el flujo si falla la notificación
+            }
         }
     }
 }
