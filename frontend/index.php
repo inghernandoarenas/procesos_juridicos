@@ -42,6 +42,9 @@ $token = $_COOKIE['token'] ?? '';
             case 'log_notificaciones':
                 $content = 'views/parametrizacion/log_notificaciones.php';
                 break;
+            case 'configuracion':
+                $content = 'views/parametrizacion/configuracion.php';
+                break;
             case 'dashboard':
             default:
                 $content = 'views/dashboard/index.php';

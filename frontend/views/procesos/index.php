@@ -119,6 +119,105 @@
 }
 
 /* ══════════════════════════════════════════
+   VISTA DE PROCESOS — HEADER IMPACTANTE
+══════════════════════════════════════════ */
+.procesos-hero {
+    background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 50%, #1a3a5c 100%);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+}
+.procesos-hero-left h2 {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.procesos-hero-left p {
+    color: rgba(255,255,255,.6);
+    font-size: 13px;
+    margin: 0;
+}
+.procesos-hero-stats {
+    display: flex;
+    gap: 20px;
+}
+.hero-stat {
+    text-align: center;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: 12px 18px;
+    min-width: 80px;
+}
+.hero-stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.hero-stat-label {
+    font-size: 10px;
+    color: rgba(255,255,255,.55);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.procesos-hero-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .2s, transform .15s;
+    white-space: nowrap;
+}
+.procesos-hero-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* Tabla de procesos mejorada */
+#tablaProcesos thead tr { background: linear-gradient(90deg, #2c3e50, #34495e); }
+#tablaProcesos th { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+#tablaProcesos tbody tr { transition: background .15s; }
+#tablaProcesos tbody tr:hover { background: #f0f6ff; }
+#tablaProcesos td { vertical-align: middle; }
+
+/* Búsqueda en procesos más compacta */
+.procesos-search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+.procesos-search-bar input {
+    flex: 1;
+    padding: 10px 12px 10px 38px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: border-color .2s;
+}
+.procesos-search-bar input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* ══════════════════════════════════════════
    TIMELINE DE ACTUACIONES
 ══════════════════════════════════════════ */
 .timeline-wrap {
@@ -280,24 +379,39 @@ function fetchWithAuth(url, options = {}) {
 }
 </script>
 
-<!-- ══ CABECERA ══════════════════════════════════════════════ -->
-<div class="page-header">
-    <h2>Gestión de Procesos</h2>
-    <button class="btn btn-primary" onclick="abrirModalProceso()">Nuevo Proceso</button>
+<!-- ── Hero de Procesos ──────────────────────────────────── -->
+<div class="procesos-hero">
+    <div class="procesos-hero-left">
+        <h2><i class="fas fa-gavel"></i> Gestión de Procesos</h2>
+        <p>Seguimiento y control de expedientes judiciales</p>
+    </div>
+    <div class="procesos-hero-stats">
+        <div class="hero-stat">
+            <div class="hero-stat-num" id="heroTotal">—</div>
+            <div class="hero-stat-label">Total</div>
+        </div>
+        <div class="hero-stat">
+            <div class="hero-stat-num" id="heroActivos" style="color:#2ecc71">—</div>
+            <div class="hero-stat-label">Activos</div>
+        </div>
+        <div class="hero-stat">
+            <div class="hero-stat-num" id="heroVencen" style="color:#f39c12">—</div>
+            <div class="hero-stat-label">Por vencer</div>
+        </div>
+    </div>
+    <button class="procesos-hero-btn" onclick="abrirModalProceso()">
+        <i class="fas fa-plus"></i> Nuevo Proceso
+    </button>
 </div>
 
-<!-- ══ BUSCADOR ══════════════════════════════════════════════ -->
-<div style="margin-bottom:20px;display:flex;gap:10px;max-width:500px">
+<!-- ── Buscador compacto ──────────────────────────────────── -->
+<div class="procesos-search-bar">
     <div style="flex:1;position:relative">
-        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#95a5a6"></i>
-        <input type="text" id="buscarProcesos" placeholder="Buscar por radicado, cliente, tipo o descripción..."
-               style="width:100%;padding:12px 12px 12px 40px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px">
+        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#95a5a6;font-size:13px"></i>
+        <input type="text" id="buscarProcesos" placeholder="Buscar por radicado, cliente, tipo o descripción...">
     </div>
-    <button class="btn btn-primary" onclick="buscarProcesos()" style="padding:0 25px">
-        <i class="fas fa-search"></i> Buscar
-    </button>
-    <button class="btn btn-secondary" onclick="limpiarBusqueda()" style="padding:0 20px;background:#95a5a6">
-        <i class="fas fa-times"></i> Limpiar
+    <button class="btn btn-secondary" onclick="limpiarBusqueda()" style="padding:0 16px;background:#95a5a6;height:40px">
+        <i class="fas fa-times"></i>
     </button>
 </div>
 
@@ -577,11 +691,26 @@ function cargarProcesos(pagina = 1, buscar = '') {
         const tbody = document.querySelector('#tablaProcesos tbody');
         tbody.innerHTML = '';
 
+        // Actualizar stats del hero
+        document.getElementById('heroTotal').textContent = result.total || 0;
+
         if (result.data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px">No se encontraron procesos</td></tr>';
             document.getElementById('paginacionProcesos').innerHTML = '';
             return;
         }
+
+        // Contar activos y por vencer en la página actual
+        const hoy = new Date();
+        const en15dias = new Date(); en15dias.setDate(en15dias.getDate() + 15);
+        const activos  = result.data.filter(p => p.estado_proceso_nombre && p.estado_proceso_nombre.toLowerCase().includes('activ')).length;
+        const porVencer = result.data.filter(p => {
+            if (!p.fecha_vencimiento) return false;
+            const fv = new Date(p.fecha_vencimiento);
+            return fv >= hoy && fv <= en15dias;
+        }).length;
+        document.getElementById('heroActivos').textContent = activos;
+        document.getElementById('heroVencen').textContent  = porVencer;
 
         result.data.forEach(p => {
             tbody.innerHTML += `
@@ -634,7 +763,7 @@ function guardarProceso(event) {
     const fi = document.getElementById('fecha_inicio').value;
     const fv = document.getElementById('fecha_vencimiento').value;
     if (fv && new Date(fv) < new Date(fi)) {
-        toast('La fecha de vencimiento no puede ser menor a la fecha de inicio','error');
+        alert('La fecha de vencimiento no puede ser menor a la fecha de inicio');
         return;
     }
     const fd = new FormData(document.getElementById('formProceso'));
@@ -787,8 +916,8 @@ function subirArchivo(file, procesoId) {
         .then(data => {
             progress.style.display = 'none';
             document.getElementById('archivoInput').value = '';
-            if (data.success) { cargarAnexos(procesoId); toast('Archivo subido correctamente'); }
-            else { toast('Error al subir el archivo','error'); }
+            if (data.success) cargarAnexos(procesoId);
+            else alert('Error al subir el archivo');
         })
         .catch(() => { progress.style.display = 'none'; });
 }
@@ -851,7 +980,7 @@ function eliminarAnexo(id, procesoId) {
         fd.append('action','delete'); fd.append('id', id); fd.append('proceso_id', procesoId);
         fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', { method:'POST', body:fd })
             .then(r => r.json())
-            .then(data => { if (data.success) { cargarAnexos(procesoId); toast('Archivo eliminado','info'); } });
+            .then(data => { if (data.success) cargarAnexos(procesoId); });
     }
 }
 

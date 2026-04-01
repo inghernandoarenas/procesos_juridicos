@@ -10,6 +10,105 @@
 "></div>
 
 <style>
+/* ── Cards generales del dashboard ──────────────── */
+.dash-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    overflow: hidden;
+}
+.dash-card-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+}
+.dash-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dash-card-count {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f0f4f8;
+    color: #5d6d7e;
+}
+.dash-card-body {
+    padding: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+/* ── Items de próximos a vencer y en espera ──── */
+.dash-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #e0e0e0;
+    cursor: help;
+    transition: transform .15s, box-shadow .15s;
+}
+.dash-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+.dash-item:last-child { margin-bottom: 0; }
+.dash-item.urgente  { border-left-color: #e74c3c; background: #fef5f5; }
+.dash-item.atencion { border-left-color: #f39c12; background: #fff8e7; }
+.dash-item.normal   { border-left-color: #27ae60; background: #f0fff4; }
+
+.dash-item-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+}
+.dash-item-icon.urgente  { background: #fdecea; color: #e74c3c; }
+.dash-item-icon.atencion { background: #fef9ec; color: #f39c12; }
+.dash-item-icon.normal   { background: #eafaf1; color: #27ae60; }
+.dash-item-icon.espera   { background: #eaf4fd; color: #3498db; }
+
+.dash-item-info { flex: 1; min-width: 0; }
+.dash-item-radicado {
+    font-size: 13px; font-weight: 700;
+    color: #2c3e50; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+}
+.dash-item-cliente {
+    font-size: 11px; color: #7f8c8d; margin-top: 1px;
+}
+.dash-item-meta {
+    font-size: 10px; color: #95a5a6; margin-top: 2px;
+}
+.dash-item-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+}
+.dash-item-badge.rojo    { background: #fdecea; color: #e74c3c; }
+.dash-item-badge.naranja { background: #fef9ec; color: #f39c12; }
+.dash-item-badge.verde   { background: #eafaf1; color: #27ae60; }
+.dash-item-badge.azul    { background: #eaf4fd; color: #2980b9; }
+
+.dash-empty {
+    text-align: center; padding: 30px 20px;
+    color: #bdc3c7; font-size: 13px; font-style: italic;
+}
+.dash-empty i { font-size: 32px; display: block; margin-bottom: 8px; }
+
 /* Semáforo */
 .semaforo-dot {
     display: inline-block;
@@ -92,24 +191,48 @@ document.addEventListener('mouseout', e => {
 <div class="dashboard">
     <h2>Dashboard</h2>
 
-    <div class="stats-container" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
 
-        <!-- ── Próximos a vencer ──────────────────────────── -->
-        <div class="stat-card">
-            <h3>⚠️ Próximos a Vencer</h3>
-            <div id="proximosVencer" class="stat-list"></div>
+        <!-- ── Próximos a vencer ─────────────────────────── -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title">
+                    <i class="fas fa-exclamation-triangle" style="color:#f39c12"></i>
+                    Próximos a Vencer
+                </div>
+                <span id="countVencer" class="dash-card-count">—</span>
+            </div>
+            <div class="dash-card-body">
+                <div id="proximosVencer"></div>
+            </div>
         </div>
 
-        <!-- ── En espera ──────────────────────────────────── -->
-        <div class="stat-card">
-            <h3>⏳ En Espera de Respuesta</h3>
-            <div id="enEspera" class="stat-list"></div>
+        <!-- ── En espera ─────────────────────────────────── -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title">
+                    <i class="fas fa-hourglass-half" style="color:#3498db"></i>
+                    En Espera de Respuesta
+                </div>
+                <span id="countEspera" class="dash-card-count">—</span>
+            </div>
+            <div class="dash-card-body">
+                <div id="enEspera"></div>
+            </div>
         </div>
 
-        <!-- ── Semáforo de silencio judicial ─────────────── -->
-        <div class="stat-card">
-            <h3>🚦 Silencio Judicial</h3>
-            <div id="sinMovimiento" class="stat-list"></div>
+        <!-- ── Semáforo ───────────────────────────────────── -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <div class="dash-card-title">
+                    <i class="fas fa-traffic-light" style="color:#e74c3c"></i>
+                    Silencio Judicial
+                </div>
+                <span id="countSemaforo" class="dash-card-count">—</span>
+            </div>
+            <div class="dash-card-body">
+                <div id="sinMovimiento"></div>
+            </div>
         </div>
 
     </div>
@@ -123,14 +246,15 @@ function cargarProximosVencer() {
         .then(data => {
             const div = document.getElementById('proximosVencer');
             if (data.length === 0) {
-                div.innerHTML = '<p class="sin-datos">No hay procesos próximos a vencer</p>';
+                div.innerHTML = '<div class="dash-empty"><i class="fas fa-check-circle" style="color:#27ae60"></i>Sin vencimientos próximos</div>';
                 return;
             }
+            document.getElementById('countVencer').textContent = data.length;
             div.innerHTML = data.map(p => {
                 const diffDays = Math.ceil((new Date(p.fecha_vencimiento) - new Date()) / 86400000);
-                let clase = 'normal', claseDias = 'dias-verde';
-                if      (diffDays <= 3) { clase = 'urgente';  claseDias = 'dias-rojo';    }
-                else if (diffDays <= 7) { clase = 'atencion'; claseDias = 'dias-naranja'; }
+                let clase = 'normal', claseBadge = 'verde', claseIcon = 'normal';
+                if      (diffDays <= 3) { clase = 'urgente';  claseBadge = 'rojo';    claseIcon = 'urgente';  }
+                else if (diffDays <= 7) { clase = 'atencion'; claseBadge = 'naranja'; claseIcon = 'atencion'; }
 
                 const tip = [
                     '📋 Radicado: ' + p.numero_radicado,
@@ -142,16 +266,20 @@ function cargarProximosVencer() {
                     p.descripcion ? '📄 ' + p.descripcion.substring(0,100) : ''
                 ].filter(Boolean).join('\n');
 
+                const icono = diffDays <= 3 ? 'fa-fire' : diffDays <= 7 ? 'fa-clock' : 'fa-calendar-check';
+
                 return `
-                <div class="stat-item ${clase}"
-                     data-dash-tooltip="${tip.replace(/"/g,'&quot;')}" style="cursor:help">
-                    <div style="display:flex;justify-content:space-between;align-items:start">
-                        <strong>${p.numero_radicado}</strong>
-                        <span class="dias-badge ${claseDias}">${diffDays} días</span>
+                <div class="dash-item ${clase}"
+                     data-dash-tooltip="${tip.replace(/"/g,'&quot;')}">
+                    <div class="dash-item-icon ${claseIcon}">
+                        <i class="fas ${icono}"></i>
                     </div>
-                    <div>${p.nombre} ${p.apellido}</div>
-                    <div><small>Vence: ${p.fecha_vencimiento}</small></div>
-                    <div><span class="${p.estado==='Activo'?'estado-activo':'estado-espera'}">${p.estado||'—'}</span></div>
+                    <div class="dash-item-info">
+                        <div class="dash-item-radicado">${p.numero_radicado}</div>
+                        <div class="dash-item-cliente">${p.nombre} ${p.apellido}</div>
+                        <div class="dash-item-meta">Vence: ${p.fecha_vencimiento}</div>
+                    </div>
+                    <span class="dash-item-badge ${claseBadge}">${diffDays}d</span>
                 </div>`;
             }).join('');
         });
@@ -164,9 +292,10 @@ function cargarEnEspera() {
         .then(data => {
             const div = document.getElementById('enEspera');
             if (data.length === 0) {
-                div.innerHTML = '<p class="sin-datos">No hay procesos en espera</p>';
+                div.innerHTML = '<div class="dash-empty"><i class="fas fa-inbox"></i>Sin procesos en espera</div>';
                 return;
             }
+            document.getElementById('countEspera').textContent = data.length;
             div.innerHTML = data.map(p => {
                 const tip = [
                     '📋 Radicado: ' + p.numero_radicado,
@@ -179,12 +308,17 @@ function cargarEnEspera() {
                 ].filter(Boolean).join('\n');
 
                 return `
-                <div class="stat-item"
-                     data-dash-tooltip="${tip.replace(/"/g,'&quot;')}" style="cursor:help">
-                    <strong>${p.numero_radicado}</strong>
-                    <div>${p.nombre} ${p.apellido}</div>
-                    <div><small>${p.tipo_proceso || '—'}</small></div>
-                    <div><span class="estado-espera">⏳ ${p.estado||'—'}</span></div>
+                <div class="dash-item"
+                     data-dash-tooltip="${tip.replace(/"/g,'&quot;')}">
+                    <div class="dash-item-icon espera">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="dash-item-info">
+                        <div class="dash-item-radicado">${p.numero_radicado}</div>
+                        <div class="dash-item-cliente">${p.nombre} ${p.apellido}</div>
+                        <div class="dash-item-meta">${p.tipo_proceso || '—'}</div>
+                    </div>
+                    <span class="dash-item-badge azul">En espera</span>
                 </div>`;
             }).join('');
         });
@@ -197,7 +331,8 @@ function cargarSinMovimiento() {
         .then(data => {
             const div = document.getElementById('sinMovimiento');
             if (data.length === 0) {
-                div.innerHTML = '<p class="sin-datos">✅ Todos los procesos tienen actividad reciente</p>';
+                div.innerHTML = '<div class="dash-empty"><i class="fas fa-check-double" style="color:#27ae60"></i>Todos activos recientemente</div>';
+                document.getElementById('countSemaforo').textContent = '0';
                 return;
             }
 

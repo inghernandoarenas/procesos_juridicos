@@ -13,13 +13,17 @@ $actuacionModel = new Actuacion();
 
 $proceso     = $procesoModel->getById($id);
 
-// Cargar datos completos del cliente
-$clienteData = null;
-if ($proceso) {
-    require_once __DIR__ . '/../models/Cliente.php';
-    $clienteModel = new Cliente();
-    $clienteData  = $clienteModel->getById($proceso['cliente_id']);
-}
+// Cargar configuración del despacho
+require_once __DIR__ . '/../models/Configuracion.php';
+$cfg = (new Configuracion())->getMap();
+$nombreEmpresa = $cfg['nombre_empresa'] ?? 'Oficina Jurídica';
+$subtitulo     = $cfg['subtitulo']      ?? 'Sistema de Gestión de Procesos Judiciales';
+$nit           = $cfg['nit']            ?? '';
+$telefono      = $cfg['telefono']       ?? '';
+$email         = $cfg['email']          ?? '';
+$ciudad        = $cfg['ciudad']         ?? '';
+$website       = $cfg['website']        ?? '';
+$pieReporte    = $cfg['pie_reporte']    ?? 'Documento generado automáticamente';
 $actuaciones = $actuacionModel->getByProceso($id);
 
 if (!$proceso) { echo "Proceso no encontrado"; exit; }
@@ -149,14 +153,17 @@ body {
     <div class="header-logo">
         <div class="logo-icono">⚖️</div>
         <div class="logo-texto">
-            <h1>Oficina Jurídica</h1>
-            <p>Sistema de Gestión de Procesos Judiciales</p>
+            <h1><?= htmlspecialchars($nombreEmpresa) ?></h1>
+            <p><?= htmlspecialchars($subtitulo) ?></p>
+            <?php if ($nit): ?><p style="font-size:10px;color:#95a5a6;margin-top:2px">NIT: <?= htmlspecialchars($nit) ?></p><?php endif; ?>
         </div>
     </div>
     <div class="header-meta">
         <strong>Reporte de Proceso</strong>
         Generado el: <?= $fechaGeneracion ?><br>
         Total actuaciones: <?= $totalActuaciones ?>
+        <?php if ($telefono): ?><br><?= htmlspecialchars($telefono) ?><?php endif; ?>
+        <?php if ($ciudad): ?><br><?= htmlspecialchars($ciudad) ?><?php endif; ?>
     </div>
 </div>
 
@@ -215,29 +222,11 @@ body {
 <!-- Datos del cliente -->
 <div class="seccion">
     <div class="seccion-titulo">👤 Datos del Cliente</div>
-    <div class="datos-grid">
-        <div class="dato-item destacado span3">
+    <div class="datos-grid dos-col">
+        <div class="dato-item destacado span2">
             <div class="dato-label">Nombre Completo</div>
             <div class="dato-valor" style="font-size:16px"><?= htmlspecialchars($proceso['nombre'] . ' ' . $proceso['apellido']) ?></div>
         </div>
-        <?php if (!empty($clienteData['email'])): ?>
-        <div class="dato-item">
-            <div class="dato-label">Email</div>
-            <div class="dato-valor" style="font-weight:400"><?= htmlspecialchars($clienteData['email']) ?></div>
-        </div>
-        <?php endif; ?>
-        <?php if (!empty($clienteData['telefono'])): ?>
-        <div class="dato-item">
-            <div class="dato-label">Teléfono</div>
-            <div class="dato-valor" style="font-weight:400"><?= htmlspecialchars($clienteData['telefono']) ?></div>
-        </div>
-        <?php endif; ?>
-        <?php if (!empty($clienteData['direccion'])): ?>
-        <div class="dato-item <?= (empty($clienteData['email']) && empty($clienteData['telefono'])) ? 'span3' : 'span3' ?>">
-            <div class="dato-label">Dirección</div>
-            <div class="dato-valor" style="font-weight:400;font-size:13px"><?= htmlspecialchars($clienteData['direccion']) ?></div>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -276,7 +265,7 @@ body {
 
 <!-- Pie -->
 <div class="footer">
-    <span>Sistema de Gestión de Procesos Judiciales — Documento generado automáticamente</span>
+    <span><?= htmlspecialchars($nombreEmpresa) ?> — <?= htmlspecialchars($pieReporte) ?></span>
     <span><?= $fechaGeneracion ?></span>
 </div>
 

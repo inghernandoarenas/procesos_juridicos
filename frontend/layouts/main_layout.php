@@ -1,9 +1,16 @@
+<?php
+require_once __DIR__ . '/../../backend/models/Configuracion.php';
+$_cfg          = (new Configuracion())->getMap();
+$_nombreEmp    = $_cfg['nombre_empresa']  ?? 'Oficina Jurídica';
+$_subtituloEmp = $_cfg['subtitulo']       ?? 'Sistema de Gestión de Procesos Judiciales';
+$_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Procesos</title>
+    <title><?= htmlspecialchars($_nombreEmp) ?></title>
     <link rel="stylesheet" href="/procesos_juridicos/frontend/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,10 +25,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/procesos_juridicos/frontend/index.php?view=procesos" style="display:flex;justify-content:space-between;align-items:center">
-                        <span><i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos</span>
-                        <span id="badgeProcesos" style="background:#3498db;color:white;font-size:10px;font-weight:700;
-                              padding:2px 7px;border-radius:20px;display:none">0</span>
+                    <a href="/procesos_juridicos/frontend/index.php?view=procesos">
+                        <i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos
                     </a>
                 </li>
                 <li class="menu-item has-submenu">
@@ -60,6 +65,11 @@
                                 <i class="fas fa-list-alt" style="margin-right:10px;width:20px"></i> Log Notificaciones
                             </a>
                         </li>
+                        <li>
+                            <a href="/procesos_juridicos/frontend/index.php?view=configuracion">
+                                <i class="fas fa-sliders-h" style="margin-right:10px;width:20px"></i> Mi Empresa
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -67,7 +77,7 @@
 
         <div class="main-content">
             <div class="header">
-                <h1>Sistema de Gestión de Procesos Judiciales</h1>
+                <h1><?= htmlspecialchars($_nombreEmp) ?></h1>
                 <div class="user-info" style="display:flex;align-items:center;gap:15px">
                     <span style="display:flex;align-items:center;gap:8px">
                         <i class="fas fa-user-circle" style="font-size:24px;color:#3498db"></i>
@@ -97,7 +107,7 @@
             </div>
 
             <div class="footer">
-                <p>&copy; 2024 - Oficina de Abogados</p>
+                <p>&copy; <?= $_anioEmp ?> - <?= htmlspecialchars($_nombreEmp) ?></p>
             </div>
         </div>
     </div>
@@ -123,24 +133,6 @@
 </html>
 
 <script>
-// ── Contador procesos activos en sidebar ─────────────────
-(function() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=1', {
-        headers: { 'Authorization': 'Bearer ' + token }
-    })
-    .then(r => r.json())
-    .then(data => {
-        const badge = document.getElementById('badgeProcesos');
-        if (badge && data.total > 0) {
-            badge.textContent = data.total;
-            badge.style.display = 'inline-block';
-        }
-    })
-    .catch(() => {});
-})();
-
 function toggleSubmenu(event) {
     event.preventDefault();
     const submenu = event.currentTarget.nextElementSibling;
@@ -154,7 +146,7 @@ function toggleSubmenu(event) {
 // Mantener submenú abierto si estamos en parametrización
 document.addEventListener('DOMContentLoaded', function() {
     const view = new URLSearchParams(window.location.search).get('view');
-    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','log_notificaciones'];
+    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','log_notificaciones','configuracion'];
 
     if (vistasParametrizacion.includes(view)) {
         const submenu = document.querySelector('.submenu');
