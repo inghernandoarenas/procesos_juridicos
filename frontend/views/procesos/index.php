@@ -405,12 +405,34 @@ function fetchWithAuth(url, options = {}) {
 </div>
 
 <!-- ── Buscador compacto ──────────────────────────────────── -->
-<div class="procesos-search-bar">
-    <div style="flex:1;position:relative">
-        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#95a5a6;font-size:13px"></i>
-        <input type="text" id="buscarProcesos" placeholder="Buscar por radicado, cliente, tipo o descripción...">
+<div class="procesos-search-bar" 
+     style="display:flex;align-items:center;gap:8px;width:100%">
+
+    <div style="flex:0 0 70%;position:relative">
+        <i class="fas fa-search"
+           style="position:absolute;left:12px;top:50%;
+                  transform:translateY(-50%);
+                  color:#95a5a6;font-size:14px">
+        </i>
+
+        <input type="text"
+               id="buscarProcesos"
+               placeholder="Buscar por radicado, cliente, tipo o descripción..."
+               style="width:100%;
+                      height:42px;
+                      padding-left:35px;
+                      font-size:15px;">
     </div>
-    <button class="btn btn-secondary" onclick="limpiarBusqueda()" style="padding:0 16px;background:#95a5a6;height:40px">
+
+    <button class="btn btn-primary"
+            onclick="buscarProcesos()"
+            style="height:42px;min-width:42px">
+        <i class="fas fa-search"></i>
+    </button>
+
+    <button class="btn btn-secondary"
+            onclick="limpiarBusqueda()"
+            style="height:42px;min-width:42px">
         <i class="fas fa-times"></i>
     </button>
 </div>
