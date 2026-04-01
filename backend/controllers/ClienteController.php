@@ -17,11 +17,12 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $cliente = new Cliente();
 
 if($action == 'list') {
-    $pagina = $_GET['pagina'] ?? 1;
+    $pagina     = $_GET['pagina'] ?? 1;
+    $buscar     = $_GET['buscar'] ?? '';
     $por_pagina = 6;
-    $inicio = ($pagina - 1) * $por_pagina;
-    
-    $resultado = $cliente->getAllPaginated($inicio, $por_pagina);
+    $inicio     = ($pagina - 1) * $por_pagina;
+
+    $resultado = $cliente->getAllPaginated($inicio, $por_pagina, $buscar);
     echo json_encode($resultado);
     exit;
 }

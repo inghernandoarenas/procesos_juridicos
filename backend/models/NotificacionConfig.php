@@ -72,5 +72,31 @@ class NotificacionConfig {
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
+
+    public function registrarLog($data) {
+        $query = "INSERT INTO notificaciones_log
+                  (proceso_id, actuacion_id, tipo_envio, destinatario, estado, mensaje, fecha_envio)
+                  VALUES (:proceso_id, :actuacion_id, :tipo_envio, :destinatario, :estado, :mensaje, NOW())";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':proceso_id',   $data['proceso_id']);
+        $stmt->bindParam(':actuacion_id', $data['actuacion_id']);
+        $stmt->bindParam(':tipo_envio',   $data['tipo_envio']);
+        $stmt->bindParam(':destinatario', $data['destinatario']);
+        $stmt->bindParam(':estado',       $data['estado']);
+        $stmt->bindParam(':mensaje',      $data['mensaje']);
+        return $stmt->execute();
+    }
+
+    public function getLogs($limite = 100) {
+        $query = "SELECT l.*, p.numero_radicado
+                  FROM notificaciones_log l
+                  JOIN procesos p ON l.proceso_id = p.id
+                  ORDER BY l.fecha_envio DESC LIMIT :limite";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 ?>

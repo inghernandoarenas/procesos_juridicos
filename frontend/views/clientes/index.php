@@ -111,8 +111,10 @@ function fetchWithAuth(url, options = {}) {
 
 <script>
 
-function cargarClientes(pagina = 1) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/ClienteController.php?action=list&pagina=${pagina}`)
+function cargarClientes(pagina = 1, buscar = '') {
+    let url = `/procesos_juridicos/backend/controllers/ClienteController.php?action=list&pagina=${pagina}`;
+    if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
+    fetchWithAuth(url)
         .then(response => response.json())
         .then(result => {
             // Guardar datos de paginación

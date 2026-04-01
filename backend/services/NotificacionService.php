@@ -35,9 +35,11 @@ class NotificacionService {
         $resultados = [];
 
         foreach ($destinatarios as $dest) {
+            $tipo = $dest['tipo'] ?? 'email'; // email | whatsapp | ambos
 
             // ── Envío por correo ──────────────────────────────────────
-            if (!empty($dest['email'])) {
+            $enviarEmail = in_array($tipo, ['email', 'ambos']) && !empty($dest['email']);
+            if ($enviarEmail) {
                 $emailOk = $this->emailService->enviar($dest['email'], $asunto, $mensaje);
 
                 $this->notificacionModel->registrarLog([
@@ -50,14 +52,17 @@ class NotificacionService {
                 ]);
 
                 $resultados[] = [
-                    'tipo'        => 'email',
+                    'tipo'         => 'email',
                     'destinatario' => $dest['email'],
-                    'resultado'   => $emailOk,
+                    'resultado'    => $emailOk,
                 ];
             }
 
-            // ── Envío por WhatsApp (solo si el servicio está disponible) ──
-            if (!empty($dest['telefono']) && $this->whatsappService !== null) {
+            // ── Envío por WhatsApp ────────────────────────────────────
+            $enviarWa = in_array($tipo, ['whatsapp', 'ambos'])
+                        && !empty($dest['telefono'])
+                        && $this->whatsappService !== null;
+            if ($enviarWa) {
                 $waOk = $this->whatsappService->enviar($dest['telefono'], $mensaje);
 
                 $this->notificacionModel->registrarLog([
@@ -81,8 +86,13 @@ class NotificacionService {
     }
 
     private function getSistemaUrl() {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        return "$protocol://$host/procesos_juridicos/frontend/index.php?view=procesos";
+        // Cuando corre desde cron no hay HTTP_HOST — usar la URL configurada aquí
+        $baseUrl = defined('SISTEMA_URL') ? SISTEMA_URL : 'http://localhost';
+        $host    = $_SERVER['HTTP_HOST'] ?? null;
+        if ($host) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            $baseUrl  = "$protocol://$host";
+        }
+        return "$baseUrl/procesos_juridicos/frontend/index.php?view=procesos";
     }
 }

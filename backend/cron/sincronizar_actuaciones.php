@@ -5,6 +5,9 @@ ini_set('memory_limit', '512M');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
+// URL base del sistema — ajusta esto a tu dominio real
+define('SISTEMA_URL', 'http://localhost');
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../api/ApiRamaJudicial.php';
 require_once __DIR__ . '/../models/Proceso.php';
@@ -32,10 +35,11 @@ $procesos = $procesoModel->getAll();
 
 writeLog("Procesos a revisar: " . count($procesos));
 
-$api = new ApiRamaJudicial();
-$actuacionModel = new Actuacion();
-$totalNuevas = 0;
-$errores = 0;
+$api             = new ApiRamaJudicial();
+$actuacionModel  = new Actuacion();
+$notificacionSvc = new NotificacionService(); // una sola instancia para todo el cron
+$totalNuevas     = 0;
+$errores         = 0;
 
 foreach($procesos as $proceso) {
     // Verificar que tenga radicado
@@ -96,8 +100,7 @@ foreach($procesos as $proceso) {
                     
                     // Disparar notificación
                     try {
-                        $notificacion = new NotificacionService();
-                        $resultados = $notificacion->notificarNuevaActuacion($proceso, $act);
+                        $resultados = $notificacionSvc->notificarNuevaActuacion($proceso, $act);
                         writeLog("    📧 Notificaciones enviadas: " . count($resultados));
                     } catch(Exception $e) {
                         writeLog("    ⚠️ Error en notificación: " . $e->getMessage());

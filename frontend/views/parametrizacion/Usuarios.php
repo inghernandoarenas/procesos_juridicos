@@ -149,6 +149,7 @@ function guardarUsuario(event) {
         if (data.success) {
             cerrarModalUsuario();
             cargarUsuarios();
+            toast('Usuario guardado correctamente');
         } else {
             msgError.textContent = data.message || 'Error al guardar';
             msgError.style.display = 'block';
@@ -217,7 +218,7 @@ function eliminarUsuario(id) {
             method: 'POST', body: fd
         })
         .then(r => r.json())
-        .then(data => { if (data.success) cargarUsuarios(); });
+        .then(data => { if (data.success) { cargarUsuarios(); toast('Usuario eliminado','info'); } });
     }
 }
 

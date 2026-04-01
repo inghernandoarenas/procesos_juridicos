@@ -171,10 +171,8 @@ function guardarEstado(event) {
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success) {
-            cerrarModalEstado();
-            cargarEstados();
-        }
+        if(data.success) { cerrarModalEstado(); cargarEstados(); toast('Estado guardado correctamente'); }
+        else { toast('Error al guardar el estado','error'); }
     });
 }
 
@@ -247,7 +245,7 @@ function eliminarEstado(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) cargarEstados();
+            if(data.success) { cargarEstados(); toast('Estado eliminado','info'); }
         });
     }
 }

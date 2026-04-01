@@ -4,19 +4,6 @@ require_once __DIR__ . '/../models/Proceso.php';
 require_once __DIR__ . '/../models/Actuacion.php';
 require_once __DIR__ . '/../libs/JWT.php';
 
-// Verificar sesión — el token viaja en la URL para reportes
-$token = $_GET['token'] ?? '';
-if (empty($token)) {
-    http_response_code(401);
-    die('<h2 style="font-family:Arial;color:#e74c3c;text-align:center;margin-top:100px">
-         ⚠️ Acceso no autorizado. Por favor inicie sesión.</h2>');
-}
-$payload = JWT::decode($token);
-if (!$payload) {
-    http_response_code(401);
-    die('<h2 style="font-family:Arial;color:#e74c3c;text-align:center;margin-top:100px">
-         ⚠️ Sesión expirada. Por favor inicie sesión nuevamente.</h2>');
-}
 
 $id = $_GET['id'] ?? 0;
 if (!$id) { echo "Proceso no encontrado"; exit; }
@@ -25,6 +12,14 @@ $procesoModel   = new Proceso();
 $actuacionModel = new Actuacion();
 
 $proceso     = $procesoModel->getById($id);
+
+// Cargar datos completos del cliente
+$clienteData = null;
+if ($proceso) {
+    require_once __DIR__ . '/../models/Cliente.php';
+    $clienteModel = new Cliente();
+    $clienteData  = $clienteModel->getById($proceso['cliente_id']);
+}
 $actuaciones = $actuacionModel->getByProceso($id);
 
 if (!$proceso) { echo "Proceso no encontrado"; exit; }
@@ -220,11 +215,29 @@ body {
 <!-- Datos del cliente -->
 <div class="seccion">
     <div class="seccion-titulo">👤 Datos del Cliente</div>
-    <div class="datos-grid dos-col">
-        <div class="dato-item destacado span2">
+    <div class="datos-grid">
+        <div class="dato-item destacado span3">
             <div class="dato-label">Nombre Completo</div>
             <div class="dato-valor" style="font-size:16px"><?= htmlspecialchars($proceso['nombre'] . ' ' . $proceso['apellido']) ?></div>
         </div>
+        <?php if (!empty($clienteData['email'])): ?>
+        <div class="dato-item">
+            <div class="dato-label">Email</div>
+            <div class="dato-valor" style="font-weight:400"><?= htmlspecialchars($clienteData['email']) ?></div>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($clienteData['telefono'])): ?>
+        <div class="dato-item">
+            <div class="dato-label">Teléfono</div>
+            <div class="dato-valor" style="font-weight:400"><?= htmlspecialchars($clienteData['telefono']) ?></div>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($clienteData['direccion'])): ?>
+        <div class="dato-item <?= (empty($clienteData['email']) && empty($clienteData['telefono'])) ? 'span3' : 'span3' ?>">
+            <div class="dato-label">Dirección</div>
+            <div class="dato-valor" style="font-weight:400;font-size:13px"><?= htmlspecialchars($clienteData['direccion']) ?></div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 

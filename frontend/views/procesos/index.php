@@ -634,7 +634,7 @@ function guardarProceso(event) {
     const fi = document.getElementById('fecha_inicio').value;
     const fv = document.getElementById('fecha_vencimiento').value;
     if (fv && new Date(fv) < new Date(fi)) {
-        alert('La fecha de vencimiento no puede ser menor a la fecha de inicio');
+        toast('La fecha de vencimiento no puede ser menor a la fecha de inicio','error');
         return;
     }
     const fd = new FormData(document.getElementById('formProceso'));
@@ -787,8 +787,8 @@ function subirArchivo(file, procesoId) {
         .then(data => {
             progress.style.display = 'none';
             document.getElementById('archivoInput').value = '';
-            if (data.success) cargarAnexos(procesoId);
-            else alert('Error al subir el archivo');
+            if (data.success) { cargarAnexos(procesoId); toast('Archivo subido correctamente'); }
+            else { toast('Error al subir el archivo','error'); }
         })
         .catch(() => { progress.style.display = 'none'; });
 }
@@ -851,7 +851,7 @@ function eliminarAnexo(id, procesoId) {
         fd.append('action','delete'); fd.append('id', id); fd.append('proceso_id', procesoId);
         fetchWithAuth('/procesos_juridicos/backend/controllers/AnexoController.php', { method:'POST', body:fd })
             .then(r => r.json())
-            .then(data => { if (data.success) cargarAnexos(procesoId); });
+            .then(data => { if (data.success) { cargarAnexos(procesoId); toast('Archivo eliminado','info'); } });
     }
 }
 

@@ -166,7 +166,8 @@ function guardarNotif(event) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { cerrarModalNotif(); cargarNotificaciones(); }
+        if (data.success) { cerrarModalNotif(); cargarNotificaciones(); toast('Notificación guardada correctamente'); }
+        else { toast('Error al guardar la notificación','error'); }
     });
 }
 
@@ -222,7 +223,7 @@ function eliminarNotif(id) {
             method: 'POST', body: fd
         })
         .then(r => r.json())
-        .then(data => { if (data.success) cargarNotificaciones(); });
+        .then(data => { if (data.success) { cargarNotificaciones(); toast('Notificación eliminada','info'); } });
     }
 }
 

@@ -18,8 +18,10 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/procesos_juridicos/frontend/index.php?view=procesos">
-                        <i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos
+                    <a href="/procesos_juridicos/frontend/index.php?view=procesos" style="display:flex;justify-content:space-between;align-items:center">
+                        <span><i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos</span>
+                        <span id="badgeProcesos" style="background:#3498db;color:white;font-size:10px;font-weight:700;
+                              padding:2px 7px;border-radius:20px;display:none">0</span>
                     </a>
                 </li>
                 <li class="menu-item has-submenu">
@@ -121,6 +123,24 @@
 </html>
 
 <script>
+// ── Contador procesos activos en sidebar ─────────────────
+(function() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=1', {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const badge = document.getElementById('badgeProcesos');
+        if (badge && data.total > 0) {
+            badge.textContent = data.total;
+            badge.style.display = 'inline-block';
+        }
+    })
+    .catch(() => {});
+})();
+
 function toggleSubmenu(event) {
     event.preventDefault();
     const submenu = event.currentTarget.nextElementSibling;

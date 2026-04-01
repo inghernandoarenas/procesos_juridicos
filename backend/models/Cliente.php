@@ -44,25 +44,39 @@ class Cliente {
         return $stmt->execute();
     }
 
-    public function getAllPaginated($inicio, $por_pagina) {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT :inicio, :por_pagina";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':inicio', $inicio, PDO::PARAM_INT);
-        $stmt->bindParam(':por_pagina', $por_pagina, PDO::PARAM_INT);
+    public function getAllPaginated($inicio, $por_pagina, $buscar = '') {
+        $params = [];
+        $where  = '';
+
+        if (!empty($buscar)) {
+            $where = " WHERE nombre LIKE :buscar
+                          OR apellido LIKE :buscar
+                          OR email LIKE :buscar
+                          OR telefono LIKE :buscar
+                          OR CONCAT(nombre,' ',apellido) LIKE :buscar";
+            $params[':buscar'] = '%' . $buscar . '%';
+        }
+
+        $query = "SELECT * FROM " . $this->table . $where . " ORDER BY nombre ASC LIMIT :inicio, :por_pagina";
+        $stmt  = $this->conn->prepare($query);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindParam(':inicio',    $inicio,    PDO::PARAM_INT);
+        $stmt->bindParam(':por_pagina',$por_pagina,PDO::PARAM_INT);
         $stmt->execute();
-        
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Obtener total de registros
-        $total = $this->conn->query("SELECT COUNT(*) as total FROM " . $this->table)->fetch(PDO::FETCH_ASSOC)['total'];
-        
+
+        $queryCount = "SELECT COUNT(*) as total FROM " . $this->table . $where;
+        $stmtCount  = $this->conn->prepare($queryCount);
+        foreach ($params as $k => $v) $stmtCount->bindValue($k, $v);
+        $stmtCount->execute();
+        $total = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+
         return [
-            'data' => $data,
-            'total' => $total,
-            'pagina' => ($inicio / $por_pagina) + 1,
-            'por_pagina' => $por_pagina,
-            'total_paginas' => ceil($total / $por_pagina)
+            'data'          => $data,
+            'total'         => $total,
+            'pagina'        => ($inicio / $por_pagina) + 1,
+            'por_pagina'    => $por_pagina,
+            'total_paginas' => ceil($total / $por_pagina),
         ];
     }
 

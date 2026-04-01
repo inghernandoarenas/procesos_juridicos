@@ -183,10 +183,12 @@ class Proceso {
                     MAX(a.fecha) AS ultima_actuacion,
                     DATEDIFF(CURDATE(), MAX(a.fecha)) AS dias_sin_movimiento
                   FROM procesos p
-                  JOIN clientes c        ON p.cliente_id        = c.id
+                  JOIN clientes c           ON p.cliente_id        = c.id
                   LEFT JOIN tipos_proceso   tp ON p.tipo_proceso_id   = tp.id
                   LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
-                  LEFT JOIN actuaciones a     ON a.proceso_id         = p.id
+                  LEFT JOIN actuaciones a      ON a.proceso_id        = p.id
+                  WHERE ep.nombre IS NULL
+                     OR ep.nombre NOT IN ('Finalizado', 'Archivado', 'Cerrado')
                   GROUP BY p.id, p.numero_radicado, p.fecha_inicio,
                            c.nombre, c.apellido,
                            tp.nombre, ep.nombre, ep.color
