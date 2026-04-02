@@ -33,8 +33,14 @@ $api = new ApiRamaJudicial();
 
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 
-if(empty($actuaciones)) {
-    echo json_encode(['success' => false, 'message' => 'No se encontraron actuaciones nuevas']);
+// null = timeout/error de red; [] = proceso sin actuaciones
+if ($actuaciones === null) {
+    echo json_encode(['success' => false, 'message' => 'No se pudo conectar con la Rama Judicial. Verifique su conexión e intente nuevamente.']);
+    exit;
+}
+
+if (empty($actuaciones)) {
+    echo json_encode(['success' => true, 'message' => 'El proceso no tiene actuaciones registradas en la Rama Judicial.']);
     exit;
 }
 
@@ -45,7 +51,7 @@ $notificacionService = new NotificacionService();
 $contador = 0;
 
 foreach($actuaciones as $act) {
-    $existe = $actuacionModel->getByIdApi($act['id']);
+    $existe = $actuacionModel->getByIdApi($act['id'], $proceso_id);
 
     if(!$existe) {
         $data = [

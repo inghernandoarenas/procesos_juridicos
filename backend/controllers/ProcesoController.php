@@ -99,6 +99,11 @@ if($action == 'sinMovimiento') {
     exit;
 }
 
+if($action == 'stats') {
+    echo json_encode($proceso->getStats());
+    exit;
+}
+
 if($action == 'getTipos') {
     require_once __DIR__ . '/../models/TipoProceso.php';
     $tipo = new TipoProceso();

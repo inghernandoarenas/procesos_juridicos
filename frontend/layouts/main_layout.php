@@ -25,6 +25,11 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                     </a>
                 </li>
                 <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=honorarios">
+                        <i class="fas fa-dollar-sign" style="margin-right:10px;width:20px"></i> Honorarios
+                    </a>
+                </li>
+                <li>
                     <a href="/procesos_juridicos/frontend/index.php?view=procesos">
                         <i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos
                     </a>
@@ -147,6 +152,7 @@ function toggleSubmenu(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const view = new URLSearchParams(window.location.search).get('view');
     const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','log_notificaciones','configuracion'];
+    const todasVistas = [...vistasParametrizacion, 'honorarios'];
 
     if (vistasParametrizacion.includes(view)) {
         const submenu = document.querySelector('.submenu');

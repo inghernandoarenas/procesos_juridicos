@@ -45,6 +45,9 @@ $token = $_COOKIE['token'] ?? '';
             case 'configuracion':
                 $content = 'views/parametrizacion/configuracion.php';
                 break;
+            case 'honorarios':
+                $content = 'views/honorarios/index.php';
+                break;
             case 'dashboard':
             default:
                 $content = 'views/dashboard/index.php';

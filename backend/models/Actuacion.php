@@ -48,10 +48,17 @@ class Actuacion {
         return $stmt->execute();
     }
 
-    public function getByIdApi($id_api) {
-        $query = "SELECT id FROM " . $this->table . " WHERE id_api = :id_api LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_api', $id_api);
+    public function getByIdApi($id_api, $proceso_id = null) {
+        if ($proceso_id) {
+            $query = "SELECT id FROM " . $this->table . " WHERE id_api = :id_api AND proceso_id = :proceso_id LIMIT 1";
+            $stmt  = $this->conn->prepare($query);
+            $stmt->bindParam(':id_api',     $id_api);
+            $stmt->bindParam(':proceso_id', $proceso_id);
+        } else {
+            $query = "SELECT id FROM " . $this->table . " WHERE id_api = :id_api LIMIT 1";
+            $stmt  = $this->conn->prepare($query);
+            $stmt->bindParam(':id_api', $id_api);
+        }
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

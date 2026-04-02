@@ -235,6 +235,35 @@ document.addEventListener('mouseout', e => {
             </div>
         </div>
 
+        <!-- ── Widget financiero ───────────────────────────────── -->
+        <div class="dash-card" style="grid-column:span 3;margin-top:4px">
+            <div class="dash-card-header">
+                <div class="dash-card-title">
+                    <i class="fas fa-chart-line" style="color:#27ae60"></i>
+                    Resumen Financiero
+                </div>
+                <span style="font-size:11px;color:#95a5a6">Honorarios globales</span>
+            </div>
+            <div class="dash-card-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:16px">
+                <div style="text-align:center;background:#eafaf1;border-radius:10px;padding:16px">
+                    <div style="font-size:11px;color:#27ae60;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Cobrado este mes</div>
+                    <div id="finCobradoMes" style="font-size:22px;font-weight:700;color:#27ae60">—</div>
+                </div>
+                <div style="text-align:center;background:#fef9ec;border-radius:10px;padding:16px">
+                    <div style="font-size:11px;color:#f39c12;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Pendiente por cobrar</div>
+                    <div id="finPendiente" style="font-size:22px;font-weight:700;color:#f39c12">—</div>
+                </div>
+                <div style="text-align:center;background:#fdecea;border-radius:10px;padding:16px">
+                    <div style="font-size:11px;color:#e74c3c;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Vencido sin cobrar</div>
+                    <div id="finVencido" style="font-size:22px;font-weight:700;color:#e74c3c">—</div>
+                </div>
+                <div style="text-align:center;background:#eaf4fd;border-radius:10px;padding:16px">
+                    <div style="font-size:11px;color:#2980b9;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Procesos con pendiente</div>
+                    <div id="finProcesos" style="font-size:22px;font-weight:700;color:#2980b9">—</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -394,5 +423,21 @@ setInterval(() => {
     cargarProximosVencer();
     cargarEnEspera();
     cargarSinMovimiento();
+    cargarFinanzas();
 }, 300000);
+
+function cargarFinanzas() {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php?action=resumen_global')
+        .then(r => r.json())
+        .then(d => {
+            const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0}).format(v||0);
+            document.getElementById('finCobradoMes').textContent = fmt(d.cobrado_mes);
+            document.getElementById('finPendiente').textContent  = fmt(d.pendiente_total);
+            document.getElementById('finVencido').textContent    = fmt(d.vencido_total);
+            document.getElementById('finProcesos').textContent   = d.procesos_con_pendiente || '0';
+        })
+        .catch(() => {});
+}
+
+cargarFinanzas();
 </script>

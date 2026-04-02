@@ -608,6 +608,106 @@ function fetchWithAuth(url, options = {}) {
     </div>
 </div>
 
+<!-- ══ MODAL HONORARIOS ══════════════════════════════════════ -->
+<div id="modalHonorarios" class="modal">
+    <div class="modal-content" style="width:90%;max-width:1000px">
+        <span class="close" onclick="cerrarHonorarios()">&times;</span>
+
+        <div style="margin-top:30px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div>
+                    <h3 style="margin:0"><i class="fas fa-dollar-sign" style="color:#27ae60;margin-right:8px"></i>Honorarios del Proceso</h3>
+                    <p id="honSubtitulo" style="margin:4px 0 0;font-size:13px;color:#7f8c8d"></p>
+                </div>
+                <button class="btn btn-primary" onclick="abrirFormHonorario()"
+                        style="background:#27ae60;border-color:#27ae60;display:flex;align-items:center;gap:6px">
+                    <i class="fas fa-plus"></i> Nuevo Cobro
+                </button>
+            </div>
+
+            <!-- KPIs resumen -->
+            <div class="hon-resumen" id="honKpis"></div>
+
+            <!-- Formulario inline (oculto por defecto) -->
+            <div id="honFormWrap" style="display:none;background:#f8f9fa;border-radius:10px;padding:18px;margin-bottom:18px;border-left:4px solid #27ae60">
+                <h4 style="margin:0 0 14px;color:#2c3e50;font-size:14px" id="honFormTitulo">Nuevo Cobro</h4>
+                <input type="hidden" id="honId">
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Concepto *</label>
+                        <input type="text" id="honConcepto" placeholder="Ej: Honorarios audiencia inicial"
+                               style="margin-top:4px">
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Tipo *</label>
+                        <select id="honTipo" style="margin-top:4px">
+                            <option value="pago_puntual">Pago puntual</option>
+                            <option value="cuota_periodica">Cuota periódica</option>
+                            <option value="honorario_exito">Honorario de éxito</option>
+                            <option value="anticipo">Anticipo</option>
+                            <option value="gasto_reembolsable">Gasto reembolsable</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Valor (COP) *</label>
+                        <input type="number" id="honValor" placeholder="0" min="0" step="1000"
+                               style="margin-top:4px">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:12px;margin-bottom:14px">
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Fecha causación *</label>
+                        <input type="date" id="honFechaCausacion" style="margin-top:4px">
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Fecha pago</label>
+                        <input type="date" id="honFechaPago" style="margin-top:4px">
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Estado</label>
+                        <select id="honEstado" style="margin-top:4px">
+                            <option value="pendiente">Pendiente</option>
+                            <option value="pagado">Pagado</option>
+                            <option value="vencido">Vencido</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase">Observaciones</label>
+                        <input type="text" id="honObs" placeholder="Opcional" style="margin-top:4px">
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                    <button class="btn btn-primary" onclick="guardarHonorario()"
+                            style="background:#27ae60;border-color:#27ae60">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-secondary" onclick="cancelarFormHonorario()">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de honorarios -->
+            <div id="honTablaWrap">
+                <table class="hon-tabla">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Causación</th>
+                            <th>Pago</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="honTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ══ SCRIPTS ════════════════════════════════════════════════ -->
 <script>
 
@@ -753,6 +853,11 @@ function cargarProcesos(pagina = 1, buscar = '') {
         document.getElementById('heroVencen').textContent  = porVencer;
 
         result.data.forEach(p => {
+
+            const rad = (p.numero_radicado || '')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, "&quot;");
+
             tbody.innerHTML += `
                 <tr>
                     <td>${p.id}</td>
@@ -762,12 +867,35 @@ function cargarProcesos(pagina = 1, buscar = '') {
                     <td>${p.estado_proceso_nombre || p.estado || '—'}</td>
                     <td>${p.fecha_vencimiento || 'N/A'}</td>
                     <td>
-                        <button class="btn-icon" onclick="verProceso(${p.id})" data-tooltip="Ver detalles"><i class="fas fa-eye"></i></button>
-                        <button class="btn-icon" onclick="verActuaciones(${p.id})" data-tooltip="Timeline"><i class="fas fa-stream"></i></button>
-                        <button class="btn-icon" onclick="editarProceso(${p.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon" onclick="abrirModalAnexos(${p.id})" data-tooltip="Anexos"><i class="fas fa-paperclip"></i></button>
-                        <button class="btn-icon" onclick="abrirReporte(${p.id})" data-tooltip="Generar reporte PDF"><i class="fas fa-file-pdf" style="color:#e74c3c"></i></button>
-                        <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon" onclick="verProceso(${p.id})" data-tooltip="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+
+                        <button class="btn-icon" onclick="verActuaciones(${p.id})" data-tooltip="Timeline">
+                            <i class="fas fa-stream"></i>
+                        </button>
+
+                        <button class="btn-icon" onclick="editarProceso(${p.id})" data-tooltip="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button class="btn-icon" onclick="abrirModalAnexos(${p.id})" data-tooltip="Anexos">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+
+                        <button class="btn-icon" 
+                                onclick="abrirHonorarios(${p.id}, '${rad}')" 
+                                data-tooltip="Honorarios">
+                            <i class="fas fa-dollar-sign" style="color:#27ae60"></i>
+                        </button>
+
+                        <button class="btn-icon" onclick="abrirReporte(${p.id})" data-tooltip="Generar reporte PDF">
+                            <i class="fas fa-file-pdf" style="color:#e74c3c"></i>
+                        </button>
+
+                        <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>`;
         });
@@ -1148,6 +1276,193 @@ document.getElementById('buscarProcesos').addEventListener('keyup', e => {
 // ── Reporte PDF ──────────────────────────────────────────────
 function abrirReporte(id) {
     window.open(`/procesos_juridicos/backend/reportes/reporte_proceso.php?id=${id}`, '_blank');
+}
+
+// ── Honorarios ───────────────────────────────────────────────
+let honProcesoId  = 0;
+let honRadicado   = '';
+
+const tiposHon = {
+    pago_puntual:        'Pago puntual',
+    cuota_periodica:     'Cuota periódica',
+    honorario_exito:     'Honorario éxito',
+    anticipo:            'Anticipo',
+    gasto_reembolsable:  'Gasto reembolsable',
+};
+
+function fmtCOP(v) {
+    return new Intl.NumberFormat('es-CO', { style:'currency', currency:'COP', minimumFractionDigits:0 }).format(v||0);
+}
+
+function abrirHonorarios(procesoId, radicado) {
+    honProcesoId = procesoId;
+    honRadicado  = radicado;
+    document.getElementById('honSubtitulo').textContent = 'Radicado: ' + radicado;
+    document.getElementById('honFormWrap').style.display = 'none';
+    document.getElementById('modalHonorarios').style.display = 'block';
+    cargarHonorarios();
+}
+
+function cerrarHonorarios() {
+    document.getElementById('modalHonorarios').style.display = 'none';
+}
+
+function cargarHonorarios() {
+    Promise.all([
+        fetchWithAuth(`/procesos_juridicos/backend/controllers/HonorarioController.php?action=resumen&proceso_id=${honProcesoId}`).then(r=>r.json()),
+        fetchWithAuth(`/procesos_juridicos/backend/controllers/HonorarioController.php?action=list&proceso_id=${honProcesoId}`).then(r=>r.json())
+    ]).then(([resumen, lista]) => {
+        renderHonKpis(resumen);
+        renderHonTabla(lista);
+    });
+}
+
+function renderHonKpis(r) {
+    document.getElementById('honKpis').innerHTML = `
+        <div class="hon-kpi cobrado">
+            <div class="hon-kpi-num">${fmtCOP(r.total_cobrado)}</div>
+            <div class="hon-kpi-label">Total cobrado</div>
+        </div>
+        <div class="hon-kpi pagado">
+            <div class="hon-kpi-num">${fmtCOP(r.total_pagado)}</div>
+            <div class="hon-kpi-label">Pagado</div>
+        </div>
+        <div class="hon-kpi pendiente">
+            <div class="hon-kpi-num">${fmtCOP(r.total_pendiente)}</div>
+            <div class="hon-kpi-label">Pendiente</div>
+        </div>
+        <div class="hon-kpi vencido">
+            <div class="hon-kpi-num">${fmtCOP(r.total_vencido)}</div>
+            <div class="hon-kpi-label">Vencido</div>
+        </div>`;
+}
+
+function renderHonTabla(lista) {
+    const tbody = document.getElementById('honTbody');
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa">
+            <i class="fas fa-file-invoice-dollar" style="font-size:32px;display:block;margin-bottom:8px"></i>
+            No hay cobros registrados para este proceso
+        </td></tr>`;
+        return;
+    }
+    tbody.innerHTML = lista.map(h => {
+        const fmtFecha = f => f ? new Date(f+'T00:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+        const accPagar = h.estado !== 'pagado'
+            ? `<button class="btn-icon" onclick="pagarHonorario(${h.id})" data-tooltip="Marcar pagado" style="color:#27ae60"><i class="fas fa-check-circle"></i></button>`
+            : '';
+        return `<tr>
+            <td><strong>${h.concepto}</strong>${h.observaciones ? '<br><small style="color:#95a5a6">'+h.observaciones+'</small>' : ''}</td>
+            <td><span class="hon-tipo-badge">${tiposHon[h.tipo]||h.tipo}</span></td>
+            <td><strong>${fmtCOP(h.valor)}</strong></td>
+            <td style="font-size:12px;color:#7f8c8d">${fmtFecha(h.fecha_causacion)}</td>
+            <td style="font-size:12px;color:#7f8c8d">${fmtFecha(h.fecha_pago)}</td>
+            <td><span class="hon-badge ${h.estado}">${h.estado}</span></td>
+            <td>
+                ${accPagar}
+                <button class="btn-icon" onclick="editarHonorario(${h.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon" onclick="eliminarHonorario(${h.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function abrirFormHonorario() {
+    document.getElementById('honId').value             = '';
+    document.getElementById('honConcepto').value        = '';
+    document.getElementById('honTipo').value            = 'pago_puntual';
+    document.getElementById('honValor').value           = '';
+    document.getElementById('honFechaCausacion').value  = new Date().toISOString().split('T')[0];
+    document.getElementById('honFechaPago').value       = '';
+    document.getElementById('honEstado').value          = 'pendiente';
+    document.getElementById('honObs').value             = '';
+    document.getElementById('honFormTitulo').textContent = 'Nuevo Cobro';
+    document.getElementById('honFormWrap').style.display = 'block';
+    document.getElementById('honConcepto').focus();
+}
+
+function cancelarFormHonorario() {
+    document.getElementById('honFormWrap').style.display = 'none';
+}
+
+function editarHonorario(id) {
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/HonorarioController.php?action=get&id=${id}`)
+        .then(r=>r.json())
+        .then(h => {
+            document.getElementById('honId').value             = h.id;
+            document.getElementById('honConcepto').value        = h.concepto;
+            document.getElementById('honTipo').value            = h.tipo;
+            document.getElementById('honValor').value           = h.valor;
+            document.getElementById('honFechaCausacion').value  = h.fecha_causacion;
+            document.getElementById('honFechaPago').value       = h.fecha_pago || '';
+            document.getElementById('honEstado').value          = h.estado;
+            document.getElementById('honObs').value             = h.observaciones || '';
+            document.getElementById('honFormTitulo').textContent = 'Editar Cobro';
+            document.getElementById('honFormWrap').style.display = 'block';
+            document.getElementById('honConcepto').focus();
+        });
+}
+
+function guardarHonorario() {
+    const id        = document.getElementById('honId').value;
+    const concepto  = document.getElementById('honConcepto').value.trim();
+    const valor     = document.getElementById('honValor').value;
+    const fechaCaus = document.getElementById('honFechaCausacion').value;
+
+    if (!concepto || !valor || !fechaCaus) {
+        toast('Complete los campos obligatorios', 'error');
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('action',           id ? 'update' : 'create');
+    if (id) fd.append('id',       id);
+    fd.append('proceso_id',       honProcesoId);
+    fd.append('concepto',         concepto);
+    fd.append('tipo',             document.getElementById('honTipo').value);
+    fd.append('valor',            valor);
+    fd.append('fecha_causacion',  fechaCaus);
+    fd.append('fecha_pago',       document.getElementById('honFechaPago').value);
+    fd.append('estado',           document.getElementById('honEstado').value);
+    fd.append('observaciones',    document.getElementById('honObs').value);
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php', { method:'POST', body:fd })
+        .then(r=>r.json())
+        .then(data => {
+            if (data.success) {
+                cancelarFormHonorario();
+                cargarHonorarios();
+                toast(id ? 'Cobro actualizado' : 'Cobro registrado correctamente');
+            } else {
+                toast('Error al guardar', 'error');
+            }
+        });
+}
+
+function pagarHonorario(id) {
+    const hoy = new Date().toISOString().split('T')[0];
+    if (!confirm('¿Marcar este cobro como pagado hoy?')) return;
+    const fd = new FormData();
+    fd.append('action',     'pagar');
+    fd.append('id',         id);
+    fd.append('fecha_pago', hoy);
+    fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php', { method:'POST', body:fd })
+        .then(r=>r.json())
+        .then(data => {
+            if (data.success) { cargarHonorarios(); toast('Pago registrado ✓'); }
+        });
+}
+
+function eliminarHonorario(id) {
+    if (!confirm('¿Eliminar este cobro?')) return;
+    const fd = new FormData();
+    fd.append('action', 'delete');
+    fd.append('id', id);
+    fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php', { method:'POST', body:fd })
+        .then(r=>r.json())
+        .then(data => {
+            if (data.success) { cargarHonorarios(); toast('Cobro eliminado', 'info'); }
+        });
 }
 
 // ── Init ──────────────────────────────────────────────────────
