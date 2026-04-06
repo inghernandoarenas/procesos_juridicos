@@ -1,5 +1,67 @@
 <style>
 /* ══════════════════════════════════════════
+   HONORARIOS - KPIs
+══════════════════════════════════════════ */
+.hon-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.hon-kpi {
+    background: #fff;
+    border: 1px solid #e8ecef;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    transition: transform .15s, box-shadow .15s;
+}
+
+.hon-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.hon-kpi-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.hon-kpi-body {
+    flex: 1;
+}
+
+.hon-kpi-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #95a5a6;
+    margin-bottom: 2px;
+}
+
+.hon-kpi-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+}
+
+/* colores */
+.hon-total     { background:#eef5ff; color:#3498db; }
+.hon-pagado    { background:#eafaf1; color:#27ae60; }
+.hon-pendiente { background:#fef9ec; color:#f39c12; }
+.hon-vencido   { background:#fdecea; color:#e74c3c; }
+
+/* ══════════════════════════════════════════
    ANEXOS
 ══════════════════════════════════════════ */
 .anexos-grid {
@@ -1320,21 +1382,25 @@ function cargarHonorarios() {
 function renderHonKpis(r) {
     document.getElementById('honKpis').innerHTML = `
         <div class="hon-kpi cobrado">
-            <div class="hon-kpi-num">${fmtCOP(r.total_cobrado)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_cobrado || 0)}</div>
             <div class="hon-kpi-label">Total cobrado</div>
         </div>
+
         <div class="hon-kpi pagado">
-            <div class="hon-kpi-num">${fmtCOP(r.total_pagado)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_pagado || 0)}</div>
             <div class="hon-kpi-label">Pagado</div>
         </div>
+
         <div class="hon-kpi pendiente">
-            <div class="hon-kpi-num">${fmtCOP(r.total_pendiente)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_pendiente || 0)}</div>
             <div class="hon-kpi-label">Pendiente</div>
         </div>
+
         <div class="hon-kpi vencido">
-            <div class="hon-kpi-num">${fmtCOP(r.total_vencido)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_vencido || 0)}</div>
             <div class="hon-kpi-label">Vencido</div>
-        </div>`;
+        </div>
+    `;
 }
 
 function renderHonTabla(lista) {
