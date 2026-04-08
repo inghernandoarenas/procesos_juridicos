@@ -43,12 +43,11 @@
 </style>
 
 <!-- Hero -->
-<div style="background:linear-gradient(135deg,#1a2a3a,#27ae60 200%);border-radius:12px;padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.15)">
+<div style="background:linear-gradient(135deg,#1a2a3a 0%,#1e8449 100%);border-radius:10px;padding:12px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1)">
     <div>
-        <h2 style="color:white;margin:0;font-size:20px;display:flex;align-items:center;gap:10px">
+        <h2 style="color:white;margin:0;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px">
             <i class="fas fa-dollar-sign"></i> Honorarios
         </h2>
-        <p style="color:rgba(255,255,255,.6);font-size:13px;margin:4px 0 0">Control de cobros y pagos por proceso</p>
     </div>
 </div>
 
@@ -100,6 +99,7 @@
     <i class="fas fa-file-invoice-dollar" style="font-size:40px;display:block;margin-bottom:10px"></i>
     No hay honorarios registrados
 </p>
+<div id="paginacionHon" class="pagination-container" style="margin-top:20px;display:flex;justify-content:center;align-items:center;gap:10px"></div>
 
 <script>
 function fetchWithAuth(url, options = {}) {
@@ -116,67 +116,98 @@ const tiposHon = { pago_puntual:'Pago puntual', cuota_periodica:'Cuota periódic
 const fmt = v => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0}).format(v||0);
 const fmtF = f => f ? new Date(f+'T00:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
 
-let honGlobalData = [];
+let honPaginaActual   = 1;
+let honTotalPaginas   = 1;
+let honDebounceTimer  = null;
 
+// ── Carga inicial: KPIs + primera página ──────────────────────
 function cargarHonGlobal() {
-    Promise.all([
-        fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php?action=resumen_global').then(r=>r.json()),
-        fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php?action=list_global').then(r=>r.json())
-    ]).then(([resumen, lista]) => {
-        document.getElementById('gkCobrado').textContent  = fmt(resumen.cobrado_mes);
-        document.getElementById('gkPendiente').textContent = fmt(resumen.pendiente_total);
-        document.getElementById('gkVencido').textContent  = fmt(resumen.vencido_total);
-        document.getElementById('gkProcesos').textContent = resumen.procesos_con_pendiente || '0';
-        honGlobalData = lista;
-        filtrarHon();
-    });
+    fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php?action=resumen_global')
+        .then(r => r.json())
+        .then(resumen => {
+            document.getElementById('gkCobrado').textContent   = fmt(resumen.cobrado_mes);
+            document.getElementById('gkPendiente').textContent = fmt(resumen.pendiente_total);
+            document.getElementById('gkVencido').textContent   = fmt(resumen.vencido_total);
+            document.getElementById('gkProcesos').textContent  = resumen.procesos_con_pendiente || '0';
+        });
+    cargarPaginaHon(1);
 }
 
-function filtrarHon() {
+// ── Carga una página con los filtros activos ──────────────────
+function cargarPaginaHon(pagina) {
+    honPaginaActual = pagina;
+
     const estado = document.getElementById('filtroEstadoHon').value;
     const tipo   = document.getElementById('filtroTipoHon').value;
-    const buscar = document.getElementById('filtroBuscarHon').value.toLowerCase();
+    const buscar = document.getElementById('filtroBuscarHon').value.trim();
 
-    const filtrado = honGlobalData.filter(h => {
-        if (estado && h.estado    !== estado) return false;
-        if (tipo   && h.tipo      !== tipo)   return false;
-        if (buscar && !h.concepto?.toLowerCase().includes(buscar)
-                   && !h.numero_radicado?.toLowerCase().includes(buscar)
-                   && !h.cliente?.toLowerCase().includes(buscar)) return false;
-        return true;
-    });
+    let url = `/procesos_juridicos/backend/controllers/HonorarioController.php?action=list_global&pagina=${pagina}`;
+    if (estado) url += `&estado=${encodeURIComponent(estado)}`;
+    if (tipo)   url += `&tipo=${encodeURIComponent(tipo)}`;
+    if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
 
-    document.getElementById('honCount').textContent =
-        filtrado.length !== honGlobalData.length
-            ? `Mostrando ${filtrado.length} de ${honGlobalData.length}`
-            : `${honGlobalData.length} registros`;
+    fetchWithAuth(url)
+        .then(r => r.json())
+        .then(result => {
+            honTotalPaginas = result.total_paginas || 1;
 
-    const tbody = document.getElementById('honGlobalTbody');
-    const vacio = document.getElementById('honGlobalVacio');
-    const tabla = document.getElementById('tablaHonGlobal');
+            document.getElementById('honCount').textContent =
+                result.total === 0 ? '' : `${result.total} registro${result.total !== 1 ? 's' : ''}`;
 
-    if (filtrado.length === 0) {
-        tabla.style.display = 'none';
-        vacio.style.display = 'block';
-        return;
-    }
-    tabla.style.display = '';
-    vacio.style.display = 'none';
+            const tbody = document.getElementById('honGlobalTbody');
+            const vacio = document.getElementById('honGlobalVacio');
+            const tabla = document.getElementById('tablaHonGlobal');
 
-    tbody.innerHTML = filtrado.map(h => `
-        <tr style="border-bottom:1px solid #f0f0f0;transition:background .15s" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
-            <td style="padding:10px 14px"><strong style="color:#3498db">${h.numero_radicado||'—'}</strong></td>
-            <td style="padding:10px 14px;font-size:13px">${h.cliente||'—'}</td>
-            <td style="padding:10px 14px">
-                <div style="font-weight:600;color:#2c3e50">${h.concepto}</div>
-                ${h.observaciones ? '<div style="font-size:11px;color:#95a5a6">'+h.observaciones+'</div>' : ''}
-            </td>
-            <td style="padding:10px 14px"><span class="hon-tipo-badge">${tiposHon[h.tipo]||h.tipo}</span></td>
-            <td style="padding:10px 14px"><strong>${fmt(h.valor)}</strong></td>
-            <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_causacion)}</td>
-            <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_pago)}</td>
-            <td style="padding:10px 14px"><span class="hon-badge ${h.estado}">${h.estado}</span></td>
-        </tr>`).join('');
+            if (result.data.length === 0) {
+                tabla.style.display = 'none';
+                vacio.style.display = 'block';
+                document.getElementById('paginacionHon').innerHTML = '';
+                return;
+            }
+            tabla.style.display = '';
+            vacio.style.display = 'none';
+
+            tbody.innerHTML = result.data.map(h => `
+                <tr style="border-bottom:1px solid #f0f0f0;transition:background .15s" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
+                    <td style="padding:10px 14px"><strong style="color:#3498db">${h.numero_radicado||'—'}</strong></td>
+                    <td style="padding:10px 14px;font-size:13px">${h.cliente||'—'}</td>
+                    <td style="padding:10px 14px">
+                        <div style="font-weight:600;color:#2c3e50">${h.concepto}</div>
+                        ${h.observaciones ? '<div style="font-size:11px;color:#95a5a6">'+h.observaciones+'</div>' : ''}
+                    </td>
+                    <td style="padding:10px 14px"><span class="hon-tipo-badge">${tiposHon[h.tipo]||h.tipo}</span></td>
+                    <td style="padding:10px 14px"><strong>${fmt(h.valor)}</strong></td>
+                    <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_causacion)}</td>
+                    <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_pago)}</td>
+                    <td style="padding:10px 14px"><span class="hon-badge ${h.estado}">${h.estado}</span></td>
+                </tr>`).join('');
+
+            renderPaginacionHon();
+        });
+}
+
+// ── Paginación ────────────────────────────────────────────────
+function renderPaginacionHon() {
+    const c = document.getElementById('paginacionHon');
+    if (honTotalPaginas <= 1) { c.innerHTML = ''; return; }
+    c.innerHTML = `
+        <button class="pagination-btn" onclick="cambiarPaginaHon(${honPaginaActual - 1})" ${honPaginaActual <= 1 ? 'disabled' : ''}>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="pagination-info">Página ${honPaginaActual} de ${honTotalPaginas}</span>
+        <button class="pagination-btn" onclick="cambiarPaginaHon(${honPaginaActual + 1})" ${honPaginaActual >= honTotalPaginas ? 'disabled' : ''}>
+            <i class="fas fa-chevron-right"></i>
+        </button>`;
+}
+
+function cambiarPaginaHon(p) {
+    if (p >= 1 && p <= honTotalPaginas) cargarPaginaHon(p);
+}
+
+// ── Filtros: reset a página 1, debounce en el buscador ───────
+function filtrarHon() {
+    clearTimeout(honDebounceTimer);
+    honDebounceTimer = setTimeout(() => cargarPaginaHon(1), 300);
 }
 
 cargarHonGlobal();

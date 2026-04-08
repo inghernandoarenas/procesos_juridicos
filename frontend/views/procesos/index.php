@@ -1,67 +1,5 @@
 <style>
 /* ══════════════════════════════════════════
-   HONORARIOS - KPIs
-══════════════════════════════════════════ */
-.hon-resumen {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.hon-kpi {
-    background: #fff;
-    border: 1px solid #e8ecef;
-    border-radius: 10px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.05);
-    transition: transform .15s, box-shadow .15s;
-}
-
-.hon-kpi:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
-}
-
-.hon-kpi-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-}
-
-.hon-kpi-body {
-    flex: 1;
-}
-
-.hon-kpi-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: #95a5a6;
-    margin-bottom: 2px;
-}
-
-.hon-kpi-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: #2c3e50;
-    line-height: 1;
-}
-
-/* colores */
-.hon-total     { background:#eef5ff; color:#3498db; }
-.hon-pagado    { background:#eafaf1; color:#27ae60; }
-.hon-pendiente { background:#fef9ec; color:#f39c12; }
-.hon-vencido   { background:#fdecea; color:#e74c3c; }
-
-/* ══════════════════════════════════════════
    ANEXOS
 ══════════════════════════════════════════ */
 .anexos-grid {
@@ -139,7 +77,6 @@
     text-transform: uppercase;
     letter-spacing: .3px;
 }
-
 /* Zona de drop */
 .upload-zone {
     border: 2px dashed #d0d7de;
@@ -159,7 +96,6 @@
 .upload-zone p { font-size: 13px; color: #7f8c8d; margin: 0; }
 .upload-zone small { font-size: 11px; color: #bdc3c7; }
 .upload-zone input[type=file] { display: none; }
-
 .anexos-empty {
     text-align: center;
     padding: 40px 20px;
@@ -167,7 +103,6 @@
 }
 .anexos-empty i { font-size: 48px; display: block; margin-bottom: 12px; }
 .anexos-empty p { font-size: 14px; }
-
 .subiendo-progress {
     display: none;
     background: #eaf4fd;
@@ -184,73 +119,66 @@
    VISTA DE PROCESOS — HEADER IMPACTANTE
 ══════════════════════════════════════════ */
 .procesos-hero {
-    background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 50%, #1a3a5c 100%);
-    border-radius: 12px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
+    background: linear-gradient(135deg, #2c3e50 0%, #3d5166 100%);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
 }
 .procesos-hero-left h2 {
     color: white;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 700;
-    margin: 0 0 4px 0;
+    margin: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
-.procesos-hero-left p {
-    color: rgba(255,255,255,.6);
-    font-size: 13px;
-    margin: 0;
-}
+.procesos-hero-left p { display: none; }
 .procesos-hero-stats {
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 .hero-stat {
-    text-align: center;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 10px;
-    padding: 12px 18px;
-    min-width: 80px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 7px;
+    padding: 4px 12px;
 }
 .hero-stat-num {
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 700;
     color: white;
     line-height: 1;
-    margin-bottom: 4px;
 }
 .hero-stat-label {
     font-size: 10px;
-    color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.6);
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: .3px;
 }
 .procesos-hero-btn {
     background: #3498db;
     color: white;
     border: none;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: background .2s, transform .15s;
+    gap: 6px;
+    transition: background .2s;
     white-space: nowrap;
 }
-.procesos-hero-btn:hover {
-    background: #2980b9;
-    transform: translateY(-2px);
-}
+.procesos-hero-btn:hover { background: #2980b9; }
 
 /* Tabla de procesos mejorada */
 #tablaProcesos thead tr { background: linear-gradient(90deg, #2c3e50, #34495e); }
@@ -279,6 +207,71 @@
     border-color: #3498db;
 }
 
+
+/* ── Menú de acciones desplegable ─────────────────────────── */
+.acc-wrap {
+    position: relative;
+    display: inline-block;
+}
+.acc-trigger {
+    background: #f0f4f8;
+    border: none;
+    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #5d6d7e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s;
+}
+.acc-trigger:hover {
+    background: #2c3e50;
+    color: white;
+}
+.acc-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 34px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.14);
+    border: 1px solid #e8ecef;
+    min-width: 170px;
+    z-index: 500;
+    overflow: hidden;
+    animation: accFadeIn .12s ease;
+}
+.acc-menu.open { display: block; }
+@keyframes accFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.acc-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 14px;
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: #2c3e50;
+    cursor: pointer;
+    text-align: left;
+    transition: background .12s;
+}
+.acc-item:hover { background: #f4f6f8; }
+.acc-item i { width: 14px; text-align: center; font-size: 12px; color: #7f8c8d; }
+.acc-item:hover i { color: #2c3e50; }
+.acc-danger { color: #e74c3c !important; }
+.acc-danger i { color: #e74c3c !important; }
+.acc-danger:hover { background: #fdecea !important; }
+.acc-sep { height: 1px; background: #f0f0f0; margin: 3px 0; }
+
 /* ══════════════════════════════════════════
    TIMELINE DE ACTUACIONES
 ══════════════════════════════════════════ */
@@ -286,6 +279,12 @@
     padding: 10px 5px 10px 10px;
     max-height: 520px;
     overflow-y: auto;
+    animation: fadeInUp .25s ease both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .timeline {
@@ -308,13 +307,9 @@
 .tl-item {
     position: relative;
     margin-bottom: 28px;
-    animation: fadeInUp .3s ease both;
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
+
 
 /* Punto en la línea */
 .tl-dot {
@@ -492,7 +487,7 @@ function fetchWithAuth(url, options = {}) {
     <thead>
         <tr>
             <th>ID</th><th>Radicado</th><th>Cliente</th>
-            <th>Tipo</th><th>Estado</th><th>Vencimiento</th><th>Acciones</th>
+            <th>Tipo</th><th>Estado</th><th>Vencimiento</th><th style="text-align:center">Priv.</th><th style="width:44px"></th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -546,7 +541,14 @@ function fetchWithAuth(url, options = {}) {
                 <label>Fecha de Vencimiento:</label>
                 <input type="date" id="fecha_vencimiento" name="fecha_vencimiento">
             </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                <input type="checkbox" id="es_privado" name="es_privado" value="1" style="width:16px;height:16px;accent-color:#f39c12">
+                <label for="es_privado" style="margin:0;font-size:13px;cursor:pointer">
+                    <i class="fas fa-lock" style="color:#f39c12;margin-right:4px"></i>
+                    Proceso privado <span style="font-size:11px;color:#95a5a6">(sujetos procesales reservados)</span>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:14px">Guardar</button>
         </form>
     </div>
 </div>
@@ -628,28 +630,45 @@ function fetchWithAuth(url, options = {}) {
     </div>
 </div>
 
-<!-- ══ MODAL ACTUACIONES (con Timeline) ══════════════════════ -->
+<!-- ══ MODAL ACTUACIONES ══════════════════════════════════════ -->
 <div id="modalActuaciones" class="modal">
-    <div class="modal-content" style="width:80%;max-width:800px">
+    <div class="modal-content" style="width:92%;max-width:1050px">
         <span class="close" onclick="cerrarModalActuaciones()">&times;</span>
 
-        <div style="margin-top:30px">
-            <div class="tl-header">
-                <div>
-                    <h3 style="margin:0">Actuaciones del Proceso</h3>
-                    <div id="procesoInfo" style="margin-top:6px;font-size:13px;color:#7f8c8d"></div>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px">
-                    <span id="tlContador" class="tl-contador"></span>
-                    <button class="btn btn-primary" onclick="sincronizarRama()" id="btnSincronizar">
-                        <i class="fas fa-sync-alt"></i> Actualizar
-                    </button>
-                </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 14px">
+            <div>
+                <h3 style="margin:0;font-size:16px;color:#2c3e50">Actuaciones del Proceso</h3>
+                <div id="procesoInfo" style="margin-top:4px;font-size:13px;color:#7f8c8d"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+                <span id="tlContador" style="font-size:12px;color:#7f8c8d;background:#f0f4f8;padding:3px 12px;border-radius:20px"></span>
+                <button class="btn btn-primary" onclick="sincronizarRama()" id="btnSincronizar" style="font-size:12px;padding:6px 14px">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
             </div>
         </div>
 
-        <div class="timeline-wrap">
-            <div id="timelineActuaciones"></div>
+        <!-- Alerta proceso privado -->
+        <div id="actAlertaPrivado" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:13px;color:#856404">
+            <i class="fas fa-lock" style="margin-right:6px"></i>
+            <strong>Proceso Reservado:</strong> Los sujetos procesales de este expediente son privados y no se muestran públicamente en la Rama Judicial.
+        </div>
+
+        <div style="max-height:62vh;overflow-y:auto;border-radius:8px;border:1px solid #e8ecef">
+            <table id="tablaActuaciones" style="width:100%;border-collapse:collapse">
+                <thead>
+                    <tr style="background:#2c3e50;position:sticky;top:0;z-index:1">
+                        <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;width:100px">Fecha</th>
+                        <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">Actuación</th>
+                        <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">Anotación</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyActuaciones"></tbody>
+            </table>
+            <div id="actVacio" style="display:none;text-align:center;padding:40px;color:#bdc3c7">
+                <i class="fas fa-folder-open" style="font-size:36px;display:block;margin-bottom:10px"></i>
+                No hay actuaciones registradas
+            </div>
         </div>
     </div>
 </div>
@@ -773,23 +792,55 @@ function fetchWithAuth(url, options = {}) {
 <!-- ══ SCRIPTS ════════════════════════════════════════════════ -->
 <script>
 
+// ── Menú acciones ────────────────────────────────────────────
+let accAbierto = null;
+
+function toggleAcc(id, e) {
+    e.stopPropagation();
+    const menu = document.getElementById('accmenu-' + id);
+    if (accAbierto && accAbierto !== menu) {
+        accAbierto.classList.remove('open');
+    }
+    const abriendo = !menu.classList.contains('open');
+    menu.classList.toggle('open', abriendo);
+    accAbierto = abriendo ? menu : null;
+}
+
+function cerrarAcc() {
+    if (accAbierto) { accAbierto.classList.remove('open'); accAbierto = null; }
+}
+
+document.addEventListener('click', () => cerrarAcc());
+
 // ── Actuaciones / Timeline ────────────────────────────────────
 function verActuaciones(procesoId) {
     procesoActual = procesoId;
+    document.getElementById('actAlertaPrivado').style.display = 'none';
+    const btnSync = document.getElementById('btnSincronizar');
+    btnSync.disabled = false;
     fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${procesoId}`)
         .then(r => r.json())
         .then(p => {
             document.getElementById('procesoInfo').innerHTML =
                 `<i class="fas fa-gavel"></i> <strong>${p.numero_radicado}</strong>
                  &nbsp;·&nbsp; ${p.nombre} ${p.apellido}`;
+            if (p.es_privado == 1) {
+                document.getElementById('actAlertaPrivado').style.display = 'block';
+                btnSync.disabled = true;
+                btnSync.title = 'No disponible para procesos privados';
+            }
         });
     cargarTimeline(procesoId);
     document.getElementById('modalActuaciones').style.display = 'block';
 }
 
 function cargarTimeline(procesoId) {
-    const contenedor = document.getElementById('timelineActuaciones');
-    contenedor.innerHTML = '<div class="tl-empty"><i class="fas fa-spinner fa-spin"></i>Cargando...</div>';
+    const tbody = document.getElementById('tbodyActuaciones');
+    const vacio = document.getElementById('actVacio');
+    const tabla = document.getElementById('tablaActuaciones');
+    tbody.innerHTML = '<tr><td colspan="3" style="padding:18px;text-align:center;color:#95a5a6;font-size:13px"><i class="fas fa-spinner fa-spin"></i> Cargando actuaciones...</td></tr>';
+    tabla.style.display = '';
+    vacio.style.display = 'none';
 
     fetchWithAuth(`/procesos_juridicos/backend/controllers/ActuacionController.php?action=list&proceso_id=${procesoId}`)
         .then(r => r.json())
@@ -798,68 +849,105 @@ function cargarTimeline(procesoId) {
                 data.length === 0 ? 'Sin actuaciones' : `${data.length} actuación${data.length !== 1 ? 'es' : ''}`;
 
             if (data.length === 0) {
-                contenedor.innerHTML = `
-                    <div class="tl-empty">
-                        <i class="fas fa-folder-open"></i>
-                        No hay actuaciones registradas para este proceso
-                    </div>`;
+                tabla.style.display = 'none';
+                vacio.style.display = 'block';
                 return;
             }
 
-            // Ordenar de más reciente a más antigua
-            data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const fmtF = f => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CO',
+                {day:'2-digit', month:'short', year:'numeric'}) : '—';
 
-            const hoy   = new Date();
-            hoy.setHours(0,0,0,0);
-            const ayer  = new Date(hoy); ayer.setDate(ayer.getDate() - 1);
-            const items = data.map((a, idx) => {
-                const fechaAct  = new Date(a.fecha);
-                const esNueva   = fechaAct >= ayer;
-                const fechaFmt  = fechaAct.toLocaleDateString('es-CO', {
-                    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-                });
+            // Orden: más antiguas primero (ASC por fecha), despacho viejo primero
+            // El servidor ya ordena despacho ASC, fecha DESC — invertimos para cronológico
+            const sorted = [...data].sort((a, b) => {
+                if ((a.despacho || '') < (b.despacho || '')) return -1;
+                if ((a.despacho || '') > (b.despacho || '')) return  1;
+                return (a.fecha || '') < (b.fecha || '') ? -1 : 1; // fecha ASC dentro del despacho
+            });
 
-                return `
-                <div class="tl-item" style="animation-delay:${idx * 0.05}s">
-                    <div class="tl-dot"></div>
-                    <div class="tl-card">
-                        <div class="tl-fecha">
-                            <i class="fas fa-calendar-day"></i>
-                            ${fechaFmt}
-                            ${esNueva ? '<span class="tl-badge-nueva">nueva</span>' : ''}
-                        </div>
-                        <div class="tl-titulo">${a.actuacion}</div>
-                        ${a.observaciones
-                            ? `<div class="tl-obs"><i class="fas fa-comment-alt" style="margin-right:5px;color:#bdc3c7"></i>${a.observaciones}</div>`
-                            : ''}
-                    </div>
-                </div>`;
-            }).join('');
+            // Paleta de fondos por despacho — alternar entre dos tonos suaves
+            const despachos = [...new Set(sorted.map(a => a.despacho || 'Sin despacho'))];
+            const paleta    = ['#f0f7ff', '#f5f0ff']; // azul suave / lila suave
+            const colores   = {};
+            despachos.forEach((d, i) => colores[d] = paleta[i % paleta.length]);
 
-            contenedor.innerHTML = `<div class="timeline">${items}</div>`;
+            const rows = [];
+            let despachoActual = null;
+
+            sorted.forEach(a => {
+                const desp = a.despacho || 'Sin despacho';
+
+                // Separador de despacho
+                if (desp !== despachoActual) {
+                    despachoActual = desp;
+                    rows.push(`
+                        <tr>
+                            <td colspan="3" style="background:${colores[desp]};padding:7px 14px;border-top:2px solid #dce8f5;border-bottom:1px solid #dce8f5">
+                                <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#2c3e50">
+                                    <i class="fas fa-landmark" style="color:#3498db;margin-right:5px"></i>${desp}
+                                </span>
+                            </td>
+                        </tr>`);
+                }
+
+                rows.push(`
+                    <tr style="background:${colores[desp]};border-bottom:1px solid rgba(0,0,0,.05)">
+                        <td style="padding:9px 14px;white-space:nowrap;font-size:12px;color:#6c757d;vertical-align:top">${fmtF(a.fecha)}</td>
+                        <td style="padding:9px 14px;vertical-align:top">
+                            <div style="font-size:13px;font-weight:700;color:#2c3e50">${a.actuacion}</div>
+                            ${a.observaciones ? `<div style="font-size:12px;color:#7f8c8d;margin-top:2px">${a.observaciones}</div>` : ''}
+                        </td>
+                        <td style="width:0"></td>
+                    </tr>`);
+            });
+
+            requestAnimationFrame(() => { tbody.innerHTML = rows.join(''); });
+        })
+        .catch(() => {
+            tbody.innerHTML = '<tr><td colspan="3" style="padding:18px;text-align:center;color:#e74c3c;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Error al cargar actuaciones</td></tr>';
         });
 }
 
 function sincronizarRama() {
     const btn = document.getElementById('btnSincronizar');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Consultando Rama...';
+
+    // La Rama es lenta: hasta 3 llamadas HTTP con reintentos → necesitamos 150s de margen
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 150000);
 
     const fd = new FormData();
     fd.append('action', 'sincronizar');
     fd.append('proceso_id', procesoActual);
 
-    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarRamaController.php', { method:'POST', body:fd })
+    // Contador de segundos visible para que el usuario sepa que está trabajando
+    let segs = 0;
+    const ticker = setInterval(() => {
+        segs++;
+        if (segs < 10)       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Consultando Rama... ${segs}s`;
+        else if (segs < 30)  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Trayendo actuaciones... ${segs}s`;
+        else                 btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Procesando páginas... ${segs}s`;
+    }, 1000);
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarRamaController.php',
+        { method:'POST', body:fd, signal: controller.signal })
         .then(r => r.json())
         .then(data => {
-            toast(data.success ? data.message : 'Error: ' + data.message, data.success ? 'success' : 'error', 4000);
+            toast(data.message, data.success ? 'success' : 'warning', 5000);
             cargarTimeline(procesoActual);
         })
-        .catch(() => {
-            toast('Sincronización completada');
+        .catch(err => {
+            if (err.name === 'AbortError') {
+                toast('La consulta tardó demasiado. Intenta de nuevo.', 'error', 5000);
+            } else {
+                toast('Error de conexión al sincronizar', 'error', 4000);
+            }
             cargarTimeline(procesoActual);
         })
         .finally(() => {
+            clearTimeout(timeoutId);
+            clearInterval(ticker);
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
         });
@@ -897,7 +985,7 @@ function cargarProcesos(pagina = 1, buscar = '') {
         document.getElementById('heroTotal').textContent = result.total || 0;
 
         if (result.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px">No se encontraron procesos</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px">No se encontraron procesos</td></tr>';
             document.getElementById('paginacionProcesos').innerHTML = '';
             return;
         }
@@ -915,49 +1003,34 @@ function cargarProcesos(pagina = 1, buscar = '') {
         document.getElementById('heroVencen').textContent  = porVencer;
 
         result.data.forEach(p => {
-
-            const rad = (p.numero_radicado || '')
-                .replace(/'/g, "\\'")
-                .replace(/"/g, "&quot;");
-
+            const privado = p.es_privado == 1;
             tbody.innerHTML += `
-                <tr>
+                <tr${privado ? ' style="background:#fffbf0"' : ''}>
                     <td>${p.id}</td>
-                    <td>${p.numero_radicado}</td>
+                    <td><strong style="color:#2980b9">${p.numero_radicado}</strong></td>
                     <td>${p.nombre} ${p.apellido}</td>
                     <td>${p.tipo_proceso_nombre || p.tipo_proceso || '—'}</td>
                     <td>${p.estado_proceso_nombre || p.estado || '—'}</td>
                     <td>${p.fecha_vencimiento || 'N/A'}</td>
-                    <td>
-                        <button class="btn-icon" onclick="verProceso(${p.id})" data-tooltip="Ver detalles">
-                            <i class="fas fa-eye"></i>
-                        </button>
-
-                        <button class="btn-icon" onclick="verActuaciones(${p.id})" data-tooltip="Timeline">
-                            <i class="fas fa-stream"></i>
-                        </button>
-
-                        <button class="btn-icon" onclick="editarProceso(${p.id})" data-tooltip="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-
-                        <button class="btn-icon" onclick="abrirModalAnexos(${p.id})" data-tooltip="Anexos">
-                            <i class="fas fa-paperclip"></i>
-                        </button>
-
-                        <button class="btn-icon" 
-                                onclick="abrirHonorarios(${p.id}, '${rad}')" 
-                                data-tooltip="Honorarios">
-                            <i class="fas fa-dollar-sign" style="color:#27ae60"></i>
-                        </button>
-
-                        <button class="btn-icon" onclick="abrirReporte(${p.id})" data-tooltip="Generar reporte PDF">
-                            <i class="fas fa-file-pdf" style="color:#e74c3c"></i>
-                        </button>
-
-                        <button class="btn-icon" onclick="eliminarProceso(${p.id})" data-tooltip="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <td style="text-align:center">
+                        ${privado ? '<span title="Proceso privado" style="color:#f39c12"><i class="fas fa-lock"></i></span>' : '<span style="color:#ddd"><i class="fas fa-lock-open"></i></span>'}
+                    </td>
+                    <td style="white-space:nowrap">
+                        <div class="acc-wrap" id="acc-${p.id}">
+                            <button class="acc-trigger" onclick="toggleAcc(${p.id}, event)" title="Acciones">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="acc-menu" id="accmenu-${p.id}">
+                                <button class="acc-item" onclick="verProceso(${p.id});cerrarAcc()"><i class="fas fa-eye"></i> Ver detalles</button>
+                                <button class="acc-item" onclick="verActuaciones(${p.id});cerrarAcc()"><i class="fas fa-stream"></i> Actuaciones</button>
+                                <button class="acc-item" onclick="editarProceso(${p.id});cerrarAcc()"><i class="fas fa-edit"></i> Editar</button>
+                                <button class="acc-item" onclick="abrirModalAnexos(${p.id});cerrarAcc()"><i class="fas fa-paperclip"></i> Anexos</button>
+                                <button class="acc-item" onclick='abrirHonorarios(${p.id},${JSON.stringify(p.numero_radicado||"")});cerrarAcc()'><i class="fas fa-dollar-sign" style="color:#27ae60"></i> Honorarios</button>
+                                <button class="acc-item" onclick="abrirReporte(${p.id});cerrarAcc()"><i class="fas fa-file-pdf" style="color:#e74c3c"></i> Reporte PDF</button>
+                                <div class="acc-sep"></div>
+                                <button class="acc-item acc-danger" onclick="eliminarProceso(${p.id});cerrarAcc()"><i class="fas fa-trash"></i> Eliminar</button>
+                            </div>
+                        </div>
                     </td>
                 </tr>`;
         });
@@ -1016,6 +1089,7 @@ function editarProceso(id) {
             document.getElementById('descripcion').value        = p.descripcion || '';
             document.getElementById('fecha_inicio').value       = p.fecha_inicio;
             document.getElementById('fecha_vencimiento').value  = p.fecha_vencimiento || '';
+            document.getElementById('es_privado').checked           = p.es_privado == 1;
             document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
             document.getElementById('modalProceso').style.display = 'block';
         });
@@ -1062,6 +1136,15 @@ function verProceso(id) {
                     <div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
                         <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Descripción</strong>
                         <span style="font-size:14px;line-height:1.5">${p.descripcion || 'Sin descripción'}</span>
+                    </div>
+                    <div style="background:${p.es_privado==1?'#fff8e6':'#f8f9fa'};padding:10px;border-radius:6px;grid-column:span 2;display:flex;align-items:center;gap:8px">
+                        <i class="fas fa-lock" style="color:${p.es_privado==1?'#f39c12':'#bdc3c7'}"></i>
+                        <div>
+                            <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Confidencialidad</strong>
+                            <span style="font-size:13px;color:${p.es_privado==1?'#b7791f':'#7f8c8d'}">
+                                ${p.es_privado==1 ? 'Proceso privado — sujetos procesales reservados' : 'Proceso público'}
+                            </span>
+                        </div>
                     </div>
                 </div>`;
             document.getElementById('modalVerProceso').style.display = 'block';
@@ -1382,25 +1465,21 @@ function cargarHonorarios() {
 function renderHonKpis(r) {
     document.getElementById('honKpis').innerHTML = `
         <div class="hon-kpi cobrado">
-            <div class="hon-kpi-num">${fmtCOP(r.total_cobrado || 0)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_cobrado)}</div>
             <div class="hon-kpi-label">Total cobrado</div>
         </div>
-
         <div class="hon-kpi pagado">
-            <div class="hon-kpi-num">${fmtCOP(r.total_pagado || 0)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_pagado)}</div>
             <div class="hon-kpi-label">Pagado</div>
         </div>
-
         <div class="hon-kpi pendiente">
-            <div class="hon-kpi-num">${fmtCOP(r.total_pendiente || 0)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_pendiente)}</div>
             <div class="hon-kpi-label">Pendiente</div>
         </div>
-
         <div class="hon-kpi vencido">
-            <div class="hon-kpi-num">${fmtCOP(r.total_vencido || 0)}</div>
+            <div class="hon-kpi-num">${fmtCOP(r.total_vencido)}</div>
             <div class="hon-kpi-label">Vencido</div>
-        </div>
-    `;
+        </div>`;
 }
 
 function renderHonTabla(lista) {

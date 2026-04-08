@@ -76,17 +76,24 @@ foreach($procesos as $proceso) {
         
         $nuevas = 0;
         foreach($actuaciones as $act) {
-            // Verificar si ya existe
-            $existe = $actuacionModel->existeActuacion($act['id'], $proceso['id']);
+            // Saltar registros incompletos que harían fallar el INSERT
+            if (empty($act['id']) || empty($act['fecha'])) {
+                writeLog("    ⚠️ Actuación omitida por datos incompletos (sin id o fecha)");
+                continue;
+            }
+
+            // Verificar si ya existe (por id_api + proceso_id + despacho)
+            $existe = $actuacionModel->existeActuacion($act['id'], $proceso['id'], $act['despacho'] ?? null);
             
             if(!$existe) {
                 // Guardar actuación y obtener ID
                 $data = [
-                    ':proceso_id' => $proceso['id'],
-                    ':id_api' => $act['id'],
-                    ':fecha' => $act['fecha'],
-                    ':actuacion' => $act['actuacion'],
-                    ':observaciones' => $act['observaciones']
+                    ':proceso_id'    => $proceso['id'],
+                    ':id_api'        => $act['id'],
+                    ':despacho'      => $act['despacho'] ?? null,
+                    ':fecha'         => $act['fecha'],
+                    ':actuacion'     => $act['actuacion'],
+                    ':observaciones' => $act['observaciones'],
                 ];
                 
                 $nuevoId = $actuacionModel->createAndGetId($data);

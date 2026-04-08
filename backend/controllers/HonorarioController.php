@@ -26,6 +26,16 @@ if ($action === 'resumen_global') {
     exit;
 }
 
+if ($action === 'list_global') {
+    $pagina    = max(1, (int)($_GET['pagina']    ?? 1));
+    $por_pagina = 6;
+    $buscar    = trim($_GET['buscar'] ?? '');
+    $estado    = trim($_GET['estado'] ?? '');
+    $tipo      = trim($_GET['tipo']   ?? '');
+    echo json_encode($honorario->getAllPaginated($pagina, $por_pagina, $buscar, $estado, $tipo));
+    exit;
+}
+
 if ($action === 'get') {
     $id = $_GET['id'] ?? 0;
     echo json_encode($honorario->getById($id));

@@ -39,7 +39,9 @@ class Proceso {
                 c.nombre, c.apellido,
                 tp.nombre as tipo_proceso_nombre,
                 ep.nombre as estado_proceso_nombre,
-                ep.color as estado_color
+                ep.color as estado_color,
+                p.sincronizar_api,
+                COALESCE(p.es_privado, 0) as es_privado
                 FROM " . $this->table . " p 
                 JOIN clientes c ON p.cliente_id = c.id 
                 LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
@@ -51,19 +53,44 @@ class Proceso {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // Procesos sin actuaciones por 365+ días — riesgo de desistimiento tácito
+    public function getDesistimientoTacito() {
+        $query = "SELECT
+                    p.id, p.numero_radicado, p.fecha_inicio,
+                    c.nombre, c.apellido,
+                    tp.nombre AS tipo_proceso,
+                    ep.nombre AS estado,
+                    ep.color  AS estado_color,
+                    MAX(a.fecha)                        AS ultima_actuacion,
+                    DATEDIFF(CURDATE(), MAX(a.fecha))   AS dias_sin_movimiento
+                  FROM procesos p
+                  JOIN clientes c             ON p.cliente_id        = c.id
+                  LEFT JOIN tipos_proceso   tp ON p.tipo_proceso_id   = tp.id
+                  LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                  LEFT JOIN actuaciones     a  ON a.proceso_id        = p.id
+                  WHERE (ep.nombre IS NULL OR ep.nombre NOT IN ('Finalizado','Archivado','Cerrado'))
+                  GROUP BY p.id, p.numero_radicado, p.fecha_inicio,
+                           c.nombre, c.apellido, tp.nombre, ep.nombre, ep.color
+                  HAVING dias_sin_movimiento >= 365 OR ultima_actuacion IS NULL
+                  ORDER BY dias_sin_movimiento DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function create($data) {
-        $query = "INSERT INTO " . $this->table . " 
-                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento) 
-                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento)";
+        $query = "INSERT INTO " . $this->table . "
+                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado)
+                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento, :es_privado)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
 
     public function update($data) {
-        $query = "UPDATE " . $this->table . " 
-                SET cliente_id=:cliente_id, tipo_proceso_id=:tipo_proceso_id, estado_proceso_id=:estado_proceso_id, 
-                    numero_radicado=:numero_radicado, descripcion=:descripcion, 
-                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento 
+        $query = "UPDATE " . $this->table . "
+                SET cliente_id=:cliente_id, tipo_proceso_id=:tipo_proceso_id, estado_proceso_id=:estado_proceso_id,
+                    numero_radicado=:numero_radicado, descripcion=:descripcion,
+                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento, es_privado=:es_privado
                 WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);

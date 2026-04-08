@@ -56,6 +56,7 @@ function fetchWithAuth(url, options = {}) {
             <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
+            <th>Identificación</th>
             <th>Email</th>
             <th>Teléfono</th>
             <th>Acciones</th>
@@ -79,6 +80,25 @@ function fetchWithAuth(url, options = {}) {
             <div class="form-group">
                 <label>Apellido:</label>
                 <input type="text" id="apellido" name="apellido" required>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px">
+                <div class="form-group">
+                    <label>Tipo ID:</label>
+                    <select id="tipo_identificacion" name="tipo_identificacion">
+                        <option value="">-- Seleccione --</option>
+                        <option value="CC">CC - Cédula</option>
+                        <option value="NIT">NIT</option>
+                        <option value="CE">CE - Cédula extranjería</option>
+                        <option value="PP">PP - Pasaporte</option>
+                        <option value="TI">TI - Tarjeta identidad</option>
+                        <option value="RC">RC - Registro civil</option>
+                        <option value="PEP">PEP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Número de identificación:</label>
+                    <input type="text" id="numero_identificacion" name="numero_identificacion" placeholder="Ej: 1.234.567.890">
+                </div>
             </div>
             <div class="form-group">
                 <label>Email:</label>
@@ -130,6 +150,7 @@ function cargarClientes(pagina = 1, buscar = '') {
                         <td>${cliente.id}</td>
                         <td>${cliente.nombre}</td>
                         <td>${cliente.apellido}</td>
+                        <td style="font-size:12px">${cliente.tipo_identificacion ? cliente.tipo_identificacion+' '+cliente.numero_identificacion : '—'}</td>
                         <td>${cliente.email || ''}</td>
                         <td>${cliente.telefono || ''}</td>
                         <td>
@@ -149,6 +170,7 @@ function cargarClientes(pagina = 1, buscar = '') {
 function abrirModalCliente() {
     document.getElementById('formCliente').reset();
     document.getElementById('clienteId').value = '';
+    document.getElementById('tipo_identificacion').value = '';
     document.getElementById('modalClienteTitle').textContent = 'Nuevo Cliente';
     document.getElementById('modalCliente').style.display = 'block';
 }
@@ -182,6 +204,8 @@ function editarCliente(id) {
             document.getElementById('clienteId').value = cliente.id;
             document.getElementById('nombre').value = cliente.nombre;
             document.getElementById('apellido').value = cliente.apellido;
+            document.getElementById('tipo_identificacion').value  = cliente.tipo_identificacion   || '';
+            document.getElementById('numero_identificacion').value = cliente.numero_identificacion || '';
             document.getElementById('email').value = cliente.email || '';
             document.getElementById('telefono').value = cliente.telefono || '';
             document.getElementById('direccion').value = cliente.direccion || '';
@@ -204,6 +228,14 @@ function verCliente(id) {
                     <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
                         <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Nombre Completo</strong>
                         <span style="font-size: 18px; font-weight: bold; color: #3498db;">${cliente.nombre} ${cliente.apellido}</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Identificación</strong>
+                        <span style="font-size: 15px; font-weight: 600;">
+                            <i class="fas fa-id-card" style="color:#3498db;margin-right:5px"></i>
+                            ${cliente.tipo_identificacion ? cliente.tipo_identificacion+' '+cliente.numero_identificacion : 'No registrada'}
+                        </span>
                     </div>
                     
                     <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">

@@ -48,15 +48,14 @@ if($action == 'getByCliente') {
 
 if($action == 'create') {
     $data = [
-        ':cliente_id' => $_POST['cliente_id'],
-        ':tipo_proceso_id' => $_POST['tipo_proceso_id'] ?: null,  // Nuevo
-        ':estado_proceso_id' => $_POST['estado_proceso_id'] ?: null, // Nuevo
-        ':numero_radicado' => $_POST['numero_radicado'],
-        //':tipo_proceso' => $_POST['tipo_proceso'],
-        ':descripcion' => $_POST['descripcion'],
-        //':estado' => $_POST['estado'],
-        ':fecha_inicio' => $_POST['fecha_inicio'],
-        ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null
+        ':cliente_id'        => $_POST['cliente_id'],
+        ':tipo_proceso_id'   => $_POST['tipo_proceso_id'] ?: null,
+        ':estado_proceso_id' => $_POST['estado_proceso_id'] ?: null,
+        ':numero_radicado'   => $_POST['numero_radicado'],
+        ':descripcion'       => $_POST['descripcion'],
+        ':fecha_inicio'      => $_POST['fecha_inicio'],
+        ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
+        ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
     ];
     echo json_encode(['success' => $proceso->create($data)]);
     exit;
@@ -64,14 +63,15 @@ if($action == 'create') {
 
 if($action == 'update') {
     $data = [
-        ':id' => $_POST['id'],
-        ':cliente_id' => $_POST['cliente_id'],
-        ':tipo_proceso_id' => $_POST['tipo_proceso_id'] ?: null,
+        ':id'                => $_POST['id'],
+        ':cliente_id'        => $_POST['cliente_id'],
+        ':tipo_proceso_id'   => $_POST['tipo_proceso_id'] ?: null,
         ':estado_proceso_id' => $_POST['estado_proceso_id'] ?: null,
-        ':numero_radicado' => $_POST['numero_radicado'],
-        ':descripcion' => $_POST['descripcion'],
-        ':fecha_inicio' => $_POST['fecha_inicio'],
-        ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null
+        ':numero_radicado'   => $_POST['numero_radicado'],
+        ':descripcion'       => $_POST['descripcion'],
+        ':fecha_inicio'      => $_POST['fecha_inicio'],
+        ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
+        ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
     ];
     echo json_encode(['success' => $proceso->update($data)]);
     exit;
@@ -96,6 +96,11 @@ if($action == 'enEspera') {
 
 if($action == 'sinMovimiento') {
     echo json_encode($proceso->getSinMovimiento());
+    exit;
+}
+
+if($action == 'desistimientoTacito') {
+    echo json_encode($proceso->getDesistimientoTacito());
     exit;
 }
 

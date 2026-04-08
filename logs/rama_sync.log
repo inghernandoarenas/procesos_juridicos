@@ -1,0 +1,130 @@
+
+[21:03:04] === INICIO radicado=08001405301420220040400 ===
+[21:03:04] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001405301420220040400&SoloActivos=false&pagina=1
+[21:03:04]   OK 416ms — 1403 bytes
+[21:03:04]   Pag 1 — despachos en esta pagina: 2
+[21:03:04]   totalPaginas=1 (registros=2, porPagina=20)
+[21:03:04] Total despachos encontrados: 2
+[21:03:04] -- Despacho 0: idProceso=133905621 | DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *
+[21:03:04] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=1
+[21:03:05]   OK 602ms — 14547 bytes
+[21:03:05]   Pag 1 — actuaciones recibidas: 40
+[21:03:05]   totalPaginas=2 (registros=45, porPagina=40)
+[21:03:05]   Pag 1 completada. totalPaginas=2
+[21:03:05] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=2
+[21:03:05]   OK 443ms — 1996 bytes
+[21:03:05]   Pag 2 — actuaciones recibidas: 5
+[21:03:05]   totalPaginas=2 (registros=45, porPagina=40)
+[21:03:05]   Pag 2 completada. totalPaginas=2
+[21:03:05]   Despacho 133905621 — total actuaciones extraidas: 45
+[21:03:05] -- Despacho 1: idProceso=3177386321 | JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA
+[21:03:05] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177386321?pagina=1
+[21:03:06]   OK 635ms — 2660 bytes
+[21:03:06]   Pag 1 — actuaciones recibidas: 7
+[21:03:06]   totalPaginas=1 (registros=7, porPagina=40)
+[21:03:06]   Pag 1 completada. totalPaginas=1
+[21:03:06]   Despacho 3177386321 — total actuaciones extraidas: 7
+[21:03:06] === FIN — total resultado: 52 actuaciones ===
+[21:03:06] SYNC FIN proceso_id=14 — API: insertadas:52 ya_existian:0
+[21:05:04] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[21:20:51] list proceso_id=11 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[21:20:52] === INICIO radicado=089954478220025454 ===
+[21:20:52] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=089954478220025454&SoloActivos=false&pagina=1
+[21:20:52]   OK 414ms — 91 bytes
+[21:20:52]   Pag 1 — despachos en esta pagina: 0
+[21:20:52] Total despachos encontrados: 0
+[21:20:52] list proceso_id=11 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[21:25:38] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[01:39:19] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[01:39:48] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[01:39:53] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[01:39:58] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[01:40:09] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:40:10] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:40:24] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:55:16] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:55:19] === INICIO radicado=08001418900520250169500 ===
+[01:55:19] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001418900520250169500&SoloActivos=false&pagina=1
+[01:55:20]   OK 777ms — 662 bytes
+[01:55:20]   Pag 1 — despachos en esta pagina: 1
+[01:55:20]   totalPaginas=1 (registros=1, porPagina=20)
+[01:55:20] Total despachos encontrados: 1
+[01:55:20] -- Despacho 0: idProceso=3177977291 | JUZGADO 005 DE PEQUEÑAS CAUSAS  Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA
+[01:55:20] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177977291?pagina=1
+[01:55:20]   OK 412ms — 81 bytes
+[01:55:20]   Pag 1 — actuaciones recibidas: 0
+[01:55:20]   Despacho 3177977291 — total actuaciones extraidas: 0
+[01:55:20] === FIN — total resultado: 0 actuaciones ===
+[01:55:20] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:55:25] === INICIO radicado=08001418900520250169500 ===
+[01:55:25] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001418900520250169500&SoloActivos=false&pagina=1
+[01:55:25]   OK 461ms — 662 bytes
+[01:55:25]   Pag 1 — despachos en esta pagina: 1
+[01:55:25]   totalPaginas=1 (registros=1, porPagina=20)
+[01:55:25] Total despachos encontrados: 1
+[01:55:25] -- Despacho 0: idProceso=3177977291 | JUZGADO 005 DE PEQUEÑAS CAUSAS  Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA
+[01:55:25] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177977291?pagina=1
+[01:55:26]   OK 424ms — 81 bytes
+[01:55:26]   Pag 1 — actuaciones recibidas: 0
+[01:55:26]   Despacho 3177977291 — total actuaciones extraidas: 0
+[01:55:26] === FIN — total resultado: 0 actuaciones ===
+[01:55:26] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:55:30] list proceso_id=12 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[01:55:32] === INICIO radicado=08001418900220260035500 ===
+[01:55:32] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001418900220260035500&SoloActivos=false&pagina=1
+[01:55:32]   OK 443ms — 662 bytes
+[01:55:32]   Pag 1 — despachos en esta pagina: 1
+[01:55:32]   totalPaginas=1 (registros=1, porPagina=20)
+[01:55:32] Total despachos encontrados: 1
+[01:55:32] -- Despacho 0: idProceso=3243914981 | JUZGADO 002 DE PEQUEÑAS CAUSAS  Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA
+[01:55:32] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3243914981?pagina=1
+[01:55:32]   OK 407ms — 81 bytes
+[01:55:32]   Pag 1 — actuaciones recibidas: 0
+[01:55:32]   Despacho 3243914981 — total actuaciones extraidas: 0
+[01:55:32] === FIN — total resultado: 0 actuaciones ===
+[01:55:32] list proceso_id=12 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:01:38] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:02:36] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:02:38] === INICIO radicado=08001418900520250169500 ===
+[02:02:38] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001418900520250169500&SoloActivos=false&pagina=1
+[02:02:38]   OK 454ms — 662 bytes
+[02:02:38]   Pag 1 — despachos en esta pagina: 1
+[02:02:38]   totalPaginas=1 (registros=1, porPagina=20)
+[02:02:38] Total despachos encontrados: 1
+[02:02:38] -- Despacho 0: idProceso=3177977291 | JUZGADO 005 DE PEQUEÑAS CAUSAS  Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA
+[02:02:38] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177977291?pagina=1
+[02:02:39]   OK 413ms — 81 bytes
+[02:02:39]   Pag 1 — actuaciones recibidas: 0
+[02:02:39]   Despacho 3177977291 — total actuaciones extraidas: 0
+[02:02:39] === FIN — total resultado: 0 actuaciones ===
+[02:02:39] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:45:20] list proceso_id=13 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:49:13] list proceso_id=14 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:49:14] === INICIO radicado=08001405301420220040400 ===
+[13:49:14] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001405301420220040400&SoloActivos=false&pagina=1
+[13:49:15]   OK 498ms — 1403 bytes
+[13:49:15]   Pag 1 — despachos en esta pagina: 2
+[13:49:15]   totalPaginas=1 (registros=2, porPagina=20)
+[13:49:15] Total despachos encontrados: 2
+[13:49:15] -- Despacho 0: idProceso=133905621 | DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *
+[13:49:15] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=1
+[13:49:15]   OK 497ms — 14547 bytes
+[13:49:15]   Pag 1 — actuaciones recibidas: 40
+[13:49:15]   totalPaginas=2 (registros=45, porPagina=40)
+[13:49:15]   Pag 1 completada. totalPaginas=2
+[13:49:15] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=2
+[13:49:16]   OK 410ms — 1996 bytes
+[13:49:16]   Pag 2 — actuaciones recibidas: 5
+[13:49:16]   totalPaginas=2 (registros=45, porPagina=40)
+[13:49:16]   Pag 2 completada. totalPaginas=2
+[13:49:16]   Despacho 133905621 — total actuaciones extraidas: 45
+[13:49:16] -- Despacho 1: idProceso=3177386321 | JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA
+[13:49:16] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177386321?pagina=1
+[13:49:16]   OK 406ms — 2660 bytes
+[13:49:16]   Pag 1 — actuaciones recibidas: 7
+[13:49:16]   totalPaginas=1 (registros=7, porPagina=40)
+[13:49:16]   Pag 1 completada. totalPaginas=1
+[13:49:16]   Despacho 3177386321 — total actuaciones extraidas: 7
+[13:49:16] === FIN — total resultado: 52 actuaciones ===
+[13:49:16] SYNC FIN proceso_id=14 — API: insertadas:52 ya_existian:0
+[13:51:15] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0

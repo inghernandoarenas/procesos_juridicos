@@ -35,11 +35,13 @@ if($action == 'get') {
 
 if($action == 'create') {
     $data = [
-        ':nombre' => $_POST['nombre'],
-        ':apellido' => $_POST['apellido'],
-        ':email' => $_POST['email'],
-        ':telefono' => $_POST['telefono'],
-        ':direccion' => $_POST['direccion']
+        ':nombre'                => $_POST['nombre'],
+        ':apellido'              => $_POST['apellido'],
+        ':tipo_identificacion'   => $_POST['tipo_identificacion']   ?? null,
+        ':numero_identificacion' => $_POST['numero_identificacion'] ?? null,
+        ':email'                 => $_POST['email']                 ?? null,
+        ':telefono'              => $_POST['telefono']              ?? null,
+        ':direccion'             => $_POST['direccion']             ?? null,
     ];
     echo json_encode(['success' => $cliente->create($data)]);
     exit;
@@ -47,12 +49,14 @@ if($action == 'create') {
 
 if($action == 'update') {
     $data = [
-        ':id' => $_POST['id'],
-        ':nombre' => $_POST['nombre'],
-        ':apellido' => $_POST['apellido'],
-        ':email' => $_POST['email'],
-        ':telefono' => $_POST['telefono'],
-        ':direccion' => $_POST['direccion']
+        ':id'                    => $_POST['id'],
+        ':nombre'                => $_POST['nombre'],
+        ':apellido'              => $_POST['apellido'],
+        ':tipo_identificacion'   => $_POST['tipo_identificacion']   ?? null,
+        ':numero_identificacion' => $_POST['numero_identificacion'] ?? null,
+        ':email'                 => $_POST['email']                 ?? null,
+        ':telefono'              => $_POST['telefono']              ?? null,
+        ':direccion'             => $_POST['direccion']             ?? null,
     ];
     echo json_encode(['success' => $cliente->update($data)]);
     exit;

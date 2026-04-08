@@ -125,5 +125,57 @@ class Honorario {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllPaginated($pagina = 1, $por_pagina = 6, $buscar = '', $estado = '', $tipo = '') {
+        $inicio = ($pagina - 1) * $por_pagina;
+
+        $where  = [];
+        $params = [];
+
+        if (!empty($buscar)) {
+            $where[] = "(h.concepto LIKE :buscar OR p.numero_radicado LIKE :buscar OR CONCAT(c.nombre,' ',c.apellido) LIKE :buscar)";
+            $params[':buscar'] = "%$buscar%";
+        }
+        if (!empty($estado)) {
+            $where[] = "h.estado = :estado";
+            $params[':estado'] = $estado;
+        }
+        if (!empty($tipo)) {
+            $where[] = "h.tipo = :tipo";
+            $params[':tipo'] = $tipo;
+        }
+
+        $whereSQL = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+        $base = "FROM {$this->table} h
+                 JOIN procesos p ON h.proceso_id = p.id
+                 JOIN clientes c ON p.cliente_id = c.id
+                 $whereSQL";
+
+        // Total
+        $stmtCount = $this->conn->prepare("SELECT COUNT(*) AS total $base");
+        foreach ($params as $k => $v) $stmtCount->bindValue($k, $v);
+        $stmtCount->execute();
+        $total = (int)$stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+
+        // Página
+        $sql  = "SELECT h.*, p.numero_radicado, CONCAT(c.nombre,' ',c.apellido) AS cliente
+                 $base
+                 ORDER BY h.fecha_causacion DESC
+                 LIMIT :inicio, :por_pagina";
+        $stmt = $this->conn->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':inicio',    $inicio,    PDO::PARAM_INT);
+        $stmt->bindValue(':por_pagina', $por_pagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'data'         => $stmt->fetchAll(PDO::FETCH_ASSOC),
+            'total'        => $total,
+            'pagina'       => $pagina,
+            'por_pagina'   => $por_pagina,
+            'total_paginas' => max(1, ceil($total / $por_pagina)),
+        ];
+    }
+
 }
 ?>

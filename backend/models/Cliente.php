@@ -26,13 +26,20 @@ class Cliente {
     }
 
     public function create($data) {
-        $query = "INSERT INTO " . $this->table . " (nombre, apellido, email, telefono, direccion) VALUES (:nombre, :apellido, :email, :telefono, :direccion)";
+        $query = "INSERT INTO " . $this->table . "
+                  (nombre, apellido, tipo_identificacion, numero_identificacion, email, telefono, direccion)
+                  VALUES (:nombre, :apellido, :tipo_identificacion, :numero_identificacion, :email, :telefono, :direccion)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
 
     public function update($data) {
-        $query = "UPDATE " . $this->table . " SET nombre=:nombre, apellido=:apellido, email=:email, telefono=:telefono, direccion=:direccion WHERE id=:id";
+        $query = "UPDATE " . $this->table . "
+                  SET nombre=:nombre, apellido=:apellido,
+                      tipo_identificacion=:tipo_identificacion,
+                      numero_identificacion=:numero_identificacion,
+                      email=:email, telefono=:telefono, direccion=:direccion
+                  WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
@@ -53,6 +60,7 @@ class Cliente {
                           OR apellido LIKE :buscar
                           OR email LIKE :buscar
                           OR telefono LIKE :buscar
+                          OR numero_identificacion LIKE :buscar
                           OR CONCAT(nombre,' ',apellido) LIKE :buscar";
             $params[':buscar'] = '%' . $buscar . '%';
         }

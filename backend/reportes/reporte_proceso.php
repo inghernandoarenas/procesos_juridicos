@@ -227,6 +227,12 @@ body {
             <div class="dato-label">Nombre Completo</div>
             <div class="dato-valor" style="font-size:16px"><?= htmlspecialchars($proceso['nombre'] . ' ' . $proceso['apellido']) ?></div>
         </div>
+        <?php if (!empty($clienteData['tipo_identificacion'])): ?>
+        <div class="dato-item">
+            <div class="dato-label">Identificación</div>
+            <div class="dato-valor" style="font-weight:400"><?= htmlspecialchars($clienteData['tipo_identificacion'] . ' ' . $clienteData['numero_identificacion']) ?></div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 

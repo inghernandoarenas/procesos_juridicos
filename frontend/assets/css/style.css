@@ -32,14 +32,28 @@ table td { padding:10px; border-bottom:1px solid #ddd; }
 .modal-content {
     background: white;
     margin: 5% auto;
-    padding: 20px;
+    padding: 28px 28px 24px;
     width: 60%;
     max-width: 800px;
     max-height: 80vh;
     overflow-y: auto;
-    border-radius: 5px;
+    border-radius: 10px;
     position: relative;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,.15);
+}
+
+/* Título del modal — consistente en todos */
+.modal-content > h3,
+.modal-content > div > h3 {
+    margin: 0 0 22px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2c3e50;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .modal-content form {
