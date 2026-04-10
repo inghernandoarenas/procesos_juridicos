@@ -41,7 +41,8 @@ class Proceso {
                 ep.nombre as estado_proceso_nombre,
                 ep.color as estado_color,
                 p.sincronizar_api,
-                COALESCE(p.es_privado, 0) as es_privado
+                COALESCE(p.es_privado, 0) as es_privado,
+                COALESCE(p.fuente_consulta, 'ninguna') as fuente_consulta
                 FROM " . $this->table . " p 
                 JOIN clientes c ON p.cliente_id = c.id 
                 LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
@@ -80,8 +81,8 @@ class Proceso {
 
     public function create($data) {
         $query = "INSERT INTO " . $this->table . "
-                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado)
-                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento, :es_privado)";
+                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado, fuente_consulta)
+                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento, :es_privado, :fuente_consulta)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
@@ -90,7 +91,7 @@ class Proceso {
         $query = "UPDATE " . $this->table . "
                 SET cliente_id=:cliente_id, tipo_proceso_id=:tipo_proceso_id, estado_proceso_id=:estado_proceso_id,
                     numero_radicado=:numero_radicado, descripcion=:descripcion,
-                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento, es_privado=:es_privado
+                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento, es_privado=:es_privado, fuente_consulta=:fuente_consulta
                 WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);

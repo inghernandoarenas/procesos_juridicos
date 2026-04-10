@@ -128,3 +128,91 @@
 [13:49:16] === FIN — total resultado: 52 actuaciones ===
 [13:49:16] SYNC FIN proceso_id=14 — API: insertadas:52 ya_existian:0
 [13:51:15] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[19:11:05] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[20:45:46] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[18:16:25] list proceso_id=14 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[20:26:58] list proceso_id=14 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:18:13] list proceso_id=14 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:18:32] list proceso_id=11 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:19:33] list proceso_id=3 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:19:38] === INICIO radicado=08638310500120250000600 ===
+[23:19:38] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08638310500120250000600&SoloActivos=false&pagina=1
+[23:19:38]   OK 496ms — 821 bytes
+[23:19:38]   Pag 1 — despachos en esta pagina: 1
+[23:19:38]   totalPaginas=1 (registros=1, porPagina=20)
+[23:19:38] Total despachos encontrados: 1
+[23:19:38] -- Despacho 0: idProceso=3247239201 | JUZGADO 001 LABORAL  DE SABANALARGA
+[23:19:38] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3247239201?pagina=1
+[23:19:39]   OK 396ms — 2225 bytes
+[23:19:39]   Pag 1 — actuaciones recibidas: 6
+[23:19:39]   totalPaginas=1 (registros=6, porPagina=40)
+[23:19:39]   Pag 1 completada. totalPaginas=1
+[23:19:39]   Despacho 3247239201 — total actuaciones extraidas: 6
+[23:19:39] === FIN — total resultado: 6 actuaciones ===
+[23:19:39] SYNC FIN proceso_id=3 — API: insertadas:6 ya_existian:0
+[23:20:08] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:20:19] === INICIO radicado=08638310500120250000600 ===
+[23:20:19] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08638310500120250000600&SoloActivos=false&pagina=1
+[23:20:19]   OK 586ms — 821 bytes
+[23:20:19]   Pag 1 — despachos en esta pagina: 1
+[23:20:19]   totalPaginas=1 (registros=1, porPagina=20)
+[23:20:19] Total despachos encontrados: 1
+[23:20:19] -- Despacho 0: idProceso=3247239201 | JUZGADO 001 LABORAL  DE SABANALARGA
+[23:20:19] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3247239201?pagina=1
+[23:20:20]   OK 403ms — 2225 bytes
+[23:20:20]   Pag 1 — actuaciones recibidas: 6
+[23:20:20]   totalPaginas=1 (registros=6, porPagina=40)
+[23:20:20]   Pag 1 completada. totalPaginas=1
+[23:20:20]   Despacho 3247239201 — total actuaciones extraidas: 6
+[23:20:20] === FIN — total resultado: 6 actuaciones ===
+[23:20:20] SYNC FIN proceso_id=3 — API: insertadas:0 ya_existian:6
+[23:20:20] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:20:22] === INICIO radicado=08638310500120250000600 ===
+[23:20:22] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08638310500120250000600&SoloActivos=false&pagina=1
+[23:20:23]   OK 426ms — 821 bytes
+[23:20:23]   Pag 1 — despachos en esta pagina: 1
+[23:20:23]   totalPaginas=1 (registros=1, porPagina=20)
+[23:20:23] Total despachos encontrados: 1
+[23:20:23] -- Despacho 0: idProceso=3247239201 | JUZGADO 001 LABORAL  DE SABANALARGA
+[23:20:23] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3247239201?pagina=1
+[23:20:23]   OK 400ms — 2225 bytes
+[23:20:23]   Pag 1 — actuaciones recibidas: 6
+[23:20:23]   totalPaginas=1 (registros=6, porPagina=40)
+[23:20:23]   Pag 1 completada. totalPaginas=1
+[23:20:23]   Despacho 3247239201 — total actuaciones extraidas: 6
+[23:20:23] === FIN — total resultado: 6 actuaciones ===
+[23:20:23] SYNC FIN proceso_id=3 — API: insertadas:0 ya_existian:6
+[23:20:23] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:20:30] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:20:32] === INICIO radicado=08638310500120250000600 ===
+[23:20:32] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08638310500120250000600&SoloActivos=false&pagina=1
+[23:20:37]   OK 4762ms — 821 bytes
+[23:20:37]   Pag 1 — despachos en esta pagina: 1
+[23:20:37]   totalPaginas=1 (registros=1, porPagina=20)
+[23:20:37] Total despachos encontrados: 1
+[23:20:37] -- Despacho 0: idProceso=3247239201 | JUZGADO 001 LABORAL  DE SABANALARGA
+[23:20:37] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3247239201?pagina=1
+[23:20:37]   OK 420ms — 2225 bytes
+[23:20:37]   Pag 1 — actuaciones recibidas: 6
+[23:20:37]   totalPaginas=1 (registros=6, porPagina=40)
+[23:20:37]   Pag 1 completada. totalPaginas=1
+[23:20:37]   Despacho 3247239201 — total actuaciones extraidas: 6
+[23:20:37] === FIN — total resultado: 6 actuaciones ===
+[23:20:37] SYNC FIN proceso_id=3 — API: insertadas:0 ya_existian:6
+[23:20:37] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:23:30] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:23:40] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:23:44] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:12:51] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:12:54] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:19:50] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[13:28:06] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:28:09] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:28:31] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[13:28:35] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:38:32] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:38:34] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:38:39] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:38:55] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:39:07] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:58:51] list proceso_id=15 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0

@@ -25,15 +25,17 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                     </a>
                 </li>
                 <li>
-                    <a href="/procesos_juridicos/frontend/index.php?view=honorarios">
-                        <i class="fas fa-dollar-sign" style="margin-right:10px;width:20px"></i> Honorarios
-                    </a>
-                </li>
-                <li>
                     <a href="/procesos_juridicos/frontend/index.php?view=procesos">
                         <i class="fas fa-gavel" style="margin-right:10px;width:20px"></i> Procesos
                     </a>
                 </li>
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=honorarios">
+                        <i class="fas fa-dollar-sign" style="margin-right:10px;width:20px"></i> Honorarios
+                    </a>
+                </li>
+                
+                <!-- ── Parametrización: solo CRUDs ──────────── -->
                 <li class="menu-item has-submenu">
                     <a href="#" onclick="toggleSubmenu(event)">
                         <i class="fas fa-cog" style="margin-right:10px;width:20px"></i> Parametrización
@@ -65,29 +67,47 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                                 <i class="fas fa-bell" style="margin-right:10px;width:20px"></i> Notificaciones
                             </a>
                         </li>
-                        <li>
-                            <a href="/procesos_juridicos/frontend/index.php?view=log_notificaciones">
-                                <i class="fas fa-list-alt" style="margin-right:10px;width:20px"></i> Log Notificaciones
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/procesos_juridicos/frontend/index.php?view=configuracion">
-                                <i class="fas fa-sliders-h" style="margin-right:10px;width:20px"></i> Mi Empresa
-                            </a>
-                        </li>
                     </ul>
                 </li>
+
+                <!-- ── Log de notificaciones ────────────────── -->
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=log_notificaciones">
+                        <i class="fas fa-list-alt" style="margin-right:10px;width:20px"></i> Log Notificaciones
+                    </a>
+                </li>
+
             </ul>
         </div>
 
         <div class="main-content">
             <div class="header">
                 <h1><?= htmlspecialchars($_nombreEmp) ?></h1>
-                <div class="user-info" style="display:flex;align-items:center;gap:15px">
+                <div class="user-info" style="display:flex;align-items:center;gap:16px">
+
+                    <!-- ── Mi Empresa ────────────────────────── -->
+                    <a href="/procesos_juridicos/frontend/index.php?view=configuracion"
+                       style="display:flex;align-items:center;gap:8px;text-decoration:none;
+                              background:#f0f4f8;border-radius:8px;padding:6px 12px;
+                              border:1px solid #dce8f0;transition:background .15s"
+                       onmouseover="this.style.background='#e2ecf5'"
+                       onmouseout="this.style.background='#f0f4f8'"
+                       title="Configurar empresa">
+                        <div style="width:30px;height:30px;background:linear-gradient(135deg,#2c3e50,#3498db);
+                                    border-radius:7px;display:flex;align-items:center;justify-content:center">
+                            <i class="fas fa-building" style="color:white;font-size:14px"></i>
+                        </div>
+                        <span style="font-size:13px;font-weight:600;color:#2c3e50">
+                            <?= htmlspecialchars($_nombreEmp) ?>
+                        </span>
+                    </a>
+
+                    <!-- ── Usuario ───────────────────────────── -->
                     <span style="display:flex;align-items:center;gap:8px">
                         <i class="fas fa-user-circle" style="font-size:24px;color:#3498db"></i>
-                        <span id="userName">Cargando...</span>
+                        <span id="userName" style="font-size:13px;color:#2c3e50;font-weight:500">Cargando...</span>
                     </span>
+
                     <button onclick="logout()" class="btn-icon" data-tooltip="Cerrar sesión" style="background:#f8f9fa">
                         <i class="fas fa-sign-out-alt" style="color:#e74c3c"></i>
                     </button>
@@ -116,13 +136,12 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
             </div>
         </div>
     </div>
-    <!-- Toast container global -->
+
     <div id="toast-container"></div>
 
     <script>
-    // ── Toast global ──────────────────────────────────────────
     function toast(mensaje, tipo = 'success', duracion = 3500) {
-        const iconos = { success: '✅', error: '❌', info: 'ℹ️' };
+        const iconos = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
         const contenedor = document.getElementById('toast-container');
         const el = document.createElement('div');
         el.className = `toast ${tipo}`;
@@ -148,11 +167,9 @@ function toggleSubmenu(event) {
     icon.classList.toggle('fa-chevron-up', !abierto);
 }
 
-// Mantener submenú abierto si estamos en parametrización
 document.addEventListener('DOMContentLoaded', function() {
     const view = new URLSearchParams(window.location.search).get('view');
-    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','log_notificaciones','configuracion'];
-    const todasVistas = [...vistasParametrizacion, 'honorarios'];
+    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones'];
 
     if (vistasParametrizacion.includes(view)) {
         const submenu = document.querySelector('.submenu');

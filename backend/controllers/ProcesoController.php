@@ -56,6 +56,7 @@ if($action == 'create') {
         ':fecha_inicio'      => $_POST['fecha_inicio'],
         ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
         ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
+        ':fuente_consulta'   => $_POST['fuente_consulta'] ?? 'ninguna',
     ];
     echo json_encode(['success' => $proceso->create($data)]);
     exit;
@@ -72,6 +73,7 @@ if($action == 'update') {
         ':fecha_inicio'      => $_POST['fecha_inicio'],
         ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
         ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
+        ':fuente_consulta'   => $_POST['fuente_consulta'] ?? 'ninguna',
     ];
     echo json_encode(['success' => $proceso->update($data)]);
     exit;

@@ -541,6 +541,18 @@ function fetchWithAuth(url, options = {}) {
                 <label>Fecha de Vencimiento:</label>
                 <input type="date" id="fecha_vencimiento" name="fecha_vencimiento">
             </div>
+            <div class="form-group">
+                <label><i class="fas fa-plug" style="color:#3498db;margin-right:5px"></i>Portal de consulta: <span style="color:#e74c3c">*</span></label>
+                <select id="fuente_consulta" name="fuente_consulta" required
+                        style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                    <option value="">— Seleccionar portal —</option>
+                    <option value="rama">⚖️ Rama Judicial (Civil / Laboral / Familia)</option>
+                    <option value="samai">🏛️ SAMAI — Consejo de Estado (Administrativo)</option>
+                    <option value="penal">🔒 SIUGJ — Penal (próximamente)</option>
+                    <option value="tyba">📁 TYBA — Civil antiguo (próximamente)</option>
+                    <option value="ninguna">❌ Sin portal asignado</option>
+                </select>
+            </div>
             <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-top:4px">
                 <input type="checkbox" id="es_privado" name="es_privado" value="1" style="width:16px;height:16px;accent-color:#f39c12">
                 <label for="es_privado" style="margin:0;font-size:13px;cursor:pointer">
@@ -813,23 +825,55 @@ function cerrarAcc() {
 document.addEventListener('click', () => cerrarAcc());
 
 // ── Actuaciones / Timeline ────────────────────────────────────
+// Mapa de fuentes: define label, color e ícono de cada portal
+const FUENTES = {
+    rama:    { label: 'Rama Judicial', icon: 'fa-balance-scale', color: '#2980b9', controller: 'SincronizarRamaController.php'     },
+    samai:   { label: 'SAMAI',         icon: 'fa-landmark',      color: '#7c3aed', controller: 'Sincronizarsamaicontroller.php' },
+    penal:   { label: 'SIUGJ (Penal)', icon: 'fa-gavel',         color: '#c0392b', controller: null },
+    tyba:    { label: 'TYBA',          icon: 'fa-folder-open',   color: '#e67e22', controller: null },
+    ninguna: { label: 'Sin portal',    icon: 'fa-ban',           color: '#95a5a6', controller: null },
+};
+let fuenteActual = 'ninguna';
+
 function verActuaciones(procesoId) {
     procesoActual = procesoId;
     document.getElementById('actAlertaPrivado').style.display = 'none';
-    const btnSync = document.getElementById('btnSincronizar');
-    btnSync.disabled = false;
+
     fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${procesoId}`)
         .then(r => r.json())
         .then(p => {
+            fuenteActual = p.fuente_consulta || 'ninguna';
+            const cfg   = FUENTES[fuenteActual] || FUENTES.ninguna;
+            const btn   = document.getElementById('btnSincronizar');
+
             document.getElementById('procesoInfo').innerHTML =
                 `<i class="fas fa-gavel"></i> <strong>${p.numero_radicado}</strong>
-                 &nbsp;·&nbsp; ${p.nombre} ${p.apellido}`;
+                 &nbsp;·&nbsp; ${p.nombre} ${p.apellido}
+                 &nbsp;<span style="font-size:11px;background:#f0f4f8;padding:2px 8px;border-radius:4px;color:${cfg.color}">
+                     <i class="fas ${cfg.icon}"></i> ${cfg.label}
+                 </span>`;
+
             if (p.es_privado == 1) {
                 document.getElementById('actAlertaPrivado').style.display = 'block';
-                btnSync.disabled = true;
-                btnSync.title = 'No disponible para procesos privados';
+                btn.disabled = true;
+                btn.title    = 'No disponible para procesos privados';
+                btn.style.background = '#bdc3c7';
+                btn.innerHTML = '<i class="fas fa-lock"></i> Privado';
+            } else if (!cfg.controller) {
+                btn.disabled = true;
+                btn.title    = `${cfg.label} — integración próximamente`;
+                btn.style.background = cfg.color;
+                btn.style.opacity    = '0.6';
+                btn.innerHTML = `<i class="fas ${cfg.icon}"></i> ${cfg.label} <small>(pronto)</small>`;
+            } else {
+                btn.disabled = false;
+                btn.title    = `Sincronizar con ${cfg.label}`;
+                btn.style.background = cfg.color;
+                btn.style.opacity    = '1';
+                btn.innerHTML = `<i class="fas fa-sync-alt"></i> ${cfg.label}`;
             }
         });
+
     cargarTimeline(procesoId);
     document.getElementById('modalActuaciones').style.display = 'block';
 }
@@ -909,28 +953,25 @@ function cargarTimeline(procesoId) {
 }
 
 function sincronizarRama() {
+    const cfg = FUENTES[fuenteActual];
+    if (!cfg || !cfg.controller) return;
+
     const btn = document.getElementById('btnSincronizar');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Consultando Rama...';
 
-    // La Rama es lenta: hasta 3 llamadas HTTP con reintentos → necesitamos 150s de margen
     const controller = new AbortController();
     const timeoutId  = setTimeout(() => controller.abort(), 150000);
 
     const fd = new FormData();
-    fd.append('action', 'sincronizar');
     fd.append('proceso_id', procesoActual);
 
-    // Contador de segundos visible para que el usuario sepa que está trabajando
     let segs = 0;
     const ticker = setInterval(() => {
         segs++;
-        if (segs < 10)       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Consultando Rama... ${segs}s`;
-        else if (segs < 30)  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Trayendo actuaciones... ${segs}s`;
-        else                 btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Procesando páginas... ${segs}s`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Consultando ${cfg.label}... ${segs}s`;
     }, 1000);
 
-    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarRamaController.php',
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/${cfg.controller}`,
         { method:'POST', body:fd, signal: controller.signal })
         .then(r => r.json())
         .then(data => {
@@ -938,18 +979,15 @@ function sincronizarRama() {
             cargarTimeline(procesoActual);
         })
         .catch(err => {
-            if (err.name === 'AbortError') {
-                toast('La consulta tardó demasiado. Intenta de nuevo.', 'error', 5000);
-            } else {
-                toast('Error de conexión al sincronizar', 'error', 4000);
-            }
+            toast(err.name === 'AbortError' ? 'La consulta tardó demasiado. Intenta de nuevo.' : 'Error de conexión al sincronizar', 'error', 5000);
             cargarTimeline(procesoActual);
         })
         .finally(() => {
             clearTimeout(timeoutId);
             clearInterval(ticker);
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+            btn.style.background = cfg.color;
+            btn.innerHTML = `<i class="fas fa-sync-alt"></i> ${cfg.label}`;
         });
 }
 
@@ -1009,7 +1047,10 @@ function cargarProcesos(pagina = 1, buscar = '') {
                     <td>${p.id}</td>
                     <td><strong style="color:#2980b9">${p.numero_radicado}</strong></td>
                     <td>${p.nombre} ${p.apellido}</td>
-                    <td>${p.tipo_proceso_nombre || p.tipo_proceso || '—'}</td>
+                    <td>
+                        ${p.tipo_proceso_nombre || p.tipo_proceso || '—'}
+                        ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<br><span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : ''}
+                    </td>
                     <td>${p.estado_proceso_nombre || p.estado || '—'}</td>
                     <td>${p.fecha_vencimiento || 'N/A'}</td>
                     <td style="text-align:center">
@@ -1090,6 +1131,7 @@ function editarProceso(id) {
             document.getElementById('fecha_inicio').value       = p.fecha_inicio;
             document.getElementById('fecha_vencimiento').value  = p.fecha_vencimiento || '';
             document.getElementById('es_privado').checked           = p.es_privado == 1;
+            document.getElementById('fuente_consulta').value         = p.fuente_consulta || 'ninguna';
             document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
             document.getElementById('modalProceso').style.display = 'block';
         });
@@ -1132,6 +1174,10 @@ function verProceso(id) {
                         <span style="font-size:16px;${p.fecha_vencimiento && new Date(p.fecha_vencimiento)<new Date()?'color:#e74c3c;font-weight:bold':''}">
                             ${p.fecha_vencimiento || 'N/A'}
                         </span>
+                    </div>
+                    <div style="background:#f0f4f8;padding:10px;border-radius:6px">
+                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Portal de Consulta</strong>
+                        <span style="font-size:14px;font-weight:600">${{rama:'⚖️ Rama Judicial',samai:'🏛️ SAMAI',penal:'🔒 SIUGJ Penal',tyba:'📁 TYBA',ninguna:'❌ Sin portal'}[p.fuente_consulta]||'—'}</span>
                     </div>
                     <div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
                         <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Descripción</strong>

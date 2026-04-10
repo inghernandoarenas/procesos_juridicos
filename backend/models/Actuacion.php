@@ -27,7 +27,7 @@ class Actuacion {
      *
      * Retorna array con los IDs de las filas realmente insertadas (nuevas).
      */
-    public function insertarLote(array $actuaciones, int $proceso_id): array {
+    public function insertarLote(array $actuaciones, int $proceso_id, string $fuente = 'rama'): array {
         if (empty($actuaciones)) return [];
 
         // Primero: cargar los id_api que ya existen para este proceso
@@ -57,9 +57,10 @@ class Actuacion {
         $placeholders = [];
         $params       = [];
         foreach ($nuevas as $i => $act) {
-            $placeholders[] = "(:pid{$i}, :id_api{$i}, :despacho{$i}, :fecha{$i}, :actuacion{$i}, :obs{$i})";
+            $placeholders[] = "(:pid{$i}, :id_api{$i}, :fuente{$i}, :despacho{$i}, :fecha{$i}, :actuacion{$i}, :obs{$i})";
             $params[":pid{$i}"]       = $proceso_id;
             $params[":id_api{$i}"]    = (string)$act['id'];
+            $params[":fuente{$i}"]    = $act['fuente'] ?? $fuente;
             $params[":despacho{$i}"]  = $act['despacho'] ?? null;
             $params[":fecha{$i}"]     = substr((string)($act['fecha'] ?? ''), 0, 10);
             $params[":actuacion{$i}"] = $act['actuacion'] ?? 'Sin descripción';
@@ -67,7 +68,7 @@ class Actuacion {
         }
 
         $sql  = "INSERT IGNORE INTO {$this->table}
-                 (proceso_id, id_api, despacho, fecha, actuacion, observaciones)
+                 (proceso_id, id_api, fuente, despacho, fecha, actuacion, observaciones)
                  VALUES " . implode(', ', $placeholders);
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2026 at 01:28 PM
+-- Generation Time: Apr 10, 2026 at 02:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,6 +40,96 @@ CREATE TABLE `actuaciones` (
   `usuario_modificacion` int(11) DEFAULT NULL,
   `fecha_modificacion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `actuaciones`
+--
+
+INSERT INTO `actuaciones` (`id`, `proceso_id`, `id_api`, `despacho`, `fecha`, `actuacion`, `observaciones`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
+(359, 3, '3393118941', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-06-12', 'AUTO ADMITE DEMANDA', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL),
+(360, 3, '3392691871', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-23', 'AUTO INADMITE LA DEMANDA', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL),
+(361, 3, '3392470971', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-14', 'AUTO ADMITE DEMANDA', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL),
+(362, 3, '3391188071', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-03-05', 'AUTO ADMITE DEMANDA', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL),
+(363, 3, '3382650431', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-02-05', 'RADICACIÓN', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL),
+(364, 3, '3395518081', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-08-25', 'CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL', NULL, '2026-04-09 21:19:39', NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `actuaciones_backup`
+--
+
+CREATE TABLE `actuaciones_backup` (
+  `id` int(11) NOT NULL DEFAULT 0,
+  `proceso_id` int(11) NOT NULL,
+  `id_api` varchar(50) DEFAULT NULL,
+  `despacho` varchar(255) DEFAULT NULL,
+  `fecha` date NOT NULL,
+  `actuacion` varchar(255) NOT NULL,
+  `observaciones` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `usuario_creacion` int(11) DEFAULT NULL,
+  `usuario_modificacion` int(11) DEFAULT NULL,
+  `fecha_modificacion` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `actuaciones_backup`
+--
+
+INSERT INTO `actuaciones_backup` (`id`, `proceso_id`, `id_api`, `despacho`, `fecha`, `actuacion`, `observaciones`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
+(307, 14, '2478439391', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-11-07', 'Envía Para Ejecución Civil', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(308, 14, '2390439341', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-10-20', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(309, 14, '2389509321', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-10-20', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(310, 14, '2390439331', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-10-20', 'Auto Ordena', 'envio ejecución', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(311, 14, '2389509311', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-10-20', 'Auto Decide', 'Aprueba liquidación de costas', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(312, 14, '2389445591', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-10-20', 'Agregar Memorial', '22VigilanciaJudicial', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(313, 14, '1779447331', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-08-26', 'Agregar Memorial', '2022-00404MemorialIncNulidad', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(314, 14, '1750489621', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-07-08', 'Agregar Memorial', '2022-00404MemorialImpulsoTrasladosAlDte', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(315, 14, '1740755061', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-06-17', 'Traslado Secretarial', 'traslado escrito de nulidad', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(316, 14, '1734175771', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-06-03', 'Agregar Memorial', '2022-00404MemorialReiteraNulidad', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(317, 14, '1698305841', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-03-18', 'Agregar Memorial', '18MemorialSolicitaNulidad', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(318, 14, '1694460251', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2025-03-10', 'Agregar Memorial', '2022-00404MemorialSolicitaAccesoExp', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(319, 14, '1424567041', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2024-09-04', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(320, 14, '1424567031', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2024-09-04', 'Auto Ordena Seguir Adelante Ejecucion', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(321, 14, '1334986051', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2024-01-24', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(322, 14, '1322949351', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-12-02', 'Agregar Memorial', '2022-00404EscritoAportaDiligenciaNotificacion', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(323, 14, '1317709031', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-11-20', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(324, 14, '1753206611', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-11-09', 'Agregar Memorial', '2022-00404EscritoAportaDiligenciaNotifcacion-', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(325, 14, '1280716051', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-08-02', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(326, 14, '1280716041', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-08-02', 'Auto Decide', 'auto no sigue adelante la ejecución y requiere', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(327, 14, '1279184421', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-07-29', 'Agregar Memorial', '2022-00404EscritoAportaConstanciaNotificacionDig', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(328, 14, '1277856241', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-07-26', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(329, 14, '1224196941', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-02-21', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(330, 14, '1220789071', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2023-02-13', 'Agregar Memorial', 'aporta notificación demandada', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(331, 14, '1199993631', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-11-22', 'Agregar Memorial', '2022-00404RtasBancosItau', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(332, 14, '1194186911', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-11-03', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(333, 14, '1194091361', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-11-02', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(334, 14, '1193298931', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-11-01', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(335, 14, '1192874531', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-31', 'Agregar Memorial', 'respuesta banco occidente', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(336, 14, '1192854921', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-31', 'Agregar Memorial', 'respuesta banco davivienda', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(337, 14, '1192412951', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-28', 'Agregar Memorial', 'Respuesta Banco Bancolombia', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(338, 14, '1192511791', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-28', 'Agregar Memorial', '2022-00404RtasBancosBCSA', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(339, 14, '1192098281', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-27', 'Agregar Memorial', '2022-404-RtasBancosBbva', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(340, 14, '1191078001', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-25', 'Elaboración De Oficios Telegramas', '2022-00404ConstanciaElectronicaEnvioOficioEmbargoBancosSNRegistro040-25055Oficio0486', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(341, 14, '1188035391', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-17', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(342, 14, '1188035381', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-17', 'Auto Decreta Medidas Cautelares', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(343, 14, '1187397891', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-13', 'Agregar Memorial', 'impulso decretar medidas cautelares', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(344, 14, '1183907241', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-04', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(345, 14, '1183907231', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-10-04', 'Auto Libra Mandamiento Ejecutivo-Pago', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(346, 14, '1177859911', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-09-15', 'Agregar Memorial', '2022-00404MemorialSolictaSubsanaCorreccionMtoPago', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(347, 14, '1176569661', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-09-13', 'Agregar Memorial', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(348, 14, '1175247431', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-09-08', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(349, 14, '1175247421', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-09-08', 'Auto Inadmite - Auto No Avoca', 'Mantiene en secretaria para subsanar por el termino de cinco (5) días', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(350, 14, '1154632831', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-07-06', 'Incorpora Expediente Digitalizado', '2022-00404DemandaRepartoEjecutivo', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(351, 14, '1154383941', 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *', '2022-07-06', 'Radicación Y Reparto', 'ACTUACIÓN RADICACIÓN Y REPARTO', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(352, 14, '3377889041', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(353, 14, '3377887981', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(354, 14, '3377887101', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Fijacion Estado', NULL, '2026-04-08 11:49:16', NULL, NULL, NULL),
+(355, 14, '3377889031', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Auto Decide', 'Avocar el conocimiento', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(356, 14, '3377887971', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Auto Decide', 'NO RECONOCER PERSONERIA', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(357, 14, '3377887091', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2026-03-17', 'Auto Decide', 'Avocar el conocimiento', '2026-04-08 11:49:16', NULL, NULL, NULL),
+(358, 14, '2478439401', 'JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA', '2025-11-07', 'Novedad Radicación Y Reparto', 'ACTUACIÓN NOVEDAD RADICACIÓN Y REPARTO', '2026-04-08 11:49:16', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -126,7 +216,7 @@ INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `tipo_identificacion`, `nume
 (1, 'Juan', 'Pérez', NULL, NULL, 'juan.perez@email.com', '3001112233', 'Calle 1 #2-3, Bogotá', '2026-03-30 02:07:11', NULL, NULL, NULL),
 (2, 'María', 'González', NULL, NULL, 'maria.gonzalez@email.com', '3102223344', 'Carrera 4 #5-6, Medellín', '2026-03-30 02:07:11', NULL, NULL, NULL),
 (3, 'Carlos', 'Rodríguez', NULL, NULL, 'carlos.rodriguez@email.com', '3203334455', 'Calle 45 #20-30, Bogotá', '2026-03-30 02:07:11', NULL, NULL, NULL),
-(4, 'Ana', 'Martínez', NULL, NULL, 'ana.martinez@email.com', '3014445566', 'Carrera 32 #15-25, Medellín', '2026-03-30 02:07:11', NULL, NULL, NULL),
+(4, 'Ana', 'Martínez', 'CC', '125548544', 'ana.martinez@email.com', '3014445566', 'Carrera 32 #15-25, Medellín', '2026-03-30 02:07:11', NULL, NULL, NULL),
 (5, 'Pedro', 'Sánchez', NULL, NULL, 'pedro.sanchez@email.com', '3025556677', 'Avenida 6 #5-10, Cali', '2026-03-30 02:07:11', NULL, NULL, NULL),
 (6, 'Luisa', 'Fernández', NULL, NULL, 'luisa.fernandez@email.com', '3036667788', 'Diagonal 23 #8-40, Barranquilla', '2026-03-30 02:07:11', NULL, NULL, NULL),
 (7, 'Diego', 'Ramírez', NULL, NULL, 'diego.ramirez@email.com', '3047778899', 'Calle 8 #10-20, Cartagena', '2026-03-30 02:07:11', NULL, NULL, NULL),
@@ -193,7 +283,7 @@ INSERT INTO `estados_proceso` (`id`, `nombre`, `color`, `activo`, `created_at`, 
 (2, 'En espera', '#3498db', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (3, 'Vencido', '#e74c3c', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (4, 'Terminado', '#2ecc71', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(5, 'Limbo juridico', '#021522', 1, '2026-03-30 23:30:40', NULL, NULL, NULL);
+(5, 'Limbo juridico', '#021522', 0, '2026-03-30 23:30:40', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -298,6 +388,24 @@ CREATE TABLE `notificaciones_log` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notificaciones_log`
+--
+
+INSERT INTO `notificaciones_log` (`id`, `proceso_id`, `actuacion_id`, `tipo_envio`, `destinatario`, `estado`, `mensaje`, `fecha_envio`, `created_at`) VALUES
+(566, 3, 364, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:42', '2026-04-09 21:19:42'),
+(567, 3, 364, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:44', '2026-04-09 21:19:44'),
+(568, 3, 363, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:47', '2026-04-09 21:19:47'),
+(569, 3, 363, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:49', '2026-04-09 21:19:49'),
+(570, 3, 362, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:52', '2026-04-09 21:19:52'),
+(571, 3, 362, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:54', '2026-04-09 21:19:54'),
+(572, 3, 361, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:56', '2026-04-09 21:19:56'),
+(573, 3, 361, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:19:59', '2026-04-09 21:19:59'),
+(574, 3, 360, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:20:01', '2026-04-09 21:20:01'),
+(575, 3, 360, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:20:03', '2026-04-09 21:20:03'),
+(576, 3, 359, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:20:06', '2026-04-09 21:20:06'),
+(577, 3, 359, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-09 21:20:08', '2026-04-09 21:20:08');
+
 -- --------------------------------------------------------
 
 --
@@ -316,31 +424,34 @@ CREATE TABLE `procesos` (
   `fecha_inicio` date DEFAULT NULL,
   `fecha_vencimiento` date DEFAULT NULL,
   `sincronizar_api` tinyint(4) DEFAULT 0,
+  `fuente_consulta` varchar(20) NOT NULL DEFAULT 'rama' COMMENT 'rama | samai | penal | tyba | ninguna',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `usuario_creacion` int(11) DEFAULT NULL,
   `usuario_modificacion` int(11) DEFAULT NULL,
-  `fecha_modificacion` timestamp NULL DEFAULT NULL
+  `fecha_modificacion` timestamp NULL DEFAULT NULL,
+  `es_privado` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `procesos`
 --
 
-INSERT INTO `procesos` (`id`, `cliente_id`, `tipo_proceso_id`, `estado_proceso_id`, `numero_radicado`, `tipo_proceso`, `descripcion`, `estado`, `fecha_inicio`, `fecha_vencimiento`, `sincronizar_api`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
-(1, 1, 1, 1, '2024-00126', NULL, 'Demanda ejecutiva hipotecaria', 'Activo', '2026-03-01', '2026-04-05', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(2, 2, 3, 1, '2024-00127', NULL, 'Proceso de fuero sindical', 'Activo', '2026-02-15', '2026-03-25', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(3, 3, 2, 1, '08638310500120250000600', NULL, 'Proceso penal - prueba con API', 'Activo', '2025-02-05', '2026-04-15', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(4, 4, 5, 2, '2024-00129', NULL, 'Divorcio contencioso', 'En espera', '2026-01-10', '2026-03-20', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(5, 5, 4, 1, '2024-00130', NULL, 'Nulidad de acto administrativo', 'Activo', '2026-02-20', '2026-04-20', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(6, 6, 1, 3, '2024-00131', NULL, 'Excepciones previas', 'Vencido', '2026-01-05', '2026-02-05', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(7, 7, 2, 3, '2024-00132', NULL, 'Término para presentar pruebas', 'Vencido', '2025-12-01', '2025-12-30', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(8, 8, 3, 4, '2024-00133', NULL, 'Calificación de origen de enfermedad', 'Finalizado', '2025-11-01', '2025-12-01', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(9, 9, 1, 1, '2024-00134', NULL, 'Recurso de apelación', 'Activo', '2026-03-01', '2026-03-28', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(10, 10, 4, 2, '2024-00135', NULL, 'Liquidación de sociedad conyugal_edit', 'En espera', '2026-02-01', '2026-03-18', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(11, 7, 3, 3, '089954478220025454', NULL, 'Demanda alcaldía Candelaria', 'Activo', '2026-03-30', '2026-06-25', 0, '2026-03-30 19:35:11', NULL, NULL, NULL),
-(12, 12, 1, 1, '08001418900220260035500', NULL, 'Proceso ejecutivo, acta de conciliación en contra del malparido ese', 'Activo', '2026-03-09', '2026-05-09', 0, '2026-04-03 17:34:09', NULL, NULL, NULL),
-(13, 12, 1, 1, '08001418900520250169500', NULL, '', 'Activo', '2025-11-01', '2026-02-06', 0, '2026-04-03 17:36:12', NULL, NULL, NULL),
-(14, 13, 1, 1, '08001405301420220040400', NULL, '', 'Activo', '2026-02-01', '2026-09-24', 0, '2026-04-03 17:53:54', NULL, NULL, NULL);
+INSERT INTO `procesos` (`id`, `cliente_id`, `tipo_proceso_id`, `estado_proceso_id`, `numero_radicado`, `tipo_proceso`, `descripcion`, `estado`, `fecha_inicio`, `fecha_vencimiento`, `sincronizar_api`, `fuente_consulta`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`, `es_privado`) VALUES
+(1, 1, 1, 1, '2024-00126', NULL, 'Demanda ejecutiva hipotecaria', 'Activo', '2026-03-01', '2026-04-05', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(2, 2, 3, 1, '2024-00127', NULL, 'Proceso de fuero sindical', 'Activo', '2026-02-15', '2026-03-25', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(3, 3, 2, 1, '08638310500120250000600', NULL, 'Proceso penal - prueba con API', 'Activo', '2025-02-05', '2026-04-15', 1, 'rama', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(4, 4, 5, 2, '2024-00129', NULL, 'Divorcio contencioso', 'En espera', '2026-01-10', '2026-03-20', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(5, 5, 4, 1, '2024-00130', NULL, 'Nulidad de acto administrativo', 'Activo', '2026-02-20', '2026-04-20', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(6, 6, 1, 3, '2024-00131', NULL, 'Excepciones previas', 'Vencido', '2026-01-05', '2026-02-05', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(7, 7, 2, 3, '2024-00132', NULL, 'Término para presentar pruebas', 'Vencido', '2025-12-01', '2025-12-30', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(8, 8, 3, 4, '2024-00133', NULL, 'Calificación de origen de enfermedad', 'Finalizado', '2025-11-01', '2025-12-01', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(9, 9, 1, 1, '2024-00134', NULL, 'Recurso de apelación', 'Activo', '2026-03-01', '2026-03-28', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(10, 10, 4, 2, '2024-00135', NULL, 'Liquidación de sociedad conyugal_edit', 'En espera', '2026-02-01', '2026-03-18', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(11, 7, 3, 3, '089954478220025454', NULL, 'Demanda alcaldía Candelaria', 'Activo', '2026-03-30', '2026-06-25', 0, 'ninguna', '2026-03-30 19:35:11', NULL, NULL, NULL, 0),
+(12, 12, 1, 1, '08001418900220260035500', NULL, 'Proceso ejecutivo, acta de conciliación en contra del malparido ese', 'Activo', '2026-03-09', '2026-05-09', 0, 'ninguna', '2026-04-03 17:34:09', NULL, NULL, NULL, 1),
+(13, 12, 1, 1, '08001418900520250169500', NULL, '', 'Activo', '2025-11-01', '2026-02-06', 0, 'ninguna', '2026-04-03 17:36:12', NULL, NULL, NULL, 1),
+(14, 13, 1, 1, '08001405301420220040400', NULL, '', 'Activo', '2026-02-01', '2026-09-24', 0, 'ninguna', '2026-04-03 17:53:54', NULL, NULL, NULL, 0),
+(15, 12, 4, 1, '08001333300320230008000', NULL, 'Prueba samai', 'Activo', '2026-04-09', '2027-12-31', 0, 'samai', '2026-04-09 21:23:24', NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -367,11 +478,11 @@ INSERT INTO `tipos_proceso` (`id`, `nombre`, `descripcion`, `activo`, `created_a
 (1, 'Civil', 'Procesos civiles y comerciales.', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (2, 'Penal', 'Procesos penales', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (3, 'Laboral', 'Procesos laborales y de seguridad social', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(4, 'Contencioso administrativo', 'Procesos contencioso administrativos', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(4, 'Contencioso', 'Proceso contencioso administrativo', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (5, 'Familia', 'Procesos de familia', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (6, 'Contencioso administrativo', 'Procesos contencioso administrativos', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (7, 'Tipo de prueba', 'Este es un registro de prueba_ update', 1, '2026-03-30 23:29:39', NULL, NULL, NULL),
-(8, 'Tutelas', '', 1, '2026-04-03 17:26:53', NULL, NULL, NULL);
+(8, 'Tutelas', 'Protección de derechos fundamentales', 1, '2026-04-03 17:26:53', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -408,7 +519,10 @@ INSERT INTO `usuarios` (`id`, `nombre`, `email`, `telefono`, `usuario`, `passwor
 --
 ALTER TABLE `actuaciones`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `proceso_id` (`proceso_id`);
+  ADD UNIQUE KEY `uniq_actuacion` (`proceso_id`,`id_api`,`despacho`),
+  ADD KEY `idx_timeline` (`proceso_id`,`despacho`,`fecha`,`id`),
+  ADD KEY `idx_actuaciones_lookup` (`proceso_id`,`id_api`),
+  ADD KEY `idx_actuaciones_timeline` (`proceso_id`,`despacho`,`fecha`);
 
 --
 -- Indexes for table `anexos`
@@ -497,7 +611,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `actuaciones`
 --
 ALTER TABLE `actuaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=365;
 
 --
 -- AUTO_INCREMENT for table `anexos`
@@ -545,13 +659,13 @@ ALTER TABLE `notificaciones_config`
 -- AUTO_INCREMENT for table `notificaciones_log`
 --
 ALTER TABLE `notificaciones_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=578;
 
 --
 -- AUTO_INCREMENT for table `procesos`
 --
 ALTER TABLE `procesos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `tipos_proceso`
