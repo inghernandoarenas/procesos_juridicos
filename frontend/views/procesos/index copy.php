@@ -1137,8 +1137,7 @@ function editarProceso(id) {
             document.getElementById('fecha_inicio').value       = p.fecha_inicio;
             document.getElementById('fecha_vencimiento').value  = p.fecha_vencimiento || '';
             document.getElementById('es_privado').checked           = p.es_privado == 1;
-            const selFuente = document.getElementById('fuente_consulta');
-            if (selFuente) selFuente.value = p.fuente_consulta || 'ninguna';
+            document.getElementById('fuente_consulta').value         = p.fuente_consulta || 'ninguna';
             document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
             document.getElementById('modalProceso').style.display = 'block';
         });

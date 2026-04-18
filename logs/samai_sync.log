@@ -1,32 +1,25 @@
-[23:39:05] === SAMAI INICIO radicado=08001333300320230008000 ===
-[23:39:05] === SAMAI buscarProceso: 08001333300320230008000 ===
-[23:39:05]   Corporación inferida: 0800133
-[23:39:05] POST https://samai.consejodeestado.gov.co/Vistas/Casos/Jprocesos.ashx/listaprocesosdata
-[23:39:05]   Payload: {"FW_tipobusqueda":"FW_Rbtradicado","FW_ppexacta":"","FW_tipoarea":"FW_RbtCorporacion","FW_Txtcriterios":"08001333300320230008000","FW_LstCorporacion":"0800133","FW_LstSeccion":"","FW_LstPonente":"","FW_FechaI":"","FW_FechaF":"","FW_LstcriterioV":"","FW_LstcriterioP":""}
-[23:39:06]   ✓ 584ms — 913 bytes
-[23:39:06]   Registros encontrados: 1
-[23:39:06] -- consultarActuaciones guid=080013333003202300080000800133
-[23:39:06] POST https://samai.consejodeestado.gov.co/Vistas/Casos/Jprocesos.ashx/listaactuacionesdata
-[23:39:06]   Payload: {"guid":"080013333003202300080000800133"}
-[23:39:06]   ✓ 417ms — 103 bytes
-[23:39:06]   AJAX vacío o no JSON (103b): The resource you are looking for has been removed, had its name changed, or is temporarily unavailab
-[23:39:07]   HTML recibido: 47085 bytes
-[23:39:07]   ⚠ Captcha detectado en HTML
-[23:39:07]   ⚠ No se pudieron traer actuaciones (posible captcha)
-[23:39:07] === SAMAI FIN — total: 1 actuaciones ===
-[23:58:49] === SAMAI INICIO radicado=08001333300320230008000 ===
-[23:58:49] === SAMAI buscarProceso: 08001333300320230008000 ===
-[23:58:49]   Corporación inferida: 0800133
-[23:58:49] POST https://samai.consejodeestado.gov.co/Vistas/Casos/Jprocesos.ashx/listaprocesosdata
-[23:58:49]   Payload: {"FW_tipobusqueda":"FW_Rbtradicado","FW_ppexacta":"","FW_tipoarea":"FW_RbtCorporacion","FW_Txtcriterios":"08001333300320230008000","FW_LstCorporacion":"0800133","FW_LstSeccion":"","FW_LstPonente":"","FW_FechaI":"","FW_FechaF":"","FW_LstcriterioV":"","FW_LstcriterioP":""}
-[23:58:50]   ✓ 619ms — 913 bytes
-[23:58:50]   Registros encontrados: 1
-[23:58:50] -- consultarActuaciones guid=080013333003202300080000800133
-[23:58:50] POST https://samai.consejodeestado.gov.co/Vistas/Casos/Jprocesos.ashx/listaactuacionesdata
-[23:58:50]   Payload: {"guid":"080013333003202300080000800133"}
-[23:58:50]   ✓ 421ms — 103 bytes
-[23:58:50]   AJAX vacío o no JSON (103b): The resource you are looking for has been removed, had its name changed, or is temporarily unavailab
-[23:58:51]   HTML recibido: 47085 bytes
-[23:58:51]   ⚠ Captcha detectado en HTML
-[23:58:51]   ⚠ No se pudieron traer actuaciones (posible captcha)
-[23:58:51] === SAMAI FIN — total: 1 actuaciones ===
+[04:28:53] === SAMAI INICIO radicado=08001333300320230008000 ===
+[04:28:53] === SAMAI buscarProceso: 08001333300320230008000 ===
+[04:28:54]   Registros: 1
+[04:28:54]   → Llamando servicio Playwright...
+[04:29:10]   ✓ Servicio devolvió 4 actuaciones (16712ms)
+[04:29:10] === SAMAI FIN — 4 actuaciones ===
+[11:38:23] === SAMAI INICIO radicado=08001333300320230008000 ===
+[11:38:23] === SAMAI buscarProceso: 08001333300320230008000 ===
+[11:38:24]   Registros: 1
+[11:38:24]   → Llamando servicio Playwright...
+[11:38:37]   ✓ Servicio devolvió 4 actuaciones (13165ms)
+[11:38:37] === SAMAI FIN — 4 actuaciones ===
+[16:46:33] === SAMAI INICIO radicado=08001333300320230008000 ===
+[16:46:33] === SAMAI buscarProceso: 08001333300320230008000 ===
+[16:46:34]   Registros: 1
+[16:46:34]   → Llamando servicio Playwright...
+[16:46:52]   ✓ Servicio devolvió 4 actuaciones (17739ms)
+[16:46:52] === SAMAI FIN — 4 actuaciones ===
+[22:35:53] === SAMAI INICIO radicado=08001333300320230008000 ===
+[22:35:53] === SAMAI buscarProceso: 08001333300320230008000 ===
+[22:35:54]   Registros: 1
+[22:35:54]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[22:35:54]   Health OK (91ms) — iniciando consulta Playwright...
+[22:36:09]   ✓ Servicio devolvió 4 actuaciones (15382ms)
+[22:36:09] === SAMAI FIN — 4 actuaciones ===

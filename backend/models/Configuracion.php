@@ -36,10 +36,11 @@ class Configuracion {
         return $map;
     }
 
-    // Guardar (update) un conjunto de claves
+    // Guardar — INSERT si no existe, UPDATE si ya existe
     public function saveAll($data) {
         $stmt = $this->conn->prepare(
-            "UPDATE {$this->table} SET valor = :valor WHERE clave = :clave"
+            "INSERT INTO {$this->table} (clave, valor) VALUES (:clave, :valor)
+             ON DUPLICATE KEY UPDATE valor = VALUES(valor)"
         );
         foreach ($data as $clave => $valor) {
             $stmt->bindValue(':clave', $clave);

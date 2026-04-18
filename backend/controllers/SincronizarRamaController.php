@@ -21,7 +21,7 @@ if (empty($proceso['numero_radicado'])) {
     exit;
 }
 
-// ── 1. Consultar API ──────────────────────────────────────────────
+// ── 1. Consultar API ──────────────────────────────────────────
 $api         = new ApiRamaJudicial();
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 
@@ -30,41 +30,46 @@ if ($actuaciones === null) {
     exit;
 }
 if (empty($actuaciones)) {
-    echo json_encode(['success' => false, 'message' => 'La consulta no devolvió actuaciones para este radicado']);
+    echo json_encode(['success' => true, 'message' => 'El proceso no tiene actuaciones en Rama Judicial']);
     exit;
 }
 
-// ── 2. Insertar en lote (1 SELECT + 1 INSERT vs 52 SELECT + 52 INSERT) ────
+// ── 2. Insertar en lote ───────────────────────────────────────
 $actuacionModel = new Actuacion();
 $insertadas     = $actuacionModel->insertarLote($actuaciones, $proceso_id);
 $contador       = count($insertadas);
+$c_api          = count($actuaciones); // ← definir ANTES del log
 
 // Log
 $logFile = __DIR__ . '/../../logs/rama_sync.log';
 $ts      = date('H:i:s');
 file_put_contents($logFile,
-    "[$ts] SYNC FIN proceso_id=$proceso_id — API:{$c_api} insertadas:{$contador} ya_existian:" . (count($actuaciones) - $contador) . "\n",
+    "[$ts] SYNC FIN proceso_id=$proceso_id — API:{$c_api} insertadas:{$contador} ya_existian:" . ($c_api - $contador) . "\n",
     FILE_APPEND
 );
 
-// ── 3. Notificaciones solo de las realmente nuevas ────────────────
-if ($contador > 0) {
-    require_once __DIR__ . '/../services/NotificacionService.php';
-    $notificacionService = new NotificacionService();
-    foreach ($insertadas as $act) {
-        try {
-            $notificacionService->notificarNuevaActuacion($proceso, $act);
-        } catch (Exception $e) { /* no interrumpir */ }
-    }
-}
-
-// ── 4. Respuesta ──────────────────────────────────────────────────
-$c_api = count($actuaciones);
+// ── 3. Respuesta inmediata al frontend ────────────────────────
 if ($contador > 0) {
     echo json_encode(['success' => true,
-        'message' => "Se importaron {$contador} actuaciones nuevas de {$c_api} encontradas"]);
+        'message' => "Rama: {$contador} actuaciones nuevas de {$c_api} encontradas"]);
 } else {
     echo json_encode(['success' => true,
-        'message' => "Todo actualizado — {$c_api} actuaciones ya estaban registradas"]);
+        'message' => "Rama: todo al día — {$c_api} actuaciones ya registradas"]);
+}
+
+// ── 4. Notificaciones en background (no bloquea) ─────────────
+if ($contador > 0) {
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    } else {
+        ob_end_flush();
+        flush();
+    }
+    require_once __DIR__ . '/../services/NotificacionService.php';
+    $svc = new NotificacionService();
+    foreach ($insertadas as $act) {
+        try { $svc->notificarNuevaActuacion($proceso, $act); }
+        catch (Exception $e) { /* no interrumpir */ }
+    }
 }
 ?>

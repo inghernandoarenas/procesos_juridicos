@@ -202,6 +202,53 @@
         </div>
     </div>
 
+    <!-- SAMAI -->
+    <div class="config-section">
+        <div class="config-section-header" style="background:linear-gradient(135deg,#4a235a,#7c3aed)">
+            <i class="fas fa-landmark"></i> SAMAI â Consejo de Estado
+        </div>
+        <div class="config-section-body">
+            <p style="font-size:13px;color:#7f8c8d;margin:0 0 16px;line-height:1.6">
+                SAMAI requiere una sesión activa para traer las actuaciones. Copia las cookies
+                de tu sesión desde DevTools (F12 → Application → Cookies) y pégalas aquí.
+            </p>
+            <div class="config-grid">
+                <div class="config-field">
+                    <label><i class="fas fa-cookie-bite" style="color:#7c3aed"></i> ASP.NET_SessionId</label>
+                    <input type="text" name="samai_session_id" id="samai_session_id"
+                           placeholder="Valor de ASP.NET_SessionId"
+                           style="font-family:monospace;font-size:12px">
+                </div>
+                <div class="config-field">
+                    <label><i class="fas fa-shield-alt" style="color:#7c3aed"></i> __AntiXsrfToken</label>
+                    <input type="text" name="samai_xsrf_token" id="samai_xsrf_token"
+                           placeholder="Valor de __AntiXsrfToken"
+                           style="font-family:monospace;font-size:12px">
+                </div>
+                <div class="config-field" style="grid-column:span 2">
+                    <label><i class="fas fa-key" style="color:#7c3aed"></i> TiPMix <span style="font-size:10px;font-weight:400;color:#bdc3c7">— cookie Azure, requerida para ver actuaciones</span></label>
+                    <input type="text" name="samai_tipmix" id="samai_tipmix"
+                           placeholder="Valor de TiPMix (ej: 40.466264138971496)"
+                           style="font-family:monospace;font-size:12px;width:100%">
+                </div>
+            </div>
+            <div style="margin-top:12px;background:#f3e8ff;border-radius:8px;padding:10px 14px;font-size:12px;color:#6b21a8">
+                <i class="fas fa-info-circle"></i>
+                Entra a samai.consejodeestado.gov.co, busca un proceso, luego
+                F12 → Application → Cookies → samai.consejodeestado.gov.co.
+                Copia <code>ASP.NET_SessionId</code>, <code>__AntiXsrfToken</code> y <code>TiPMix</code>.
+                Duran ~1 hora — renuévalas si dejan de funcionar.
+            </div>
+            <div style="margin-top:10px">
+                <button type="button" onclick="probarSamai()"
+                        style="background:#7c3aed;color:white;border:none;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer">
+                    <i class="fas fa-vial"></i> Probar conexión SAMAI
+                </button>
+                <span id="samaiTestResult" style="margin-left:12px;font-size:12px"></span>
+            </div>
+        </div>
+    </div>
+
     <div style="display:flex;gap:12px;align-items:center">
         <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">
             <i class="fas fa-save"></i> Guardar Configuración
@@ -281,4 +328,23 @@ function guardarConfig(event) {
 }
 
 cargarConfig();
+
+function probarSamai() {
+    const sid   = document.getElementById('samai_session_id').value.trim();
+    const token = document.getElementById('samai_xsrf_token').value.trim();
+    const res   = document.getElementById('samaiTestResult');
+    if (!sid || !token) {
+        res.innerHTML = '<span style="color:#e74c3c">Rellena ambos campos primero</span>';
+        return;
+    }
+    res.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando...';
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ConfiguracionController.php?action=test_samai')
+        .then(r => r.json())
+        .then(d => {
+            res.innerHTML = d.success
+                ? '<span style="color:#27ae60"><i class="fas fa-check-circle"></i> Conexión OK</span>'
+                : '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> ' + d.message + '</span>';
+        })
+        .catch(() => res.innerHTML = '<span style="color:#e74c3c">Error de red</span>');
+}
 </script>

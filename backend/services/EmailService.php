@@ -31,6 +31,7 @@ class EmailService {
         $this->mail->Password   = $this->smtpPassword;
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mail->Port       = $this->smtpPuerto;
+        $this->mail->Timeout    = 10; // 10s máximo por conexión SMTP
         $this->mail->CharSet    = 'UTF-8';
 
         $this->mail->setFrom($this->remitente, $this->nombreRemit);

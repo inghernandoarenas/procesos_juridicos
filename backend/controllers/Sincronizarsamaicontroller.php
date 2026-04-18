@@ -25,33 +25,36 @@ $api         = new ApiSamai();
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 
 if ($actuaciones === null) {
-    echo json_encode(['success' => false, 'message' => 'No se pudo conectar con SAMAI — revisa logs/samai_sync.log']);
-    exit;
-}
-if (empty($actuaciones)) {
-    echo json_encode(['success' => false, 'message' => 'SAMAI no encontró actuaciones para este radicado']);
+    echo json_encode(['success' => false, 'message' => 'No se pudo conectar con SAMAI — verifica que el servicio Node esté corriendo']);
     exit;
 }
 
 $actuacionModel = new Actuacion();
 $insertadas     = $actuacionModel->insertarLote($actuaciones, $proceso_id, 'samai');
 $contador       = count($insertadas);
+$total          = count($actuaciones);
 
+// ── Respuesta inmediata al frontend ──────────────────────────
+echo json_encode([
+    'success' => true,
+    'message' => $contador > 0
+        ? "SAMAI: {$contador} actuaciones nuevas de {$total} encontradas"
+        : "SAMAI: todo al día — {$total} actuaciones ya registradas"
+]);
+
+// ── Notificaciones en background (no bloquea) ─────────────────
 if ($contador > 0) {
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    } else {
+        ob_end_flush();
+        flush();
+    }
     require_once __DIR__ . '/../services/NotificacionService.php';
     $svc = new NotificacionService();
     foreach ($insertadas as $act) {
         try { $svc->notificarNuevaActuacion($proceso, $act); }
-        catch (Exception $e) {}
+        catch (Exception $e) { /* no interrumpir */ }
     }
-}
-
-$total = count($actuaciones);
-if ($contador > 0) {
-    echo json_encode(['success' => true,
-        'message' => "SAMAI: {$contador} actuaciones nuevas de {$total} encontradas"]);
-} else {
-    echo json_encode(['success' => true,
-        'message' => "SAMAI: todo al día — {$total} actuaciones ya registradas"]);
 }
 ?>
