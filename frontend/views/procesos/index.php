@@ -181,6 +181,7 @@
 .procesos-hero-btn:hover { background: #2980b9; }
 
 /* Tabla de procesos mejorada */
+#tablaProcesos td { padding: 5px 10px !important; font-size: 16px; }
 #tablaProcesos thead tr { background: linear-gradient(90deg, #2c3e50, #34495e); }
 #tablaProcesos th { font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
 #tablaProcesos tbody tr { transition: background .15s; }
@@ -457,7 +458,7 @@ function fetchWithAuth(url, options = {}) {
         </div>
     </div>
     <button class="procesos-hero-btn" onclick="abrirModalProceso()">
-        <i class="fas fa-plus"></i> Nuevo Proceso
+        Nuevo Proceso
     </button>
 </div>
 
@@ -486,8 +487,7 @@ function fetchWithAuth(url, options = {}) {
 <table id="tablaProcesos">
     <thead>
         <tr>
-            <th>ID</th><th>Radicado</th><th>Cliente</th>
-            <th>Tipo</th><th>Estado</th><th>Vencimiento</th><th style="text-align:center">Priv.</th><th style="width:44px"></th>
+            <th>Radicado</th><th>Cliente</th><th>Especialidad</th><th>Despacho</th><th>Departamento</th><th>Estado</th><th>Vencimiento</th><th style="width:30px;text-align:center">Priv.</th><th style="width:44px;text-align:center">Acciones</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -518,7 +518,7 @@ function fetchWithAuth(url, options = {}) {
                 <input type="text" id="numero_radicado" name="numero_radicado" required>
             </div>
             <div class="form-group">
-                <label>Tipo de Proceso:</label>
+                <label>Especialidad:</label>
                 <select id="tipo_proceso_id" name="tipo_proceso_id" required>
                     <option value="">Seleccione tipo</option>
                 </select>
@@ -540,6 +540,42 @@ function fetchWithAuth(url, options = {}) {
             <div class="form-group">
                 <label>Fecha de Vencimiento:</label>
                 <input type="date" id="fecha_vencimiento" name="fecha_vencimiento">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label>Departamento:</label>
+                    <select id="departamento_id" name="departamento_id" onchange="cargarMunicipiosProceso(this.value)">
+                        <option value="">— Seleccionar —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Municipio:</label>
+                    <select id="municipio_id" name="municipio_id">
+                        <option value="">— Seleccionar depto —</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label>Entidad:</label>
+                    <select id="entidad_id" name="entidad_id">
+                        <option value="">— Seleccionar —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Despacho:</label>
+                    <div style="position:relative">
+                        <input type="text" id="despacho_buscar" placeholder="Buscar despacho (mín. 3 caracteres)..."
+                               style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px"
+                               oninput="buscarDespachoProceso(this.value)" autocomplete="off">
+                        <div id="despacho_resultados" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #ddd;border-radius:0 0 4px 4px;max-height:180px;overflow-y:auto;z-index:200;box-shadow:0 4px 10px rgba(0,0,0,.1)"></div>
+                    </div>
+                    <input type="hidden" id="despacho_id" name="despacho_id">
+                    <div id="despacho_seleccionado" style="display:none;margin-top:4px;font-size:12px;background:#eaf4fd;padding:4px 8px;border-radius:4px;align-items:center;justify-content:space-between">
+                        <span id="despacho_sel_nombre" style="color:#2980b9;font-size:12px"></span>
+                        <button type="button" onclick="limpiarDespachoProceso()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px;line-height:1">×</button>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-plug" style="color:#3498db;margin-right:5px"></i>Portal de consulta: <span style="color:#e74c3c">*</span></label>
@@ -1015,7 +1051,7 @@ function limpiarBusqueda() {
 }
 
 function cargarProcesos(pagina = 1, buscar = '') {
-    let url = `/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&pagina=${pagina}`;
+    let url = `/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&por_pagina=10&pagina=${pagina}`;
     if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
 
     fetchWithAuth(url).then(r => r.json()).then(result => {
@@ -1050,18 +1086,16 @@ function cargarProcesos(pagina = 1, buscar = '') {
             const privado = p.es_privado == 1;
             tbody.innerHTML += `
                 <tr${privado ? ' style="background:#fffbf0"' : ''}>
-                    <td>${p.id}</td>
-                    <td><strong style="color:#2980b9">${p.numero_radicado}</strong></td>
-                    <td>${p.nombre} ${p.apellido}</td>
-                    <td>
-                        ${p.tipo_proceso_nombre || p.tipo_proceso || '—'}
-                        ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<br><span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : ''}
+                    <td style="font-size:12px"><strong style="color:#2980b9">${p.numero_radicado}</strong>
+                        ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : ''}
                     </td>
-                    <td>${p.estado_proceso_nombre || p.estado || '—'}</td>
-                    <td>${p.fecha_vencimiento || 'N/A'}</td>
-                    <td style="text-align:center">
-                        ${privado ? '<span title="Proceso privado" style="color:#f39c12"><i class="fas fa-lock"></i></span>' : '<span style="color:#ddd"><i class="fas fa-lock-open"></i></span>'}
-                    </td>
+                    <td style="font-size:12px">${p.nombre} ${p.apellido}</td>
+                    <td style="font-size:12px">${p.tipo_proceso_nombre || '—'}</td>
+                    <td style="font-size:12px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.despacho_nombre||''}">${p.despacho_nombre || '—'}</td>
+                    <td style="font-size:12px">${p.departamento_nombre || '—'}</td>
+                    <td style="font-size:12px">${p.estado_proceso_nombre || '—'}</td>
+                    <td style="font-size:12px">${p.fecha_vencimiento || 'N/A'}</td>
+                    <td style="text-align:center;padding:5px 2px">${privado ? '<i class="fas fa-lock" style="color:#f39c12;font-size:13px" title="Proceso privado"></i>' : ''}</td>
                     <td style="white-space:nowrap">
                         <div class="acc-wrap" id="acc-${p.id}">
                             <button class="acc-trigger" onclick="toggleAcc(${p.id}, event)" title="Acciones">
@@ -1097,10 +1131,82 @@ function cargarClientesSelect() {
         });
 }
 
+function cargarMunicipiosProceso(deptoId, selVal='') {
+    const sel = document.getElementById('municipio_id');
+    if (!deptoId) { sel.innerHTML='<option value="">— Seleccionar depto —</option>'; return; }
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/MunicipioController.php?action=byDepartamento&departamento_id=${deptoId}`)
+        .then(r=>r.json()).then(data=>{
+            sel.innerHTML = '<option value="">— Seleccionar —</option>' +
+                data.map(m=>`<option value="${m.id}" ${m.id==selVal?'selected':''}>` + m.nombre + '</option>').join('');
+        });
+}
+
+function cargarSelectsGeo(deptoSelId='', munSelId='', entSelId='', despSelId='', despSelNombre='') {
+    return Promise.all([
+        fetchWithAuth('/procesos_juridicos/backend/controllers/DepartamentoController.php?action=list').then(r=>r.json()),
+        fetchWithAuth('/procesos_juridicos/backend/controllers/EntidadController.php?action=list').then(r=>r.json()),
+    ]).then(([deptos, entidades]) => {
+        document.getElementById('departamento_id').innerHTML =
+            '<option value="">— Seleccionar —</option>' +
+            deptos.map(d=>'<option value="'+d.id+'" '+(d.id==deptoSelId?'selected':'')+'>'+d.nombre+'</option>').join('');
+        document.getElementById('entidad_id').innerHTML =
+            '<option value="">— Seleccionar —</option>' +
+            entidades.map(e=>'<option value="'+e.id+'" '+(e.id==entSelId?'selected':'')+'>'+e.nombre+'</option>').join('');
+        if (deptoSelId) cargarMunicipiosProceso(deptoSelId, munSelId);
+        // Pre-cargar despacho seleccionado
+        if (despSelId && despSelNombre) {
+            document.getElementById('despacho_id').value = despSelId;
+            document.getElementById('despacho_buscar').value = despSelNombre;
+            document.getElementById('despacho_sel_nombre').textContent = despSelNombre;
+            document.getElementById('despacho_seleccionado').style.display = 'flex';
+        }
+    });
+}
+
+function buscarDespachoProceso(q) {
+    const res = document.getElementById('despacho_resultados');
+    if (!q || q.length < 3) { res.style.display='none'; return; }
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/DespachoController.php?action=search&q=${encodeURIComponent(q)}`)
+        .then(r=>r.json()).then(data=>{
+            if (!data.length) { res.style.display='none'; return; }
+            res.innerHTML = data.map(d=>
+                `<div onclick="seleccionarDespachoProceso(${d.id},'${d.nombre.replace(/'/g,"\\'")}','${(d.codigo_oficial||'').replace(/'/g,"\\'")}' )"
+                      style="padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid #f0f0f0"
+                      onmouseover="this.style.background='#eaf4fd'" onmouseout="this.style.background=''">
+                    <strong>${d.nombre}</strong>
+                    ${d.codigo_oficial?`<span style="color:#95a5a6;font-size:11px;margin-left:6px">${d.codigo_oficial}</span>`:''}
+                    ${d.departamento_nombre?`<br><span style="color:#aaa;font-size:11px">${d.departamento_nombre}</span>`:''}
+                </div>`
+            ).join('');
+            res.style.display='block';
+        });
+}
+function seleccionarDespachoProceso(id, nombre, codigo) {
+    document.getElementById('despacho_id').value = id;
+    document.getElementById('despacho_buscar').value = nombre;
+    document.getElementById('despacho_sel_nombre').textContent = nombre + (codigo?' ('+codigo+')':'');
+    document.getElementById('despacho_seleccionado').style.display = 'flex';
+    document.getElementById('despacho_resultados').style.display = 'none';
+}
+function limpiarDespachoProceso() {
+    document.getElementById('despacho_id').value = '';
+    document.getElementById('despacho_buscar').value = '';
+    document.getElementById('despacho_seleccionado').style.display = 'none';
+}
+// Cerrar resultados al click fuera
+document.addEventListener('click', function(e){
+    if (!e.target.closest('#despacho_buscar') && !e.target.closest('#despacho_resultados')) {
+        const r = document.getElementById('despacho_resultados');
+        if(r) r.style.display='none';
+    }
+});
+
 function abrirModalProceso() {
-    Promise.all([cargarClientesSelect(), cargarTiposProceso(), cargarEstadosProceso()]).then(() => {
+    Promise.all([cargarClientesSelect(), cargarTiposProceso(), cargarEstadosProceso(), cargarSelectsGeo()]).then(() => {
         document.getElementById('formProceso').reset();
         document.getElementById('procesoId').value = '';
+        document.getElementById('despacho_id').value = '';
+        limpiarDespachoProceso();
         document.getElementById('modalProcesoTitle').textContent = 'Nuevo Proceso';
         document.getElementById('modalProceso').style.display = 'block';
     });
@@ -1124,23 +1230,31 @@ function guardarProceso(event) {
 }
 
 function editarProceso(id) {
-    Promise.all([cargarClientesSelect(), cargarTiposProceso(), cargarEstadosProceso()])
-        .then(() => fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`))
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(p => {
-            document.getElementById('procesoId').value          = p.id;
-            document.getElementById('cliente_id').value         = p.cliente_id;
-            document.getElementById('numero_radicado').value    = p.numero_radicado;
-            document.getElementById('tipo_proceso_id').value    = p.tipo_proceso_id;
-            document.getElementById('estado_proceso_id').value  = p.estado_proceso_id;
-            document.getElementById('descripcion').value        = p.descripcion || '';
-            document.getElementById('fecha_inicio').value       = p.fecha_inicio;
-            document.getElementById('fecha_vencimiento').value  = p.fecha_vencimiento || '';
-            document.getElementById('es_privado').checked           = p.es_privado == 1;
-            const selFuente = document.getElementById('fuente_consulta');
-            if (selFuente) selFuente.value = p.fuente_consulta || 'ninguna';
-            document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
-            document.getElementById('modalProceso').style.display = 'block';
+            Promise.all([
+                cargarClientesSelect(),
+                cargarTiposProceso(),
+                cargarEstadosProceso(),
+                cargarSelectsGeo(p.departamento_id||'', p.municipio_id||'', p.entidad_id||'', p.despacho_id||'', p.despacho_nombre||'')
+            ]).then(() => {
+                document.getElementById('procesoId').value         = p.id;
+                document.getElementById('cliente_id').value        = p.cliente_id;
+                document.getElementById('numero_radicado').value   = p.numero_radicado;
+                document.getElementById('tipo_proceso_id').value   = p.tipo_proceso_id;
+                document.getElementById('estado_proceso_id').value = p.estado_proceso_id;
+                document.getElementById('descripcion').value       = p.descripcion || '';
+                document.getElementById('fecha_inicio').value      = p.fecha_inicio;
+                document.getElementById('fecha_vencimiento').value = p.fecha_vencimiento || '';
+                document.getElementById('es_privado').checked      = p.es_privado == 1;
+                const selFuente = document.getElementById('fuente_consulta');
+                if (selFuente) selFuente.value = p.fuente_consulta || 'ninguna';
+                document.getElementById('entidad_id').value  = p.entidad_id  || '';
+                document.getElementById('despacho_id').value = p.despacho_id || '';
+                document.getElementById('modalProcesoTitle').textContent = 'Editar Proceso';
+                document.getElementById('modalProceso').style.display = 'block';
+            });
         });
 }
 
@@ -1148,60 +1262,82 @@ function verProceso(id) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(p => {
-            document.getElementById('detalleProceso').innerHTML = `
-                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;padding:10px">
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">ID Proceso</strong>
-                        <span style="font-size:16px">${p.id}</span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Radicado</strong>
-                        <span style="font-size:16px;font-weight:bold;color:#3498db">${p.numero_radicado}</span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Cliente</strong>
-                        <span style="font-size:16px">${p.nombre} ${p.apellido}</span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Tipo de Proceso</strong>
-                        <span style="font-size:16px">${p.tipo_proceso_nombre || '—'}</span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Estado</strong>
-                        <span style="font-size:14px;padding:4px 10px;border-radius:4px;background:${p.estado_color||'#3498db'};color:white;display:inline-block">
-                            ${p.estado_proceso_nombre || '—'}
-                        </span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Fecha Inicio</strong>
-                        <span style="font-size:16px">${p.fecha_inicio}</span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Fecha Vencimiento</strong>
-                        <span style="font-size:16px;${p.fecha_vencimiento && new Date(p.fecha_vencimiento)<new Date()?'color:#e74c3c;font-weight:bold':''}">
-                            ${p.fecha_vencimiento || 'N/A'}
-                        </span>
-                    </div>
-                    <div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Descripción</strong>
-                        <span style="font-size:14px;line-height:1.5">${p.descripcion || 'Sin descripción'}</span>
-                    </div>
-                    <div style="background:#f0f4f8;padding:10px;border-radius:6px;grid-column:span 2">
-                        <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Portal de Consulta</strong>
-                        <span style="font-size:14px;font-weight:600;color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',ninguna:'#95a5a6'}[p.fuente_consulta]||'#95a5a6'}">
-                            ${{rama:'⚖️ Rama Judicial',samai:'🏛️ SAMAI',penal:'🔒 SIUGJ Penal',tyba:'📁 TYBA',ninguna:'❌ Sin portal'}[p.fuente_consulta]||'—'}
-                        </span>
-                    </div>
-                    <div style="background:${p.es_privado==1?'#fff8e6':'#f8f9fa'};padding:10px;border-radius:6px;grid-column:span 2;display:flex;align-items:center;gap:8px">
-                        <i class="fas fa-lock" style="color:${p.es_privado==1?'#f39c12':'#bdc3c7'}"></i>
-                        <div>
-                            <strong style="color:#2c3e50;display:block;font-size:12px;text-transform:uppercase">Confidencialidad</strong>
-                            <span style="font-size:13px;color:${p.es_privado==1?'#b7791f':'#7f8c8d'}">
-                                ${p.es_privado==1 ? 'Proceso privado — sujetos procesales reservados' : 'Proceso público'}
-                            </span>
-                        </div>
-                    </div>
+            const fuenteLabels = {rama:'⚖️ Rama Judicial',samai:'🏛️ SAMAI',penal:'🔒 SIUGJ Penal',tyba:'📁 TYBA',ninguna:'❌ Sin portal'};
+            const fuenteColors = {rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',ninguna:'#95a5a6'};
+            const fv = p.fecha_vencimiento;
+            const vencidoStyle = (fv && new Date(fv) < new Date()) ? 'color:#e74c3c;font-weight:bold' : '';
+
+            let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px">';
+
+            // Radicado + fuente
+            html += `<div style="background:#eaf4fd;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Radicado</div>
+                <div style="font-size:15px;font-weight:700;color:#2980b9">${p.numero_radicado}</div>
+            </div>`;
+
+            // Estado
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Estado</div>
+                <span style="font-size:13px;padding:3px 10px;border-radius:4px;background:${p.estado_color||'#3498db'};color:white">${p.estado_proceso_nombre||'—'}</span>
+            </div>`;
+
+            // Cliente
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Cliente</div>
+                <div style="font-size:14px">${p.nombre} ${p.apellido}</div>
+            </div>`;
+
+            // Especialidad
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Especialidad</div>
+                <div style="font-size:13px">${p.tipo_proceso_nombre||'—'}</div>
+            </div>`;
+
+            // Portal de consulta
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Portal de Consulta</div>
+                <div style="font-size:13px;font-weight:600;color:${fuenteColors[p.fuente_consulta]||'#95a5a6'}">${fuenteLabels[p.fuente_consulta]||'—'}</div>
+            </div>`;
+
+            // Fechas
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Fecha Inicio</div>
+                <div style="font-size:13px">${p.fecha_inicio||'—'}</div>
+            </div>`;
+            html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Fecha Vencimiento</div>
+                <div style="font-size:13px;${vencidoStyle}">${fv||'N/A'}</div>
+            </div>`;
+
+            // Ubicación: departamento, municipio, entidad, despacho
+            if (p.departamento_nombre || p.municipio_nombre || p.entidad_nombre || p.despacho_nombre) {
+                html += '<div style="background:#f0f4f8;padding:10px;border-radius:6px;grid-column:span 2"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:8px">Ubicación del Proceso</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+                if (p.departamento_nombre) html += `<div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Departamento</div><div style="font-size:12px">${p.departamento_nombre}</div></div>`;
+                if (p.municipio_nombre)    html += `<div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Municipio</div><div style="font-size:12px">${p.municipio_nombre}</div></div>`;
+                if (p.entidad_nombre)      html += `<div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Entidad</div><div style="font-size:12px">${p.entidad_nombre}</div></div>`;
+                if (p.despacho_nombre)     html += `<div style="grid-column:span 2"><div style="font-size:10px;color:#aaa;text-transform:uppercase">Despacho</div><div style="font-size:12px">${p.despacho_nombre}</div></div>`;
+                html += '</div></div>';
+            }
+
+            // Descripción
+            if (p.descripcion) {
+                html += `<div style="background:#f8f9fa;padding:10px;border-radius:6px;grid-column:span 2">
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6;margin-bottom:4px">Descripción</div>
+                    <div style="font-size:13px;line-height:1.5">${p.descripcion}</div>
                 </div>`;
+            }
+
+            // Privacidad
+            html += `<div style="background:${p.es_privado==1?'#fff8e6':'#f8f9fa'};padding:10px;border-radius:6px;grid-column:span 2;display:flex;align-items:center;gap:8px">
+                <i class="fas fa-lock" style="color:${p.es_privado==1?'#f39c12':'#bdc3c7'}"></i>
+                <div>
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#95a5a6">Confidencialidad</div>
+                    <div style="font-size:13px;color:${p.es_privado==1?'#b7791f':'#7f8c8d'}">${p.es_privado==1?'Proceso privado — sujetos procesales reservados':'Proceso público'}</div>
+                </div>
+            </div>`;
+
+            html += '</div>';
+            document.getElementById('detalleProceso').innerHTML = html;
             document.getElementById('modalVerProceso').style.display = 'block';
         });
 }
@@ -1554,7 +1690,7 @@ function renderHonTabla(lista) {
         return `<tr>
             <td><strong>${h.concepto}</strong>${h.observaciones ? '<br><small style="color:#95a5a6">'+h.observaciones+'</small>' : ''}</td>
             <td><span class="hon-tipo-badge">${tiposHon[h.tipo]||h.tipo}</span></td>
-            <td><strong>${fmtCOP(h.valor)}</strong></td>
+            <td>${fmtCOP(h.valor)}</td>
             <td style="font-size:12px;color:#7f8c8d">${fmtFecha(h.fecha_causacion)}</td>
             <td style="font-size:12px;color:#7f8c8d">${fmtFecha(h.fecha_pago)}</td>
             <td><span class="hon-badge ${h.estado}">${h.estado}</span></td>

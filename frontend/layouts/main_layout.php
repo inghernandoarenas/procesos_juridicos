@@ -16,8 +16,8 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     <style>
     /* ── Sidebar colapsable ─────────────────────────────────── */
     .sidebar {
-        width: 250px;
-        min-width: 250px;
+        width: 280px;
+        min-width: 280px;
         background: #2c3e50;
         color: white;
         padding: 20px;
@@ -75,6 +75,7 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
         position: absolute;
         top: 18px;
         right: -14px;
+        z-index: 200;
         width: 28px;
         height: 28px;
         background: #3498db;
@@ -154,7 +155,7 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                             <i class="fas fa-users" style="margin-right:10px;width:20px"></i> Clientes
                         </a></li>
                         <li><a href="/procesos_juridicos/frontend/index.php?view=tipos_proceso">
-                            <i class="fas fa-tags" style="margin-right:10px;width:20px"></i> Tipos de Proceso
+                            <i class="fas fa-tags" style="margin-right:10px;width:20px"></i> Especialidades
                         </a></li>
                         <li><a href="/procesos_juridicos/frontend/index.php?view=estados_proceso">
                             <i class="fas fa-chart-pie" style="margin-right:10px;width:20px"></i> Estados de Proceso
@@ -164,6 +165,18 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                         </a></li>
                         <li><a href="/procesos_juridicos/frontend/index.php?view=notificaciones">
                             <i class="fas fa-bell" style="margin-right:10px;width:20px"></i> Notificaciones
+                        </a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=departamentos">
+                            <i class="fas fa-map" style="margin-right:10px;width:20px"></i> Departamentos
+                        </a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=municipios">
+                            <i class="fas fa-city" style="margin-right:10px;width:20px"></i> Municipios
+                        </a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=entidades">
+                            <i class="fas fa-landmark" style="margin-right:10px;width:20px"></i> Entidades
+                        </a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=despachos">
+                            <i class="fas fa-balance-scale" style="margin-right:10px;width:20px"></i> Despachos
                         </a></li>
                     </ul>
                 </li>
@@ -280,7 +293,7 @@ function toggleSubmenu(event) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const view = new URLSearchParams(window.location.search).get('view');
-    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones'];
+    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','departamentos','municipios','entidades','despachos'];
     if (vistasParametrizacion.includes(view)) {
         const submenu = document.querySelector('.submenu');
         const icon    = document.querySelector('.has-submenu a i:last-child');

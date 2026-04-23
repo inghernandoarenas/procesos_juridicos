@@ -11,7 +11,6 @@ let totalPaginas = 1;
 <table id="tablaEstados">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Color</th>
             <th>Vista Previa</th>
@@ -21,10 +20,8 @@ let totalPaginas = 1;
     <tbody></tbody>
 </table>
 
-<!-- Paginación -->
 <div id="paginacionEstados" class="pagination-container"></div>
 
-<!-- Modal Estado Proceso -->
 <div id="modalEstado" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalEstado()">&times;</span>
@@ -57,7 +54,6 @@ let totalPaginas = 1;
     </div>
 </div>
 
-<!-- Modal Ver Estado -->
 <div id="modalVerEstado" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalVer()">&times;</span>
@@ -67,8 +63,6 @@ let totalPaginas = 1;
 </div>
 
 <script>
-
-// Función para obtener headers con token
 function getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -77,7 +71,6 @@ function getHeaders() {
     };
 }
 
-// Función para hacer fetch con token
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     
@@ -103,7 +96,6 @@ function fetchWithAuth(url, options = {}) {
         });
 }
 
-// Sincronizar input color con texto
 document.getElementById('color').addEventListener('input', function(e) {
     document.getElementById('color_text').value = e.target.value;
     document.getElementById('previewText').style.backgroundColor = e.target.value;
@@ -122,21 +114,20 @@ function cargarEstados(pagina = 1) {
             tbody.innerHTML = '';
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No hay estados registrados</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 30px;">No hay estados registrados</td></tr>';
                 return;
             }
             
             data.forEach(e => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${e.id}</td>
-                        <td>${e.nombre}</td>
-                        <td><code>${e.color || '#3498db'}</code></td>
-                        <td><span style="background: ${e.color || '#3498db'}; color: white; padding: 5px 10px; border-radius: 4px;">${e.nombre}</span></td>
-                        <td>
-                            <button class="btn-icon" onclick="verEstado(${e.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
-                            <button class="btn-icon" onclick="editarEstado(${e.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon" onclick="eliminarEstado(${e.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${e.nombre}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50"><code>${e.color || '#3498db'}</code></td>
+                        <td style="padding:8px 12px"><span style="background: ${e.color || '#3498db'}; color: white; padding: 4px 10px; border-radius: 4px; font-size:12px">${e.nombre}</span></td>
+                        <td style="padding:8px 12px;white-space:nowrap">
+                            <button class="btn-icon" onclick="verEstado(${e.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarEstado(${e.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarEstado(${e.id})"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -171,7 +162,7 @@ function guardarEstado(event) {
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success) { cerrarModalEstado(); cargarEstados(); toast('Estado guardado correctamente'); }
+        if(data.success) { cerrarModalEstado(); cargarEstados(); toast('Estado guardado'); }
         else { toast('Error al guardar el estado','error'); }
     });
 }
@@ -234,7 +225,7 @@ function verEstado(id) {
 }
 
 function eliminarEstado(id) {
-    if(confirm('¿Está seguro de eliminar este estado?')) {
+    if(confirm('¿Eliminar este estado?')) {
         let formData = new FormData();
         formData.append('action', 'delete');
         formData.append('id', id);
@@ -254,6 +245,5 @@ function cerrarModalVer() {
     document.getElementById('modalVerEstado').style.display = 'none';
 }
 
-// Cargar estados al entrar
 cargarEstados();
 </script>

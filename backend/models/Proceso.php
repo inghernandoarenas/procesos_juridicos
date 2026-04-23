@@ -42,11 +42,18 @@ class Proceso {
                 ep.color as estado_color,
                 p.sincronizar_api,
                 COALESCE(p.es_privado, 0) as es_privado,
-                COALESCE(p.fuente_consulta, 'ninguna') as fuente_consulta
+                COALESCE(p.fuente_consulta, 'ninguna') as fuente_consulta,
+                p.departamento_id, p.municipio_id, p.despacho_id, p.entidad_id,
+                dep.nombre as departamento_nombre, mun.nombre as municipio_nombre,
+                des.nombre as despacho_nombre, ent.nombre as entidad_nombre
                 FROM " . $this->table . " p 
                 JOIN clientes c ON p.cliente_id = c.id 
                 LEFT JOIN tipos_proceso tp ON p.tipo_proceso_id = tp.id
                 LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+                LEFT JOIN departamentos dep ON p.departamento_id = dep.id
+                LEFT JOIN municipios mun     ON p.municipio_id    = mun.id
+                LEFT JOIN despachos des      ON p.despacho_id     = des.id
+                LEFT JOIN entidades ent      ON p.entidad_id      = ent.id
                 WHERE p.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -81,8 +88,8 @@ class Proceso {
 
     public function create($data) {
         $query = "INSERT INTO " . $this->table . "
-                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado, fuente_consulta)
-                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento, :es_privado, :fuente_consulta)";
+                (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado, fuente_consulta, departamento_id, municipio_id, despacho_id, entidad_id)
+                VALUES (:cliente_id, :tipo_proceso_id, :estado_proceso_id, :numero_radicado, :descripcion, :fecha_inicio, :fecha_vencimiento, :es_privado, :fuente_consulta, :departamento_id, :municipio_id, :despacho_id, :entidad_id)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
     }
@@ -91,7 +98,8 @@ class Proceso {
         $query = "UPDATE " . $this->table . "
                 SET cliente_id=:cliente_id, tipo_proceso_id=:tipo_proceso_id, estado_proceso_id=:estado_proceso_id,
                     numero_radicado=:numero_radicado, descripcion=:descripcion,
-                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento, es_privado=:es_privado, fuente_consulta=:fuente_consulta
+                    fecha_inicio=:fecha_inicio, fecha_vencimiento=:fecha_vencimiento, es_privado=:es_privado, fuente_consulta=:fuente_consulta,
+                    departamento_id=:departamento_id, municipio_id=:municipio_id, despacho_id=:despacho_id, entidad_id=:entidad_id
                 WHERE id=:id";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);

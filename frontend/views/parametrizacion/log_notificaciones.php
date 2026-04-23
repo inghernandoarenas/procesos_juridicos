@@ -24,28 +24,25 @@
 }
 .log-stat-card {
     background: #f8f9fa; border-radius: 8px;
-    padding: 14px 16px; text-align: center;
+    padding: 12px 16px;
+    text-align: center;
     border-top: 3px solid #e0e0e0;
 }
 .log-stat-card.verde  { border-top-color: #27ae60; }
 .log-stat-card.rojo   { border-top-color: #e74c3c; }
 .log-stat-card.azul   { border-top-color: #3498db; }
 .log-stat-card.verde2 { border-top-color: #25d366; }
-.log-stat-num  { font-size: 28px; font-weight: 700; color: #2c3e50; }
-.log-stat-label{ font-size: 11px; color: #95a5a6; text-transform: uppercase; letter-spacing: .5px; }
+.log-stat-num  { font-size: 20px; font-weight: 600; color: #2c3e50; }
+.log-stat-label{ font-size: 10px; color: #95a5a6; text-transform: uppercase; letter-spacing: .5px; }
 </style>
 
 <div class="page-header">
     <h2>Log de Notificaciones</h2>
-    <button class="btn btn-primary" onclick="cargarLog()">
-        <i class="fas fa-sync-alt"></i> Actualizar
-    </button>
+    <button class="btn btn-primary" onclick="cargarLog()">Actualizar</button>
 </div>
 
-<!-- Estadísticas rápidas -->
 <div class="log-stats" id="logStats"></div>
 
-<!-- Filtros -->
 <div class="log-filtros">
     <select id="filtroEstado" onchange="filtrarLog()">
         <option value="">Todos los estados</option>
@@ -62,7 +59,6 @@
            oninput="filtrarLog()" style="min-width:260px">
 </div>
 
-<!-- Tabla -->
 <table id="tablaLog">
     <thead>
         <tr>
@@ -169,11 +165,11 @@ function renderTabla(data) {
         const badgeTipo   = `<span class="log-badge ${d.tipo_envio}">${d.tipo_envio}</span>`;
 
         return `<tr>
-            <td style="font-size:12px;color:#7f8c8d;white-space:nowrap">${fecha}</td>
-            <td><strong style="color:#3498db">${d.numero_radicado || '—'}</strong></td>
-            <td>${badgeTipo}</td>
-            <td style="font-size:13px">${d.destinatario}</td>
-            <td>${badgeEstado}</td>
+            <td style="padding:8px 12px;font-size:12px;color:#7f8c8d;white-space:nowrap">${fecha}</td>
+            <td style="padding:8px 12px;font-size:12px;color:#3498db">${d.numero_radicado || '—'}</td>
+            <td style="padding:8px 12px">${badgeTipo}</td>
+            <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${d.destinatario}</td>
+            <td style="padding:8px 12px">${badgeEstado}</td>
         </tr>`;
     }).join('');
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2026 at 01:39 AM
+-- Generation Time: Apr 20, 2026 at 05:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,12 +51,12 @@ INSERT INTO `actuaciones` (`id`, `proceso_id`, `id_api`, `fuente`, `despacho`, `
 (382, 15, 'sm_355659426c11cd0b', 'samai', 'TUTELA — RAFAEL ANDRES FONTALVO PALACIN', '2023-03-27', 'Envío De Notificación', 'REGISTRADA', '2026-04-17 20:36:09', NULL, NULL, NULL),
 (383, 15, 'sm_48a871bd1c343772', 'samai', 'TUTELA — RAFAEL ANDRES FONTALVO PALACIN', '2023-03-27', 'Recepción Memoriales', 'Desiste acción de tutela', '2026-04-17 20:36:09', NULL, NULL, NULL),
 (384, 15, 'sm_1b4c7bafa8072552', 'samai', 'TUTELA — RAFAEL ANDRES FONTALVO PALACIN', '2023-03-23', 'Radicación Y Reparto', 'ACTUACIÓN RADICACIÓN Y REPARTO', '2026-04-17 20:36:09', NULL, NULL, NULL),
-(385, 3, '3393118941', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-06-12', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL),
-(386, 3, '3392691871', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-23', 'AUTO INADMITE LA DEMANDA', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL),
-(387, 3, '3392470971', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-14', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL),
-(388, 3, '3391188071', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-03-05', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL),
-(389, 3, '3382650431', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-02-05', 'RADICACIÓN', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL),
-(390, 3, '3395518081', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-08-25', 'CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL', NULL, '2026-04-17 23:32:26', NULL, NULL, NULL);
+(391, 3, '3393118941', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-06-12', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL),
+(392, 3, '3392691871', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-23', 'AUTO INADMITE LA DEMANDA', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL),
+(393, 3, '3392470971', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-05-14', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL),
+(394, 3, '3391188071', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-03-05', 'AUTO ADMITE DEMANDA', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL),
+(395, 3, '3382650431', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-02-05', 'RADICACIÓN', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL),
+(396, 3, '3395518081', 'rama', 'JUZGADO 001 LABORAL  DE SABANALARGA', '2025-08-25', 'CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL', NULL, '2026-04-17 23:54:20', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -271,6 +271,114 @@ INSERT INTO `configuracion` (`id`, `clave`, `valor`, `descripcion`, `updated_at`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `departamentos`
+--
+
+CREATE TABLE `departamentos` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `departamentos`
+--
+
+INSERT INTO `departamentos` (`id`, `nombre`, `activo`, `created_at`) VALUES
+(1, 'Amazonas', 1, '2026-04-19 01:07:05'),
+(2, 'Antioquia', 1, '2026-04-19 01:07:05'),
+(3, 'Arauca', 1, '2026-04-19 01:07:05'),
+(4, 'Atlántico', 1, '2026-04-19 01:07:05'),
+(5, 'Bolívar', 1, '2026-04-19 01:07:05'),
+(6, 'Boyacá', 1, '2026-04-19 01:07:05'),
+(7, 'Caldas', 1, '2026-04-19 01:07:05'),
+(8, 'Caquetá', 1, '2026-04-19 01:07:05'),
+(9, 'Casanare', 1, '2026-04-19 01:07:05'),
+(10, 'Cauca', 1, '2026-04-19 01:07:05'),
+(11, 'Cesar', 1, '2026-04-19 01:07:05'),
+(12, 'Chocó', 1, '2026-04-19 01:07:05'),
+(13, 'Córdoba', 1, '2026-04-19 01:07:05'),
+(14, 'Cundinamarca', 1, '2026-04-19 01:07:05'),
+(15, 'Guainía', 1, '2026-04-19 01:07:05'),
+(16, 'Guaviare', 1, '2026-04-19 01:07:05'),
+(17, 'Huila', 1, '2026-04-19 01:07:05'),
+(18, 'La Guajira', 1, '2026-04-19 01:07:05'),
+(19, 'Magdalena', 1, '2026-04-19 01:07:05'),
+(20, 'Meta', 1, '2026-04-19 01:07:05'),
+(21, 'Nariño', 1, '2026-04-19 01:07:05'),
+(22, 'Norte de Santander', 1, '2026-04-19 01:07:05'),
+(23, 'Putumayo', 1, '2026-04-19 01:07:05'),
+(24, 'Quindío', 1, '2026-04-19 01:07:05'),
+(25, 'Risaralda', 1, '2026-04-19 01:07:05'),
+(26, 'San Andrés y Providencia', 1, '2026-04-19 01:07:05'),
+(27, 'Santander', 1, '2026-04-19 01:07:05'),
+(28, 'Sucre', 1, '2026-04-19 01:07:05'),
+(29, 'Tolima', 1, '2026-04-19 01:07:05'),
+(30, 'Valle del Cauca', 1, '2026-04-19 01:07:05'),
+(31, 'Vaupés', 1, '2026-04-19 01:07:05'),
+(32, 'Vichada', 1, '2026-04-19 01:07:05'),
+(33, 'Bogotá D.C.', 1, '2026-04-19 01:07:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `despachos`
+--
+
+CREATE TABLE `despachos` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `entidad_id` int(11) DEFAULT NULL,
+  `departamento_id` int(11) DEFAULT NULL,
+  `municipio_id` int(11) DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `despachos`
+--
+
+INSERT INTO `despachos` (`id`, `nombre`, `descripcion`, `entidad_id`, `departamento_id`, `municipio_id`, `activo`, `created_at`) VALUES
+(1, 'Juzgado cirtuito 001', NULL, 6, 4, 1, 1, '2026-04-19 01:17:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `entidades`
+--
+
+CREATE TABLE `entidades` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(150) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `entidades`
+--
+
+INSERT INTO `entidades` (`id`, `nombre`, `descripcion`, `activo`, `created_at`) VALUES
+(1, 'Corte Suprema de Justicia', NULL, 1, '2026-04-19 01:07:05'),
+(2, 'Consejo de Estado', NULL, 1, '2026-04-19 01:07:05'),
+(3, 'Consejo Superior de la Judicatura', NULL, 1, '2026-04-19 01:07:05'),
+(4, 'Tribunal Superior', NULL, 1, '2026-04-19 01:07:05'),
+(5, 'Tribunal Administrativo', NULL, 1, '2026-04-19 01:07:05'),
+(6, 'Juzgado Civil', NULL, 1, '2026-04-19 01:07:05'),
+(7, 'Juzgado Laboral', NULL, 1, '2026-04-19 01:07:05'),
+(8, 'Juzgado Penal', NULL, 1, '2026-04-19 01:07:05'),
+(9, 'Juzgado Administrativo', NULL, 1, '2026-04-19 01:07:05'),
+(10, 'Juzgado de Familia', NULL, 1, '2026-04-19 01:07:05'),
+(11, 'Juzgado Municipal', NULL, 1, '2026-04-19 01:07:05'),
+(12, 'Fiscalía General de la Nación', NULL, 1, '2026-04-19 01:07:05');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `estados_proceso`
 --
 
@@ -360,6 +468,27 @@ INSERT INTO `honorarios` (`id`, `proceso_id`, `concepto`, `tipo`, `valor`, `fech
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `municipios`
+--
+
+CREATE TABLE `municipios` (
+  `id` int(11) NOT NULL,
+  `departamento_id` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `municipios`
+--
+
+INSERT INTO `municipios` (`id`, `departamento_id`, `nombre`, `activo`, `created_at`) VALUES
+(1, 4, 'Barranquilla', 1, '2026-04-19 01:16:17');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `notificaciones_config`
 --
 
@@ -414,24 +543,24 @@ INSERT INTO `notificaciones_log` (`id`, `proceso_id`, `actuacion_id`, `tipo_envi
 (607, 15, 382, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300320230008000.\n\nActuación: Envío De Notificación\nFecha: 27/03/2023\nObservaciones: REGISTRADA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 20:36:24', '2026-04-17 20:36:24'),
 (608, 15, 381, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300320230008000.\n\nActuación: Auto Admite Desistimiento\nFecha: 27/03/2023\nObservaciones: REGISTRADA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 20:36:27', '2026-04-17 20:36:27'),
 (609, 15, 381, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300320230008000.\n\nActuación: Auto Admite Desistimiento\nFecha: 27/03/2023\nObservaciones: REGISTRADA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 20:36:30', '2026-04-17 20:36:30'),
-(610, 3, 390, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:28', '2026-04-17 23:32:28'),
-(611, 3, 390, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:31', '2026-04-17 23:32:31'),
-(612, 3, 390, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:35', '2026-04-17 23:32:35'),
-(613, 3, 389, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:39', '2026-04-17 23:32:39'),
-(614, 3, 389, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:42', '2026-04-17 23:32:42'),
-(615, 3, 389, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:44', '2026-04-17 23:32:44'),
-(616, 3, 388, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:47', '2026-04-17 23:32:47'),
-(617, 3, 388, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:49', '2026-04-17 23:32:49'),
-(618, 3, 388, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:53', '2026-04-17 23:32:53'),
-(619, 3, 387, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:32:56', '2026-04-17 23:32:56'),
-(620, 3, 387, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:00', '2026-04-17 23:33:00'),
-(621, 3, 387, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:03', '2026-04-17 23:33:03'),
-(622, 3, 386, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:07', '2026-04-17 23:33:07'),
-(623, 3, 386, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:09', '2026-04-17 23:33:09'),
-(624, 3, 386, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:11', '2026-04-17 23:33:11'),
-(625, 3, 385, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:14', '2026-04-17 23:33:14'),
-(626, 3, 385, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:18', '2026-04-17 23:33:18'),
-(627, 3, 385, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:33:20', '2026-04-17 23:33:20');
+(628, 3, 396, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:23', '2026-04-17 23:54:23'),
+(629, 3, 396, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:26', '2026-04-17 23:54:26'),
+(630, 3, 396, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: CONSTANCIA RECEPCIÓN DE REGISTRO DE NOTIFICACIÓN PERSONAL\nFecha: 25/08/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:29', '2026-04-17 23:54:29'),
+(631, 3, 395, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:32', '2026-04-17 23:54:32'),
+(632, 3, 395, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:34', '2026-04-17 23:54:34'),
+(633, 3, 395, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: RADICACIÓN\nFecha: 05/02/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:38', '2026-04-17 23:54:38'),
+(634, 3, 394, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:42', '2026-04-17 23:54:42'),
+(635, 3, 394, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:45', '2026-04-17 23:54:45'),
+(636, 3, 394, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 05/03/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:48', '2026-04-17 23:54:48'),
+(637, 3, 393, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:52', '2026-04-17 23:54:52'),
+(638, 3, 393, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:55', '2026-04-17 23:54:55'),
+(639, 3, 393, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 14/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:54:58', '2026-04-17 23:54:58'),
+(640, 3, 392, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:00', '2026-04-17 23:55:00'),
+(641, 3, 392, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:03', '2026-04-17 23:55:03'),
+(642, 3, 392, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO INADMITE LA DEMANDA\nFecha: 23/05/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:07', '2026-04-17 23:55:07'),
+(643, 3, 391, 'email', 'hernando.17@hotmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:09', '2026-04-17 23:55:09'),
+(644, 3, 391, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:13', '2026-04-17 23:55:13'),
+(645, 3, 391, 'email', 'kettyruiz@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08638310500120250000600.\n\nActuación: AUTO ADMITE DEMANDA\nFecha: 12/06/2025\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-04-17 23:55:16', '2026-04-17 23:55:16');
 
 -- --------------------------------------------------------
 
@@ -452,6 +581,10 @@ CREATE TABLE `procesos` (
   `fecha_vencimiento` date DEFAULT NULL,
   `sincronizar_api` tinyint(4) DEFAULT 0,
   `fuente_consulta` varchar(20) NOT NULL DEFAULT 'rama' COMMENT 'rama | samai | penal | tyba | ninguna',
+  `departamento_id` int(11) DEFAULT NULL,
+  `municipio_id` int(11) DEFAULT NULL,
+  `despacho_id` int(11) DEFAULT NULL,
+  `entidad_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `usuario_creacion` int(11) DEFAULT NULL,
   `usuario_modificacion` int(11) DEFAULT NULL,
@@ -463,23 +596,22 @@ CREATE TABLE `procesos` (
 -- Dumping data for table `procesos`
 --
 
-INSERT INTO `procesos` (`id`, `cliente_id`, `tipo_proceso_id`, `estado_proceso_id`, `numero_radicado`, `tipo_proceso`, `descripcion`, `estado`, `fecha_inicio`, `fecha_vencimiento`, `sincronizar_api`, `fuente_consulta`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`, `es_privado`) VALUES
-(1, 1, 1, 1, '2024-00126', NULL, 'Demanda ejecutiva hipotecaria', 'Activo', '2026-03-01', '2026-04-05', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(2, 2, 3, 1, '2024-00127', NULL, 'Proceso de fuero sindical', 'Activo', '2026-02-15', '2026-03-25', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(3, 3, 2, 1, '08638310500120250000600', NULL, 'Proceso penal - prueba con API', 'Activo', '2025-02-05', '2026-04-15', 1, 'rama', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(4, 4, 5, 2, '2024-00129', NULL, 'Divorcio contencioso', 'En espera', '2026-01-10', '2026-03-20', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(5, 5, 4, 1, '2024-00130', NULL, 'Nulidad de acto administrativo', 'Activo', '2026-02-20', '2026-04-20', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(6, 6, 1, 3, '2024-00131', NULL, 'Excepciones previas', 'Vencido', '2026-01-05', '2026-02-05', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(7, 7, 2, 3, '2024-00132', NULL, 'Término para presentar pruebas', 'Vencido', '2025-12-01', '2025-12-30', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(8, 8, 3, 4, '2024-00133', NULL, 'Calificación de origen de enfermedad', 'Finalizado', '2025-11-01', '2025-12-01', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(9, 9, 1, 1, '2024-00134', NULL, 'Recurso de apelación', 'Activo', '2026-03-01', '2026-03-28', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(10, 10, 4, 2, '2024-00135', NULL, 'Liquidación de sociedad conyugal_edit', 'En espera', '2026-02-01', '2026-03-18', 0, 'ninguna', '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
-(11, 7, 3, 3, '089954478220025454', NULL, 'Demanda alcaldía Candelaria', 'Activo', '2026-03-30', '2026-06-25', 0, 'ninguna', '2026-03-30 19:35:11', NULL, NULL, NULL, 0),
-(12, 12, 1, 1, '08001418900220260035500', NULL, 'Proceso ejecutivo, acta de conciliación en contra del malparido ese', 'Activo', '2026-03-09', '2026-05-09', 0, 'ninguna', '2026-04-03 17:34:09', NULL, NULL, NULL, 1),
-(13, 12, 1, 1, '08001418900520250169500', NULL, '', 'Activo', '2025-11-01', '2026-02-06', 0, 'ninguna', '2026-04-03 17:36:12', NULL, NULL, NULL, 1),
-(14, 13, 1, 1, '08001405301420220040400', NULL, '', 'Activo', '2026-02-01', '2026-09-24', 0, 'ninguna', '2026-04-03 17:53:54', NULL, NULL, NULL, 0),
-(15, 12, 4, 1, '08001333300320230008000', NULL, 'Prueba samai', 'Activo', '2026-04-09', '2027-12-31', 0, 'samai', '2026-04-09 21:23:24', NULL, NULL, NULL, 0),
-(16, 15, 4, 1, '086321114002225', NULL, 'proceso de prueba. borrar', 'Activo', '2026-04-17', '2027-03-17', 0, 'samai', '2026-04-17 21:50:40', NULL, NULL, NULL, 0);
+INSERT INTO `procesos` (`id`, `cliente_id`, `tipo_proceso_id`, `estado_proceso_id`, `numero_radicado`, `tipo_proceso`, `descripcion`, `estado`, `fecha_inicio`, `fecha_vencimiento`, `sincronizar_api`, `fuente_consulta`, `departamento_id`, `municipio_id`, `despacho_id`, `entidad_id`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`, `es_privado`) VALUES
+(1, 1, 1, 1, '2024-00126', NULL, 'Demanda ejecutiva hipotecaria', 'Activo', '2026-03-01', '2026-04-05', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(2, 2, 3, 1, '2024-00127', NULL, 'Proceso de fuero sindical', 'Activo', '2026-02-15', '2026-03-25', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(3, 3, 2, 1, '08638310500120250000600', NULL, 'Proceso penal - prueba con API', 'Activo', '2025-02-05', '2026-04-15', 1, 'rama', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(4, 4, 5, 2, '2024-00129', NULL, 'Divorcio contencioso', 'En espera', '2026-01-10', '2026-03-20', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(5, 5, 4, 1, '2024-00130', NULL, 'Nulidad de acto administrativo', 'Activo', '2026-02-20', '2026-04-20', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(6, 6, 1, 3, '2024-00131', NULL, 'Excepciones previas', 'Vencido', '2026-01-05', '2026-02-05', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(7, 7, 2, 3, '2024-00132', NULL, 'Término para presentar pruebas', 'Vencido', '2025-12-01', '2025-12-30', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(8, 8, 3, 4, '2024-00133', NULL, 'Calificación de origen de enfermedad', 'Finalizado', '2025-11-01', '2025-12-01', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(9, 9, 1, 1, '2024-00134', NULL, 'Recurso de apelación', 'Activo', '2026-03-01', '2026-03-28', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(10, 10, 4, 2, '2024-00135', NULL, 'Liquidación de sociedad conyugal_edit', 'En espera', '2026-02-01', '2026-03-18', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 02:07:11', NULL, NULL, NULL, 0),
+(11, 7, 3, 3, '089954478220025454', NULL, 'Demanda alcaldía Candelaria', 'Activo', '2026-03-30', '2026-06-25', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-03-30 19:35:11', NULL, NULL, NULL, 0),
+(12, 12, 1, 1, '08001418900220260035500', NULL, 'Proceso ejecutivo, acta de conciliación en contra del malparido ese', 'Activo', '2026-03-09', '2026-05-09', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-04-03 17:34:09', NULL, NULL, NULL, 1),
+(13, 12, 1, 1, '08001418900520250169500', NULL, '', 'Activo', '2025-11-01', '2026-02-06', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-04-03 17:36:12', NULL, NULL, NULL, 1),
+(14, 12, 1, 1, '08001405301420220040400', NULL, '', 'Activo', '2026-02-01', '2026-09-24', 0, 'ninguna', NULL, NULL, NULL, NULL, '2026-04-03 17:53:54', NULL, NULL, NULL, 0),
+(15, 12, 4, 1, '08001333300320230008000', NULL, 'Prueba samai', 'Activo', '2026-04-09', '2027-12-31', 0, 'samai', NULL, NULL, NULL, NULL, '2026-04-09 21:23:24', NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -503,7 +635,7 @@ CREATE TABLE `tipos_proceso` (
 --
 
 INSERT INTO `tipos_proceso` (`id`, `nombre`, `descripcion`, `activo`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
-(1, 'Civil', 'Procesos civiles y comerciales.', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(1, 'Civil', 'Procesos civiles y comerciales...', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (2, 'Penal', 'Procesos penales', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (3, 'Laboral', 'Procesos laborales y de seguridad social', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (4, 'Contencioso', 'Proceso contencioso administrativo', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
@@ -582,6 +714,28 @@ ALTER TABLE `configuracion`
   ADD UNIQUE KEY `uq_clave` (`clave`);
 
 --
+-- Indexes for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_nombre` (`nombre`);
+
+--
+-- Indexes for table `despachos`
+--
+ALTER TABLE `despachos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_entidad` (`entidad_id`),
+  ADD KEY `idx_depto` (`departamento_id`);
+
+--
+-- Indexes for table `entidades`
+--
+ALTER TABLE `entidades`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_nombre` (`nombre`);
+
+--
 -- Indexes for table `estados_proceso`
 --
 ALTER TABLE `estados_proceso`
@@ -594,6 +748,13 @@ ALTER TABLE `honorarios`
   ADD PRIMARY KEY (`id`),
   ADD KEY `proceso_id` (`proceso_id`),
   ADD KEY `estado` (`estado`);
+
+--
+-- Indexes for table `municipios`
+--
+ALTER TABLE `municipios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_depto` (`departamento_id`);
 
 --
 -- Indexes for table `notificaciones_config`
@@ -617,7 +778,11 @@ ALTER TABLE `procesos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cliente_id` (`cliente_id`),
   ADD KEY `tipo_proceso_id` (`tipo_proceso_id`),
-  ADD KEY `estado_proceso_id` (`estado_proceso_id`);
+  ADD KEY `estado_proceso_id` (`estado_proceso_id`),
+  ADD KEY `idx_depto` (`departamento_id`),
+  ADD KEY `idx_municipio` (`municipio_id`),
+  ADD KEY `idx_despacho` (`despacho_id`),
+  ADD KEY `idx_entidad` (`entidad_id`);
 
 --
 -- Indexes for table `tipos_proceso`
@@ -641,7 +806,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `actuaciones`
 --
 ALTER TABLE `actuaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=391;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=397;
 
 --
 -- AUTO_INCREMENT for table `anexos`
@@ -668,6 +833,24 @@ ALTER TABLE `configuracion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
+-- AUTO_INCREMENT for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `despachos`
+--
+ALTER TABLE `despachos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `entidades`
+--
+ALTER TABLE `entidades`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `estados_proceso`
 --
 ALTER TABLE `estados_proceso`
@@ -680,6 +863,12 @@ ALTER TABLE `honorarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
+-- AUTO_INCREMENT for table `municipios`
+--
+ALTER TABLE `municipios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `notificaciones_config`
 --
 ALTER TABLE `notificaciones_config`
@@ -689,7 +878,7 @@ ALTER TABLE `notificaciones_config`
 -- AUTO_INCREMENT for table `notificaciones_log`
 --
 ALTER TABLE `notificaciones_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=628;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=646;
 
 --
 -- AUTO_INCREMENT for table `procesos`
@@ -731,6 +920,12 @@ ALTER TABLE `anexos`
 --
 ALTER TABLE `honorarios`
   ADD CONSTRAINT `fk_honorario_proceso` FOREIGN KEY (`proceso_id`) REFERENCES `procesos` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `municipios`
+--
+ALTER TABLE `municipios`
+  ADD CONSTRAINT `municipios_ibfk_1` FOREIGN KEY (`departamento_id`) REFERENCES `departamentos` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `notificaciones_config`

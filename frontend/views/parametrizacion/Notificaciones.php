@@ -1,14 +1,11 @@
 <div class="page-header">
     <h2>Configuración de Notificaciones</h2>
-    <button class="btn btn-primary" onclick="abrirModalNotif()">
-        <i class="fas fa-bell"></i> Nueva Notificación
-    </button>
+    <button class="btn btn-primary" onclick="abrirModalNotif()">Nueva Notificación</button>
 </div>
 
 <table id="tablaNotif">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Usuario</th>
             <th>Tipo</th>
             <th>Email</th>
@@ -19,7 +16,6 @@
     <tbody></tbody>
 </table>
 
-<!-- Modal Crear / Editar -->
 <div id="modalNotif" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalNotif()">&times;</span>
@@ -60,14 +56,11 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Guardar
-            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
 </div>
 
-<!-- Modal Ver -->
 <div id="modalVerNotif" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('modalVerNotif').style.display='none'">&times;</span>
@@ -101,17 +94,17 @@ function cargarNotificaciones() {
             data.forEach(n => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${n.id}</td>
-                        <td>${n.usuario_nombre} <small style="color:#888">(${n.usuario_login})</small></td>
-                        <td>${tipos[n.tipo] || n.tipo}</td>
-                        <td>${n.email || '<span style="color:#bbb">—</span>'}</td>
-                        <td>${n.telefono || '<span style="color:#bbb">—</span>'}</td>
-                        <td>
-                            <button class="btn-icon" onclick="verNotif(${n.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
-                            <button class="btn-icon" onclick="editarNotif(${n.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon" onclick="eliminarNotif(${n.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.usuario_nombre} <span style="color:#888">(${n.usuario_login})</span></td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${tipos[n.tipo] || n.tipo}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.email || '<span style="color:#bbb">—</span>'}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.telefono || '<span style="color:#bbb">—</span>'}</td>
+                        <td style="padding:8px 12px;white-space:nowrap">
+                            <button class="btn-icon" onclick="verNotif(${n.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarNotif(${n.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarNotif(${n.id})"><i class="fas fa-trash"></i></button>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
         });
 }
@@ -166,7 +159,7 @@ function guardarNotif(event) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { cerrarModalNotif(); cargarNotificaciones(); toast('Notificación guardada correctamente'); }
+        if (data.success) { cerrarModalNotif(); cargarNotificaciones(); toast('Notificación guardada'); }
         else { toast('Error al guardar la notificación','error'); }
     });
 }

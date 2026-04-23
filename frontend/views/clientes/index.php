@@ -1,5 +1,4 @@
 <script>
-
 // Para procesos
 let paginaActualProcesos = 1;
 let totalPaginasProcesos = 1;
@@ -8,7 +7,6 @@ let totalPaginasProcesos = 1;
 let paginaActualClientes = 1;
 let totalPaginasClientes = 1;
 
-// Función para obtener headers con token
 function getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -17,7 +15,6 @@ function getHeaders() {
     };
 }
 
-// Función para hacer fetch con token
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     
@@ -44,7 +41,6 @@ function fetchWithAuth(url, options = {}) {
 }
 </script>
 
-
 <div class="page-header">
     <h2>Gestión de Clientes</h2>
     <button class="btn btn-primary" onclick="abrirModalCliente()">Nuevo Cliente</button>
@@ -53,7 +49,6 @@ function fetchWithAuth(url, options = {}) {
 <table id="tablaClientes">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Identificación</th>
@@ -64,7 +59,7 @@ function fetchWithAuth(url, options = {}) {
     </thead>
     <tbody></tbody>
 </table>
-<!-- Paginación Clientes -->
+
 <div id="paginacionClientes" class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;"></div>
 
 <div id="modalCliente" class="modal">
@@ -73,14 +68,17 @@ function fetchWithAuth(url, options = {}) {
         <h3 id="modalClienteTitle">Nuevo Cliente</h3>
         <form id="formCliente" onsubmit="guardarCliente(event)">
             <input type="hidden" id="clienteId" name="id">
+            
             <div class="form-group">
                 <label>Nombre:</label>
                 <input type="text" id="nombre" name="nombre" required>
             </div>
+
             <div class="form-group">
                 <label>Apellido:</label>
                 <input type="text" id="apellido" name="apellido" required>
             </div>
+
             <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px">
                 <div class="form-group">
                     <label>Tipo ID:</label>
@@ -95,15 +93,18 @@ function fetchWithAuth(url, options = {}) {
                         <option value="PEP">PEP</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>Número de identificación:</label>
                     <input type="text" id="numero_identificacion" name="numero_identificacion" placeholder="Ej: 1.234.567.890">
                 </div>
             </div>
+
             <div class="form-group">
                 <label>Email:</label>
                 <input type="email" id="email" name="email">
             </div>
+
             <div class="form-group">
                 <label>Teléfono:</label>
                 <input type="text" id="telefono" name="telefono" 
@@ -112,10 +113,12 @@ function fetchWithAuth(url, options = {}) {
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     maxlength="10">
             </div>
+
             <div class="form-group">
                 <label>Dirección:</label>
                 <textarea id="direccion" name="direccion" rows="3"></textarea>
             </div>
+
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
@@ -130,39 +133,36 @@ function fetchWithAuth(url, options = {}) {
 </div>
 
 <script>
-
 function cargarClientes(pagina = 1, buscar = '') {
-    let url = `/procesos_juridicos/backend/controllers/ClienteController.php?action=list&pagina=${pagina}`;
+    let url = `/procesos_juridicos/backend/controllers/ClienteController.php?action=list&por_pagina=10&pagina=${pagina}`;
     if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
+
     fetchWithAuth(url)
         .then(response => response.json())
         .then(result => {
-            // Guardar datos de paginación
             paginaActualClientes = result.pagina;
             totalPaginasClientes = result.total_paginas;
             
-            // Renderizar tabla
             let tbody = document.querySelector('#tablaClientes tbody');
             tbody.innerHTML = '';
+
             result.data.forEach(cliente => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${cliente.id}</td>
-                        <td>${cliente.nombre}</td>
-                        <td>${cliente.apellido}</td>
-                        <td style="font-size:12px">${cliente.tipo_identificacion ? cliente.tipo_identificacion+' '+cliente.numero_identificacion : '—'}</td>
-                        <td>${cliente.email || ''}</td>
-                        <td>${cliente.telefono || ''}</td>
-                        <td>
-                            <button class="btn-icon" onclick="verCliente(${cliente.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
-                            <button class="btn-icon" onclick="editarCliente(${cliente.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon" onclick="eliminarCliente(${cliente.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${cliente.nombre || '—'}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${cliente.apellido || '—'}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${cliente.tipo_identificacion ? cliente.tipo_identificacion + ' ' + cliente.numero_identificacion : '—'}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${cliente.email || '—'}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${cliente.telefono || '—'}</td>
+                        <td style="padding:8px 12px;white-space:nowrap">
+                            <button class="btn-icon" onclick="verCliente(${cliente.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarCliente(${cliente.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarCliente(${cliente.id})"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
             });
-            
-            // Renderizar controles de paginación
+
             renderPaginacionClientes();
         });
 }
@@ -192,8 +192,8 @@ function guardarCliente(event) {
     })
     .then(response => response.json())
     .then(data => {
-        if(data.success) { cerrarModalCliente(); cargarClientes(1); toast('Cliente guardado correctamente'); }
-        else { toast('Error al guardar','error'); }
+        if(data.success) { cerrarModalCliente(); cargarClientes(1); toast('Cliente guardado'); }
+        else { toast('Error al guardar el cliente','error'); }
     });
 }
 
@@ -220,50 +220,38 @@ function verCliente(id) {
         .then(cliente => {
             let html = `
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px;">
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">ID Cliente</strong>
-                        <span style="font-size: 16px;">${cliente.id}</span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">ID</strong>
+                        <span style="font-size: 24px; font-weight: bold; color: #3498db;">${cliente.id}</span>
                     </div>
                     
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Nombre Completo</strong>
-                        <span style="font-size: 18px; font-weight: bold; color: #3498db;">${cliente.nombre} ${cliente.apellido}</span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">Nombre</strong>
+                        <span style="font-size: 18px;">${cliente.nombre} ${cliente.apellido}</span>
                     </div>
                     
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Identificación</strong>
-                        <span style="font-size: 15px; font-weight: 600;">
-                            <i class="fas fa-id-card" style="color:#3498db;margin-right:5px"></i>
-                            ${cliente.tipo_identificacion ? cliente.tipo_identificacion+' '+cliente.numero_identificacion : 'No registrada'}
-                        </span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">Email</strong>
+                        <span style="font-size: 14px;">${cliente.email || 'No registrado'}</span>
                     </div>
                     
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Email</strong>
-                        <span style="font-size: 14px;">
-                            <i class="fas fa-envelope" style="color: #3498db; margin-right: 5px;"></i>
-                            ${cliente.email || 'N/A'}
-                        </span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">Teléfono</strong>
+                        <span style="font-size: 14px;">${cliente.telefono || 'No registrado'}</span>
                     </div>
                     
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Teléfono</strong>
-                        <span style="font-size: 14px;">
-                            <i class="fas fa-phone" style="color: #27ae60; margin-right: 5px;"></i>
-                            ${cliente.telefono || 'N/A'}
-                        </span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">Identificación</strong>
+                        <span style="font-size: 14px;">${cliente.tipo_identificacion ? cliente.tipo_identificacion + ' ' + cliente.numero_identificacion : 'No registrada'}</span>
                     </div>
                     
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; grid-column: span 2;">
-                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase;">Dirección</strong>
-                        <span style="font-size: 14px;">
-                            <i class="fas fa-map-marker-alt" style="color: #e74c3c; margin-right: 5px;"></i>
-                            ${cliente.direccion || 'N/A'}
-                        </span>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; grid-column: span 2;">
+                        <strong style="color: #2c3e50; display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px;">Dirección</strong>
+                        <span style="font-size: 14px;">${cliente.direccion || 'No registrada'}</span>
                     </div>
                     
-                    <div style="grid-column: span 2; text-align: right; margin-top: 10px; color: #7f8c8d; font-size: 12px;">
-                        <i class="fas fa-calendar-alt"></i> Cliente desde: ${new Date(cliente.created_at).toLocaleDateString('es-CO')}
+                    <div style="grid-column: span 2; text-align: right; margin-top: 10px; color: #7f8c8d; font-size: 12px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <i class="fas fa-calendar-alt"></i> Creado: ${new Date(cliente.created_at).toLocaleDateString('es-CO')}
                     </div>
                 </div>
             `;
@@ -298,19 +286,10 @@ function renderPaginacionClientes() {
     if (!container) return;
     
     let html = '';
-    
-    // Botón anterior
-    html += `<button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes - 1})" ${paginaActualClientes <= 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>`;
-    
-    // Información de página
-    html += `<span class="pagination-info">Página ${paginaActualClientes} de ${totalPaginasClientes}</span>`;
-    
-    // Botón siguiente
-    html += `<button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes + 1})" ${paginaActualClientes >= totalPaginasClientes ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>`;
+
+    html += `<button onclick="cambiarPaginaClientes(${paginaActualClientes - 1})" ${paginaActualClientes <= 1 ? 'disabled' : ''}>Anterior</button>`;
+    html += `<span>Página ${paginaActualClientes} de ${totalPaginasClientes}</span>`;
+    html += `<button onclick="cambiarPaginaClientes(${paginaActualClientes + 1})" ${paginaActualClientes >= totalPaginasClientes ? 'disabled' : ''}>Siguiente</button>`;
     
     container.innerHTML = html;
 }
@@ -321,6 +300,5 @@ function cambiarPaginaClientes(pagina) {
     }
 }
 
-// Cargar clientes al entrar a la página
 cargarClientes(1);
 </script>

@@ -4,14 +4,13 @@ let totalPaginas = 1;
 </script>
 
 <div class="page-header">
-    <h2>Tipos de Proceso</h2>
-    <button class="btn btn-primary" onclick="abrirModalTipo()">Nuevo Tipo</button>
+    <h2>Especialidades</h2>
+    <button class="btn btn-primary" onclick="abrirModalTipo()">Nueva Especialidad</button>
 </div>
 
 <table id="tablaTipos">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Acciones</th>
@@ -20,14 +19,12 @@ let totalPaginas = 1;
     <tbody></tbody>
 </table>
 
-<!-- Paginación -->
 <div id="paginacionTipos" class="pagination-container"></div>
 
-<!-- Modal Tipo Proceso -->
 <div id="modalTipo" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalTipo()">&times;</span>
-        <h3 id="modalTipoTitle">Nuevo Tipo de Proceso</h3>
+        <h3 id="modalTipoTitle">Nueva Especialidad</h3>
         <form id="formTipo" onsubmit="guardarTipo(event)">
             <input type="hidden" id="tipoId" name="id">
             
@@ -46,7 +43,6 @@ let totalPaginas = 1;
     </div>
 </div>
 
-<!-- Modal Ver Tipo -->
 <div id="modalVerTipo" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalVer()">&times;</span>
@@ -56,8 +52,6 @@ let totalPaginas = 1;
 </div>
 
 <script>
-
-// Función para obtener headers con token
 function getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -66,7 +60,6 @@ function getHeaders() {
     };
 }
 
-// Función para hacer fetch con token
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     
@@ -93,62 +86,37 @@ function fetchWithAuth(url, options = {}) {
 }
     
 function cargarTipos(pagina = 1) {
-    console.log('Iniciando carga de tipos...');
-    
     fetchWithAuth('/procesos_juridicos/backend/controllers/TipoProcesoController.php?action=list')
-        .then(response => {
-            console.log('Status:', response.status);
-            console.log('Headers:', response.headers);
-            return response.text(); // Primero como texto para ver qué llega
-        })
-        .then(text => {
-            console.log('Respuesta raw:', text);
+        .then(response => response.json())
+        .then(data => {
+            let tbody = document.querySelector('#tablaTipos tbody');
+            tbody.innerHTML = '';
             
-            try {
-                const data = JSON.parse(text);
-                console.log('Datos parseados:', data);
-                
-                let tbody = document.querySelector('#tablaTipos tbody');
-                if (!tbody) {
-                    console.error('No se encontró tbody');
-                    return;
-                }
-                
-                tbody.innerHTML = '';
-                
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px;">No hay tipos registrados</td></tr>';
-                    return;
-                }
-                
-                data.forEach(t => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${t.id}</td>
-                            <td>${t.nombre}</td>
-                            <td>${t.descripcion || ''}</td>
-                            <td>
-                                <button class="btn-icon" onclick="verTipo(${t.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
-                                <button class="btn-icon" onclick="editarTipo(${t.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon" onclick="eliminarTipo(${t.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } catch (e) {
-                console.error('Error parseando JSON:', e);
-                console.error('Texto que causó el error:', text);
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="padding:30px;text-align:center;color:#aaa">No hay tipos registrados</td></tr>';
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error en fetch:', error);
+            
+            data.forEach(t => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${t.nombre}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${t.descripcion || ''}</td>
+                        <td style="padding:8px 12px;white-space:nowrap">
+                            <button class="btn-icon" onclick="verTipo(${t.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarTipo(${t.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarTipo(${t.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
         });
 }
 
 function abrirModalTipo() {
     document.getElementById('formTipo').reset();
     document.getElementById('tipoId').value = '';
-    document.getElementById('modalTipoTitle').textContent = 'Nuevo Tipo de Proceso';
+    document.getElementById('modalTipoTitle').textContent = 'Nueva Especialidad';
     document.getElementById('modalTipo').style.display = 'block';
 }
 
@@ -180,7 +148,7 @@ function editarTipo(id) {
             document.getElementById('tipoId').value = t.id;
             document.getElementById('nombre').value = t.nombre;
             document.getElementById('descripcion').value = t.descripcion || '';
-            document.getElementById('modalTipoTitle').textContent = 'Editar Tipo de Proceso';
+            document.getElementById('modalTipoTitle').textContent = 'Editar Especialidad';
             document.getElementById('modalTipo').style.display = 'block';
         });
 }
@@ -228,7 +196,7 @@ function eliminarTipo(id) {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) { cargarTipos(); toast('Tipo eliminado','info'); }
+            if(data.success) { cargarTipos(); toast('Especialidad eliminada','info'); }
         });
     }
 }
@@ -237,6 +205,5 @@ function cerrarModalVer() {
     document.getElementById('modalVerTipo').style.display = 'none';
 }
 
-// Cargar tipos al entrar
 cargarTipos();
 </script>

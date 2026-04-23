@@ -57,6 +57,10 @@ if($action == 'create') {
         ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
         ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
         ':fuente_consulta'   => $_POST['fuente_consulta'] ?? 'ninguna',
+        ':departamento_id'   => $_POST['departamento_id'] ?: null,
+        ':municipio_id'      => $_POST['municipio_id']   ?: null,
+        ':despacho_id'       => $_POST['despacho_id']    ?: null,
+        ':entidad_id'        => $_POST['entidad_id']     ?: null,
     ];
     echo json_encode(['success' => $proceso->create($data)]);
     exit;
@@ -74,6 +78,10 @@ if($action == 'update') {
         ':fecha_vencimiento' => $_POST['fecha_vencimiento'] ?: null,
         ':es_privado'        => isset($_POST['es_privado']) ? 1 : 0,
         ':fuente_consulta'   => $_POST['fuente_consulta'] ?? 'ninguna',
+        ':departamento_id'   => $_POST['departamento_id'] ?: null,
+        ':municipio_id'      => $_POST['municipio_id']   ?: null,
+        ':despacho_id'       => $_POST['despacho_id']    ?: null,
+        ':entidad_id'        => $_POST['entidad_id']     ?: null,
     ];
     echo json_encode(['success' => $proceso->update($data)]);
     exit;

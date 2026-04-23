@@ -17,8 +17,8 @@
 .hon-global-kpi.pagado   { border-top-color: #3498db; }
 .hon-global-kpi.pendiente{ border-top-color: #f39c12; }
 .hon-global-kpi.vencido  { border-top-color: #e74c3c; }
-.hon-global-num   { font-size: 26px; font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
-.hon-global-label { font-size: 12px; color: #95a5a6; text-transform: uppercase; letter-spacing: .5px; }
+.hon-global-num   { font-size: 20px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
+.hon-global-label { font-size: 11px; color: #95a5a6; text-transform: uppercase; letter-spacing: .5px; }
 
 .hon-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; }
 .hon-badge.pagado   { background:#eafaf1; color:#27ae60; }
@@ -42,12 +42,10 @@
 }
 </style>
 
-<!-- Hero -->
+<!-- Hero - sin ícono -->
 <div style="background:linear-gradient(135deg,#1a2a3a 0%,#1e8449 100%);border-radius:10px;padding:12px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1)">
     <div>
-        <h2 style="color:white;margin:0;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px">
-            <i class="fas fa-dollar-sign"></i> Honorarios
-        </h2>
+        <h2 style="color:white;margin:0;font-size:16px;font-weight:700">Honorarios</h2>
     </div>
 </div>
 
@@ -83,14 +81,14 @@
 <table id="tablaHonGlobal" style="width:100%;border-collapse:collapse">
     <thead>
         <tr style="background:linear-gradient(90deg,#2c3e50,#34495e)">
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Proceso</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Cliente</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Concepto</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Tipo</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Valor</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Causación</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Pago</th>
-            <th style="padding:11px 14px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Estado</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Proceso</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Cliente</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Concepto</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Tipo</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Valor</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Causación</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Pago</th>
+            <th style="padding:7px 10px;color:white;font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px">Estado</th>
         </tr>
     </thead>
     <tbody id="honGlobalTbody"></tbody>
@@ -120,7 +118,6 @@ let honPaginaActual   = 1;
 let honTotalPaginas   = 1;
 let honDebounceTimer  = null;
 
-// ── Carga inicial: KPIs + primera página ──────────────────────
 function cargarHonGlobal() {
     fetchWithAuth('/procesos_juridicos/backend/controllers/HonorarioController.php?action=resumen_global')
         .then(r => r.json())
@@ -133,7 +130,6 @@ function cargarHonGlobal() {
     cargarPaginaHon(1);
 }
 
-// ── Carga una página con los filtros activos ──────────────────
 function cargarPaginaHon(pagina) {
     honPaginaActual = pagina;
 
@@ -141,7 +137,7 @@ function cargarPaginaHon(pagina) {
     const tipo   = document.getElementById('filtroTipoHon').value;
     const buscar = document.getElementById('filtroBuscarHon').value.trim();
 
-    let url = `/procesos_juridicos/backend/controllers/HonorarioController.php?action=list_global&pagina=${pagina}`;
+    let url = `/procesos_juridicos/backend/controllers/HonorarioController.php?action=list_global&por_pagina=10&pagina=${pagina}`;
     if (estado) url += `&estado=${encodeURIComponent(estado)}`;
     if (tipo)   url += `&tipo=${encodeURIComponent(tipo)}`;
     if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
@@ -169,24 +165,24 @@ function cargarPaginaHon(pagina) {
 
             tbody.innerHTML = result.data.map(h => `
                 <tr style="border-bottom:1px solid #f0f0f0;transition:background .15s" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
-                    <td style="padding:10px 14px"><strong style="color:#3498db">${h.numero_radicado||'—'}</strong></td>
-                    <td style="padding:10px 14px;font-size:13px">${h.cliente||'—'}</td>
-                    <td style="padding:10px 14px">
-                        <div style="font-weight:600;color:#2c3e50">${h.concepto}</div>
-                        ${h.observaciones ? '<div style="font-size:11px;color:#95a5a6">'+h.observaciones+'</div>' : ''}
+                    <td style="padding:10px 14px;font-size:12px;color:#3498db">${h.numero_radicado||'—'}</td>
+                    <td style="padding:10px 14px;font-size:12px;color:#2c3e50">${h.cliente||'—'}</td>
+                    <td style="padding:10px 14px;font-size:12px;color:#2c3e50">
+                        ${h.concepto}
+                        ${h.observaciones ? '<div style="font-size:10px;color:#95a5a6;margin-top:2px">'+h.observaciones+'</div>' : ''}
                     </td>
                     <td style="padding:10px 14px"><span class="hon-tipo-badge">${tiposHon[h.tipo]||h.tipo}</span></td>
-                    <td style="padding:10px 14px"><strong>${fmt(h.valor)}</strong></td>
+                    <td style="padding:10px 14px;font-size:12px;color:#2c3e50">${fmt(h.valor)}</td>
                     <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_causacion)}</td>
                     <td style="padding:10px 14px;font-size:12px;color:#7f8c8d">${fmtF(h.fecha_pago)}</td>
                     <td style="padding:10px 14px"><span class="hon-badge ${h.estado}">${h.estado}</span></td>
-                </tr>`).join('');
+                 </tr>
+            `).join('');
 
             renderPaginacionHon();
         });
 }
 
-// ── Paginación ────────────────────────────────────────────────
 function renderPaginacionHon() {
     const c = document.getElementById('paginacionHon');
     if (honTotalPaginas <= 1) { c.innerHTML = ''; return; }
@@ -204,7 +200,6 @@ function cambiarPaginaHon(p) {
     if (p >= 1 && p <= honTotalPaginas) cargarPaginaHon(p);
 }
 
-// ── Filtros: reset a página 1, debounce en el buscador ───────
 function filtrarHon() {
     clearTimeout(honDebounceTimer);
     honDebounceTimer = setTimeout(() => cargarPaginaHon(1), 300);

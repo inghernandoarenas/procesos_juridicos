@@ -1,14 +1,11 @@
 <div class="page-header">
     <h2>Usuarios</h2>
-    <button class="btn btn-primary" onclick="abrirModalUsuario()">
-        <i class="fas fa-user-plus"></i> Nuevo Usuario
-    </button>
+    <button class="btn btn-primary" onclick="abrirModalUsuario()">Nuevo Usuario</button>
 </div>
 
 <table id="tablaUsuarios">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Usuario</th>
             <th>Email</th>
@@ -19,7 +16,6 @@
     <tbody></tbody>
 </table>
 
-<!-- ── Modal Crear / Editar ─────────────────────────────────── -->
 <div id="modalUsuario" class="modal">
     <div class="modal-content">
         <span class="close" onclick="cerrarModalUsuario()">&times;</span>
@@ -58,14 +54,11 @@
 
             <div id="msgError" style="color:red; margin-bottom:10px; display:none;"></div>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Guardar
-            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
 </div>
 
-<!-- ── Modal Ver ────────────────────────────────────────────── -->
 <div id="modalVerUsuario" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('modalVerUsuario').style.display='none'">&times;</span>
@@ -75,7 +68,6 @@
 </div>
 
 <script>
-// ── Helpers ───────────────────────────────────────────────────
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     if (!token) { window.location.href = '/procesos_juridicos/frontend/login.php'; return Promise.reject(); }
@@ -86,7 +78,6 @@ function fetchWithAuth(url, options = {}) {
     });
 }
 
-// ── Cargar tabla ──────────────────────────────────────────────
 function cargarUsuarios() {
     fetchWithAuth('/procesos_juridicos/backend/controllers/UsuarioController.php?action=list')
         .then(r => r.json())
@@ -100,22 +91,21 @@ function cargarUsuarios() {
             data.forEach(u => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${u.id}</td>
-                        <td>${u.nombre}</td>
-                        <td>${u.usuario}</td>
-                        <td>${u.email}</td>
-                        <td>${u.telefono || '-'}</td>
-                        <td>
-                            <button class="btn-icon" onclick="verUsuario(${u.id})" data-tooltip="Ver"><i class="fas fa-eye"></i></button>
-                            <button class="btn-icon" onclick="editarUsuario(${u.id})" data-tooltip="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon" onclick="eliminarUsuario(${u.id})" data-tooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${u.nombre}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${u.usuario}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${u.email}</td>
+                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${u.telefono || '-'}</td>
+                        <td style="padding:8px 12px;white-space:nowrap">
+                            <button class="btn-icon" onclick="verUsuario(${u.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-icon" onclick="editarUsuario(${u.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" onclick="eliminarUsuario(${u.id})"><i class="fas fa-trash"></i></button>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
         });
 }
 
-// ── Abrir / cerrar modal ──────────────────────────────────────
 function abrirModalUsuario() {
     document.getElementById('formUsuario').reset();
     document.getElementById('usuarioId').value = '';
@@ -131,7 +121,6 @@ function cerrarModalUsuario() {
     document.getElementById('modalUsuario').style.display = 'none';
 }
 
-// ── Guardar ───────────────────────────────────────────────────
 function guardarUsuario(event) {
     event.preventDefault();
     const msgError = document.getElementById('msgError');
@@ -149,7 +138,7 @@ function guardarUsuario(event) {
         if (data.success) {
             cerrarModalUsuario();
             cargarUsuarios();
-            toast('Usuario guardado correctamente');
+            toast('Usuario guardado');
         } else {
             msgError.textContent = data.message || 'Error al guardar';
             msgError.style.display = 'block';
@@ -157,7 +146,6 @@ function guardarUsuario(event) {
     });
 }
 
-// ── Editar ────────────────────────────────────────────────────
 function editarUsuario(id) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/UsuarioController.php?action=get&id=${id}`)
         .then(r => r.json())
@@ -177,7 +165,6 @@ function editarUsuario(id) {
         });
 }
 
-// ── Ver ───────────────────────────────────────────────────────
 function verUsuario(id) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/UsuarioController.php?action=get&id=${id}`)
         .then(r => r.json())
@@ -208,7 +195,6 @@ function verUsuario(id) {
         });
 }
 
-// ── Eliminar ──────────────────────────────────────────────────
 function eliminarUsuario(id) {
     if (confirm('¿Está seguro de eliminar este usuario?')) {
         const fd = new FormData();
