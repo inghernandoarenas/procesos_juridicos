@@ -86,6 +86,33 @@ class Proceso {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
+    /**
+     * Retorna procesos activos que tienen despacho con codigo_oficial asignado.
+     * Usado por SincronizarPublicacionesController para saber qué despachos consultar.
+     */
+    public function getActivosConDespacho(): array {
+        $stmt = $this->conn->prepare("
+            SELECT p.id, p.numero_radicado,
+                   c.nombre, c.apellido,
+                   tp.nombre  AS especialidad,
+                   ep.nombre  AS estado_proceso_nombre,
+                   des.id     AS despacho_id,
+                   des.nombre AS despacho_nombre,
+                   des.codigo_oficial
+            FROM {$this->table} p
+            JOIN clientes c              ON p.cliente_id        = c.id
+            LEFT JOIN tipos_proceso   tp ON p.tipo_proceso_id   = tp.id
+            LEFT JOIN estados_proceso ep ON p.estado_proceso_id = ep.id
+            JOIN despachos des           ON p.despacho_id       = des.id
+            WHERE des.codigo_oficial IS NOT NULL
+              AND des.codigo_oficial != ''
+              AND (ep.nombre IS NULL OR ep.nombre NOT IN ('Finalizado','Archivado','Cerrado'))
+            ORDER BY p.id
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function create($data) {
         $query = "INSERT INTO " . $this->table . "
                 (cliente_id, tipo_proceso_id, estado_proceso_id, numero_radicado, descripcion, fecha_inicio, fecha_vencimiento, es_privado, fuente_consulta, departamento_id, municipio_id, despacho_id, entidad_id)

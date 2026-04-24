@@ -180,6 +180,31 @@
             </div>
         </div>
 
+        <!-- ══ PUBLICACIONES PROCESALES ════════════════════════════ -->
+        <div class="dash-card" id="cardPublicaciones" style="grid-column:span 3;border-left:4px solid #16a085">
+            <div class="dash-card-header" onclick="toggleCard('pubBody','pubToggle')">
+                <div class="dash-card-title" style="display:flex;align-items:center;gap:10px">
+                    <i class="fas fa-newspaper" style="color:#16a085;font-size:16px"></i>
+                    <span>Publicaciones Procesales</span>
+                    <span id="cntPublicaciones" class="dash-card-count" style="background:#e8f8f5;color:#16a085">—</span>
+                    <span style="font-size:10px;font-weight:400;color:#95a5a6">— últimos 7 días</span>
+                </div>
+                <div class="dash-card-meta">
+                    <button id="btnSyncPublicaciones" onclick="event.stopPropagation();sincronizarPublicaciones()"
+                            style="background:#16a085;color:white;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <i id="pubToggle" class="fas fa-chevron-down dash-toggle abierto" style="margin-left:8px"></i>
+                </div>
+            </div>
+            <div id="pubBody" class="dash-card-body">
+                <div id="pubContenido" style="padding:18px;text-align:center;color:#bdc3c7;font-size:13px">
+                    <i class="fas fa-newspaper" style="font-size:28px;display:block;margin-bottom:8px;color:#b2dfdb"></i>
+                    Haz clic en <strong>Actualizar</strong> para consultar publicaciones de los despachos de tus procesos
+                </div>
+            </div>
+        </div>
+
         <!-- ══ PRÓXIMOS A VENCER ═══════════════════════════════ -->
         <div class="dash-card">
             <div class="dash-card-header" onclick="toggleCard('vencerBody','vencerToggle')">
@@ -430,6 +455,67 @@ function cargarDesistimiento() {
         });
 }
 
+// ── Publicaciones ────────────────────────────────────────────
+function cargarPublicaciones() {
+    const div = document.getElementById('pubContenido');
+    div.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/ActuacionController.php?action=recientes&fuente=publicaciones&limite=15')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('cntPublicaciones').textContent = data.length || '0';
+            if (data.length === 0) {
+                div.innerHTML = '<div style="padding:18px;text-align:center;color:#bdc3c7;font-size:13px"><i class="fas fa-check-circle" style="color:#16a085;font-size:24px;display:block;margin-bottom:6px"></i>Sin publicaciones nuevas en los últimos 7 días</div>';
+                return;
+            }
+            const fmtF = f => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+            div.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr)">' +
+                data.map(a => {
+                    const tip = a.observaciones ? a.observaciones : '';
+                    return `<div class="dash-item" style="border-left:3px solid #16a085;cursor:pointer"
+                         onclick="verActuaciones(${a.proceso_id})" title="Ver timeline del proceso">
+                        <div class="dash-item-icon" style="background:#e8f8f5;color:#16a085;flex-shrink:0">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div class="dash-item-info" style="min-width:0">
+                            <div class="dash-item-radicado">${a.numero_radicado}</div>
+                            <div class="dash-item-cliente">${a.actuacion}</div>
+                            <div class="dash-item-meta">${a.nombre} ${a.apellido} · ${fmtF(a.fecha)}</div>
+                            ${tip ? '<div style="font-size:10px;color:#95a5a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+tip+'</div>' : ''}
+                        </div>
+                    </div>`;
+                }).join('') +
+            '</div>';
+        })
+        .catch(() => {
+            div.innerHTML = '<div style="padding:16px;text-align:center;color:#e74c3c;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Error al cargar publicaciones</div>';
+        });
+}
+
+function sincronizarPublicaciones() {
+    const btn = document.getElementById('btnSyncPublicaciones');
+    btn.disabled = true;
+    let segs = 0;
+    const ticker = setInterval(() => {
+        segs++;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + segs + 's...';
+    }, 1000);
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarPublicacionesController.php')
+        .then(r => r.json())
+        .then(data => {
+            toast(data.message, data.success ? 'success' : 'warning', 6000);
+            // Esperar 3s y recargar para ver resultados
+            setTimeout(() => cargarPublicaciones(), 3000);
+        })
+        .catch(() => toast('Error de conexión al sincronizar publicaciones', 'error'))
+        .finally(() => {
+            clearInterval(ticker);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+        });
+}
+
 // ── Init ──────────────────────────────────────────────────────
 cargarFinanzas();
 cargarProximosVencer();
@@ -443,5 +529,6 @@ setInterval(() => {
     cargarEnEspera();
     cargarSinMovimiento();
     cargarDesistimiento();
+    cargarPublicaciones();
 }, 300000);
 </script>
