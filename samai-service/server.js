@@ -267,11 +267,12 @@ app.post("/publicaciones/consultar", async (req, res) => {
         });
         page = await context.newPage();
 
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+        // domcontentloaded es suficiente — networkidle nunca termina en Liferay
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
         console.log(`  Página cargada (${Date.now()-t0}ms)`);
 
-        // Esperar a que cargue el portlet de resultados
-        await page.waitForTimeout(1500);
+        // Esperar que el portlet renderice los resultados
+        await page.waitForTimeout(3000);
 
         // Extraer texto plano del portlet
         const texto = await page.evaluate(() => {
