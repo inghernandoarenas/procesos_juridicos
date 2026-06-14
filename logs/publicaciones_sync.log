@@ -1,64 +1,24 @@
 
-[2026-04-23 03:18:41] === INICIO SYNC PUBLICACIONES ===
-
-[2026-04-23 03:18:50] === INICIO SYNC PUBLICACIONES ===
-
-[2026-04-23 03:18:53] === INICIO SYNC PUBLICACIONES ===
-
-[2026-04-23 03:18:55] === INICIO SYNC PUBLICACIONES ===
-
-[2026-04-23 14:01:39] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-04-16 → 2026-04-23
-Despachos únicos: 1
-[14:01:39] GET despacho=080011398200Z rango=2026-04-16/2026-04-23
-[14:01:40]   HTML parseado pero sin cards encontradas (0 resultados o estructura inesperada)
-[14:01:40]   Encontradas: 0 publicaciones
-  Sin publicaciones: 080011398200Z
-[14:01:40] FIN — insertadas: 0 | errores: 0
-
-[2026-04-23 14:01:52] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-04-16 → 2026-04-23
-Despachos únicos: 1
-[14:01:52] GET despacho=080011398200Z rango=2026-04-16/2026-04-23
-[14:01:54]   HTML parseado pero sin cards encontradas (0 resultados o estructura inesperada)
-[14:01:54]   Encontradas: 0 publicaciones
-  Sin publicaciones: 080011398200Z
-[14:01:54] FIN — insertadas: 0 | errores: 0
-
-[2026-04-23 14:12:27] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-04-16 → 2026-04-23
-Despachos únicos: 1
-[14:12:27] GET despacho=080011398200Z rango=2026-04-16/2026-04-23
-[14:12:29]   HTML parseado pero sin cards encontradas (0 resultados o estructura inesperada)
-[14:12:29]   Encontradas: 0 publicaciones
-  Sin publicaciones: 080011398200Z
-[14:12:29] FIN — insertadas: 0 | errores: 0
-
-[2026-04-24 22:04:34] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-04-17 → 2026-04-24
-Despachos únicos: 1
-[22:04:34] GET despacho=080011398200Z rango=2026-04-17/2026-04-24
-[22:04:36]   HTML parseado pero sin cards encontradas (0 resultados o estructura inesperada)
-[22:04:36]   Encontradas: 0 publicaciones
-  Sin publicaciones: 080011398200Z
-[22:04:36] FIN — insertadas: 0 | errores: 0
-
-[2026-06-05 19:49:26] === INICIO SYNC PUBLICACIONES ===
+[2026-06-05 21:34:16] === INICIO SYNC PUBLICACIONES ===
 Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
 Despachos únicos: 1
-[19:49:26] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
-[19:49:28]   HTML parseado pero sin cards encontradas (0 resultados o estructura inesperada)
-[19:49:28]   Encontradas: 0 publicaciones
+[21:34:16] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
+[21:34:45]   Encontradas: 0 publicaciones (29388ms)
   Sin publicaciones: 080011398200Z
-[19:49:28] FIN — insertadas: 0 | errores: 0
+[21:34:45] FIN — insertadas: 0 | errores: 0
 
-[2026-06-05 21:13:46] === INICIO SYNC PUBLICACIONES ===
+[2026-06-05 22:11:21] === INICIO SYNC PUBLICACIONES ===
 Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
 Despachos únicos: 1
-[21:13:46] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
-[21:14:18]   ERROR del servicio: page.goto: Timeout 30000ms exceeded.
-Call log:
-[2m  - navigating to "https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio?p_p_id=co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_action=busqueda&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaInicio=2026-05-29&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaFin=2026-06-05&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDepto=%2B&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDespacho=080011398200Z&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_verTotales=true", waiting until "networkidle"[22m
+[22:11:21] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
+[22:11:40]   Encontradas: 0 publicaciones (18292ms)
+  Sin publicaciones: 080011398200Z
+[22:11:40] FIN — insertadas: 0 | errores: 0
 
+[2026-06-05 22:13:38] === INICIO SYNC PUBLICACIONES ===
+Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
+Despachos únicos: 1
+[22:13:38] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
+[22:14:38]   ERROR: timeout o fallo en la llamada al servicio (60022ms)
   ERROR despacho 080011398200Z
-[21:14:18] FIN — insertadas: 0 | errores: 1
+[22:14:38] FIN — insertadas: 0 | errores: 1

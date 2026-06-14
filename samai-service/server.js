@@ -267,23 +267,81 @@ app.post("/publicaciones/consultar", async (req, res) => {
         });
         page = await context.newPage();
 
-        // domcontentloaded es suficiente — networkidle nunca termina en Liferay
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-        console.log(`  Página cargada (${Date.now()-t0}ms)`);
-
-        // Esperar que el portlet renderice los resultados
+        // 1. Cargar página inicial para establecer sesión
+        await page.goto(`${PUB_BASE}/web/publicaciones-procesales/inicio`,
+            { waitUntil: 'domcontentloaded', timeout: 45000 });
+        console.log(`  Sesión establecida (${Date.now()-t0}ms)`);
         await page.waitForTimeout(3000);
 
-        // Extraer texto plano del portlet
+        const PFX = `_${PORTLET}_`;
+
+        // 2. Llenar fechas (los campos son type=date, formato YYYY-MM-DD)
+        try {
+            await page.fill(`[name="${PFX}fechaInicio"]`, fecha_inicio);
+            await page.fill(`[name="${PFX}fechaFin"]`, fecha_fin);
+            console.log(`  Fechas llenadas: ${fecha_inicio} → ${fecha_fin}`);
+        } catch(e) {
+            console.log('  Error fechas:', e.message.split('\n')[0]);
+        }
+
+        // 3. Esperar que cargue el select de despachos y seleccionar
+        try {
+            await page.waitForSelector(`[name="${PFX}idDespacho"]`, { timeout: 10000 });
+            // Obtener las opciones disponibles para debug
+            const opciones = await page.evaluate((sel) => {
+                const s = document.querySelector(sel);
+                if (!s) return [];
+                return Array.from(s.options).slice(0, 5).map(o => ({ v: o.value, t: o.text.substring(0,40) }));
+            }, `[name="${PFX}idDespacho"]`);
+            console.log('  Opciones despacho (primeras 5):', JSON.stringify(opciones));
+
+            // Intentar seleccionar por valor exacto
+            await page.selectOption(`[name="${PFX}idDespacho"]`, { value: codigo_despacho });
+            console.log(`  Despacho seleccionado: ${codigo_despacho}`);
+        } catch(e) {
+            console.log('  Error despacho:', e.message.split('\n')[0]);
+        }
+
+        // 4. Click en botón buscar
+        try {
+            const btn = await page.$(`button[type=submit], input[type=submit]`);
+            if (btn) {
+                const btnText = await btn.evaluate(el => el.innerText || el.value);
+                console.log(`  Botón encontrado: "${btnText}"`);
+                await Promise.all([
+                    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                    btn.click(),
+                ]);
+                console.log(`  Formulario enviado (${Date.now()-t0}ms)`);
+            } else {
+                console.log('  Sin botón submit — haciendo Enter en campo fecha');
+                await page.press(`[name="${PFX}fechaFin"]`, 'Enter');
+            }
+        } catch(e) {
+            console.log('  Error submit:', e.message.split('\n')[0]);
+        }
+
+        await page.waitForTimeout(4000);
+
+        // 5. Extraer texto de resultados
         const texto = await page.evaluate(() => {
-            // Buscar el contenedor del portlet con los resultados
-            const portlet = document.querySelector(
-                '[id*="BIyXQFHVaYaq"] .portlet-body, ' +
-                '[id*="BIyXQFHVaYaq"] .portlet-content-container, ' +
-                '.portlet-column-content'
-            );
-            return portlet ? portlet.innerText : document.body.innerText;
+            const selectors = [
+                '[id*="BIyXQFHVaYaq"] .portlet-body',
+                '[id*="BIyXQFHVaYaq"]',
+                '.portlet-body',
+                '#content',
+                'main',
+            ];
+            for (const sel of selectors) {
+                const el = document.querySelector(sel);
+                if (el && el.innerText.includes('Categor')) return el.innerText;
+            }
+            return document.body.innerText;
         });
+
+        console.log(`  Tiene Categorías: ${texto.includes('Categor')}`);
+        console.log(`  Tiene Fecha Publicación: ${texto.includes('Fecha de Publicaci')}`);
+        console.log(`  Texto (300): ${texto.substring(0, 300).replace(/\n/g,' ')}`);
 
         await context.close();
 
