@@ -61,3 +61,51 @@
 [14:12:50] list proceso_id=14 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
 [14:13:01] list proceso_id=3 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
 [14:13:23] list proceso_id=14 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:34:20] list proceso_id=1 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:34:24] === INICIO radicado=08001405301420220040400 ===
+[23:34:24] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001405301420220040400&SoloActivos=false&pagina=1
+[23:34:25]   OK 694ms — 1403 bytes
+[23:34:25]   Pag 1 — despachos en esta pagina: 2
+[23:34:25]   totalPaginas=1 (registros=2, porPagina=20)
+[23:34:25] Total despachos encontrados: 2
+[23:34:25] -- Despacho 0: idProceso=133905621 | DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *
+[23:34:25] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=1
+[23:34:25]   OK 540ms — 14547 bytes
+[23:34:25]   Pag 1 — actuaciones recibidas: 40
+[23:34:25]   totalPaginas=2 (registros=45, porPagina=40)
+[23:34:25]   Pag 1 completada. totalPaginas=2
+[23:34:25] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=2
+[23:34:26]   OK 1240ms — 1996 bytes
+[23:34:26]   Pag 2 — actuaciones recibidas: 5
+[23:34:26]   totalPaginas=2 (registros=45, porPagina=40)
+[23:34:26]   Pag 2 completada. totalPaginas=2
+[23:34:26]   Despacho 133905621 — total actuaciones extraidas: 45
+[23:34:26] -- Despacho 1: idProceso=3177386321 | JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA
+[23:34:26] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177386321?pagina=1
+[23:34:27]   OK 605ms — 2660 bytes
+[23:34:27]   Pag 1 — actuaciones recibidas: 7
+[23:34:27]   totalPaginas=1 (registros=7, porPagina=40)
+[23:34:27]   Pag 1 completada. totalPaginas=1
+[23:34:27]   Despacho 3177386321 — total actuaciones extraidas: 7
+[23:34:27] === FIN — total resultado: 52 actuaciones ===
+[23:34:27] SYNC FIN proceso_id=1 — API:52 insertadas:52 ya_existian:0
+[23:36:24] list proceso_id=1 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[00:06:20] list proceso_id=1 — filas BD: 52 — nulas_fecha: 0 — nulos_id: 0
+[04:07:58] list proceso_id=2 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[04:22:49] list proceso_id=4 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[04:22:52] === INICIO radicado=70001333300920260001700 ===
+[04:22:52] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=70001333300920260001700&SoloActivos=false&pagina=1
+[04:22:52]   OK 490ms — 765 bytes
+[04:22:52]   Pag 1 — despachos en esta pagina: 1
+[04:22:52]   totalPaginas=1 (registros=1, porPagina=20)
+[04:22:52] Total despachos encontrados: 1
+[04:22:52] -- Despacho 0: idProceso=221192660 | JUZGADO 009 ADMINISTRATIVO  DE SINCELEJO
+[04:22:52] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/221192660?pagina=1
+[04:22:52]   OK 415ms — 2376 bytes
+[04:22:52]   Pag 1 — actuaciones recibidas: 6
+[04:22:52]   totalPaginas=1 (registros=6, porPagina=40)
+[04:22:52]   Pag 1 completada. totalPaginas=1
+[04:22:52]   Despacho 221192660 — total actuaciones extraidas: 6
+[04:22:52] === FIN — total resultado: 6 actuaciones ===
+[04:22:52] SYNC FIN proceso_id=4 — API:6 insertadas:6 ya_existian:0
+[04:23:10] list proceso_id=4 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
