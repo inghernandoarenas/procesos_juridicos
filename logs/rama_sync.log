@@ -109,3 +109,34 @@
 [04:22:52] === FIN — total resultado: 6 actuaciones ===
 [04:22:52] SYNC FIN proceso_id=4 — API:6 insertadas:6 ya_existian:0
 [04:23:10] list proceso_id=4 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[22:22:26] list proceso_id=5 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:22:34] list proceso_id=5 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[15:10:59] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[15:11:35] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[16:07:19] list proceso_id=6 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[16:07:44] list proceso_id=6 — filas BD: 4 — nulas_fecha: 0 — nulos_id: 0
+[16:07:57] list proceso_id=5 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[16:08:14] list proceso_id=5 — filas BD: 2 — nulas_fecha: 0 — nulos_id: 0
+[02:55:34] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:55:36] === INICIO radicado=08001311000320230038501 ===
+[02:55:36] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:55:37]   OK 525ms — 666 bytes
+[02:55:37]   Pag 1 — despachos en esta pagina: 1
+[02:55:37]   totalPaginas=1 (registros=1, porPagina=20)
+[02:55:37] Total despachos encontrados: 1
+[02:55:37] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[02:55:37] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[02:55:37]   OK 388ms — 2123 bytes
+[02:55:37]   Pag 1 — actuaciones recibidas: 5
+[02:55:37]   totalPaginas=1 (registros=5, porPagina=40)
+[02:55:37]   Pag 1 completada. totalPaginas=1
+[02:55:37]   Despacho 3283876501 — total actuaciones extraidas: 5
+[02:55:37] === FIN — total resultado: 5 actuaciones ===
+[02:55:37] SYNC FIN proceso_id=8 — API:5 insertadas:5 ya_existian:0
+[02:55:49] list proceso_id=8 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[16:13:43] list proceso_id=1 — filas BD: 53 — nulas_fecha: 0 — nulos_id: 0
+[16:14:24] list proceso_id=1 — filas BD: 53 — nulas_fecha: 0 — nulos_id: 0
+[02:36:15] list proceso_id=3 — filas BD: 2 — nulas_fecha: 0 — nulos_id: 0
+[02:59:01] list proceso_id=1 — filas BD: 54 — nulas_fecha: 0 — nulos_id: 0
+[03:22:28] list proceso_id=3 — filas BD: 4 — nulas_fecha: 0 — nulos_id: 0
+[03:22:45] list proceso_id=8 — filas BD: 7 — nulas_fecha: 0 — nulos_id: 0

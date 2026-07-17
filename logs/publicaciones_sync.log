@@ -1,24 +1,45 @@
 
-[2026-06-05 21:34:16] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
-Despachos únicos: 1
-[21:34:16] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
-[21:34:45]   Encontradas: 0 publicaciones (29388ms)
-  Sin publicaciones: 080011398200Z
-[21:34:45] FIN — insertadas: 0 | errores: 0
+[2026-07-17 03:17:24] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
+Despachos únicos: 3
+[03:17:24] GET despacho=080012213004L rango=2026-07-10/2026-07-17
+[03:17:37]   Encontradas: 1 publicaciones (13012ms)
+  Despacho 080012213004L — 1 publicaciones
+[03:17:37] GET despacho=080014189002G rango=2026-07-10/2026-07-17
+[03:17:47]   Encontradas: 2 publicaciones (9837ms)
+  Despacho 080014189002G — 2 publicaciones
+[03:17:47] GET despacho=080012213000 rango=2026-07-10/2026-07-17
+[03:17:58]   Encontradas: 1 publicaciones (10852ms)
+  Despacho 080012213000 — 1 publicaciones
+[03:17:58] FIN — insertadas: 0 | errores: 0
 
-[2026-06-05 22:11:21] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
-Despachos únicos: 1
-[22:11:21] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
-[22:11:40]   Encontradas: 0 publicaciones (18292ms)
-  Sin publicaciones: 080011398200Z
-[22:11:40] FIN — insertadas: 0 | errores: 0
+[2026-07-17 03:18:05] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
+Despachos únicos: 3
+[03:18:05] GET despacho=080012213004L rango=2026-07-10/2026-07-17
+[03:18:17]   Encontradas: 1 publicaciones (12537ms)
+  Despacho 080012213004L — 1 publicaciones
+[03:18:17] GET despacho=080014189002G rango=2026-07-10/2026-07-17
+[03:18:40]   Encontradas: 2 publicaciones (22494ms)
+  Despacho 080014189002G — 2 publicaciones
+[03:18:40] GET despacho=080012213000 rango=2026-07-10/2026-07-17
+[03:18:49]   Encontradas: 1 publicaciones (9111ms)
+  Despacho 080012213000 — 1 publicaciones
+[03:18:49] FIN — insertadas: 0 | errores: 0
 
-[2026-06-05 22:13:38] === INICIO SYNC PUBLICACIONES ===
-Procesos: 1 | Rango: 2026-05-29 → 2026-06-05
-Despachos únicos: 1
-[22:13:38] GET despacho=080011398200Z rango=2026-05-29/2026-06-05
-[22:14:38]   ERROR: timeout o fallo en la llamada al servicio (60022ms)
-  ERROR despacho 080011398200Z
-[22:14:38] FIN — insertadas: 0 | errores: 1
+[2026-07-17 03:22:50] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
+Despachos únicos: 3
+[03:22:50] GET despacho=080012213004L rango=2026-07-10/2026-07-17
+[03:23:24]   Encontradas: 1 publicaciones (33885ms)
+  Despacho 080012213004L — 1 publicaciones
+[03:23:24] GET despacho=080014189002G rango=2026-07-10/2026-07-17
+[03:24:09]   ERROR del servicio: page.goto: Timeout 45000ms exceeded.
+Call log:
+[2m  - navigating to "https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio?p_p_id=co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_action=busqueda&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaInicio=2026-07-10&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaFin=2026-07-17&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDepto=08&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idMuni=08001&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_verTotales=true", waiting until "domcontentloaded"[22m
+
+  ERROR despacho 080014189002G
+[03:24:09] GET despacho=080012213000 rango=2026-07-10/2026-07-17
+[03:24:19]   Encontradas: 1 publicaciones (9826ms)
+  Despacho 080012213000 — 1 publicaciones
+[03:24:19] FIN — insertadas: 0 | errores: 1

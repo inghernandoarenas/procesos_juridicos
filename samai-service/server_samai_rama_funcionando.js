@@ -267,33 +267,63 @@ app.post("/publicaciones/consultar", async (req, res) => {
         });
         page = await context.newPage();
 
-        // Extraer códigos DANE del código de despacho
-        // Estructura: DDMMMEEENNNX donde DD=depto, DDDDD=municipio
-        const idDepto = codigo_despacho.substring(0, 2);
-        const idMuni  = codigo_despacho.substring(0, 5);
+        // 1. Cargar página inicial para establecer sesión
+        await page.goto(`${PUB_BASE}/web/publicaciones-procesales/inicio`,
+            { waitUntil: 'domcontentloaded', timeout: 45000 });
+        console.log(`  Sesión establecida (${Date.now()-t0}ms)`);
+        await page.waitForTimeout(3000);
 
-        // Construir URL directa con parámetros — sin filtro de despacho
-        // El portal filtra por depto+municipio y nosotros filtramos por despacho en el parser
-        const urlBusqueda = `${PUB_BASE}/web/publicaciones-procesales/inicio`
-            + `?p_p_id=${encodeURIComponent(PORTLET)}`
-            + `&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view`
-            + `&_${encodeURIComponent(PORTLET)}_action=busqueda`
-            + `&_${encodeURIComponent(PORTLET)}_fechaInicio=${encodeURIComponent(fecha_inicio)}`
-            + `&_${encodeURIComponent(PORTLET)}_fechaFin=${encodeURIComponent(fecha_fin)}`
-            + `&_${encodeURIComponent(PORTLET)}_idDepto=${idDepto}`
-            + `&_${encodeURIComponent(PORTLET)}_idMuni=${idMuni}`
-            + `&_${encodeURIComponent(PORTLET)}_verTotales=true`;
+        const PFX = `_${PORTLET}_`;
 
-        console.log(`  URL depto=${idDepto} muni=${idMuni}`);
+        // 2. Llenar fechas (los campos son type=date, formato YYYY-MM-DD)
+        try {
+            await page.fill(`[name="${PFX}fechaInicio"]`, fecha_inicio);
+            await page.fill(`[name="${PFX}fechaFin"]`, fecha_fin);
+            console.log(`  Fechas llenadas: ${fecha_inicio} → ${fecha_fin}`);
+        } catch(e) {
+            console.log('  Error fechas:', e.message.split('\n')[0]);
+        }
 
-        // 1. Navegar directo a la búsqueda con parámetros GET
-        await page.goto(urlBusqueda, { waitUntil: 'domcontentloaded', timeout: 45000 });
-        console.log(`  Página cargada (${Date.now()-t0}ms)`);
+        // 3. Esperar que cargue el select de despachos y seleccionar
+        try {
+            await page.waitForSelector(`[name="${PFX}idDespacho"]`, { timeout: 10000 });
+            // Obtener las opciones disponibles para debug
+            const opciones = await page.evaluate((sel) => {
+                const s = document.querySelector(sel);
+                if (!s) return [];
+                return Array.from(s.options).slice(0, 5).map(o => ({ v: o.value, t: o.text.substring(0,40) }));
+            }, `[name="${PFX}idDespacho"]`);
+            console.log('  Opciones despacho (primeras 5):', JSON.stringify(opciones));
 
-        // 2. Esperar que el portlet renderice resultados
+            // Intentar seleccionar por valor exacto
+            await page.selectOption(`[name="${PFX}idDespacho"]`, { value: codigo_despacho });
+            console.log(`  Despacho seleccionado: ${codigo_despacho}`);
+        } catch(e) {
+            console.log('  Error despacho:', e.message.split('\n')[0]);
+        }
+
+        // 4. Click en botón buscar
+        try {
+            const btn = await page.$(`button[type=submit], input[type=submit]`);
+            if (btn) {
+                const btnText = await btn.evaluate(el => el.innerText || el.value);
+                console.log(`  Botón encontrado: "${btnText}"`);
+                await Promise.all([
+                    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                    btn.click(),
+                ]);
+                console.log(`  Formulario enviado (${Date.now()-t0}ms)`);
+            } else {
+                console.log('  Sin botón submit — haciendo Enter en campo fecha');
+                await page.press(`[name="${PFX}fechaFin"]`, 'Enter');
+            }
+        } catch(e) {
+            console.log('  Error submit:', e.message.split('\n')[0]);
+        }
+
         await page.waitForTimeout(4000);
 
-        // 3. Extraer texto
+        // 5. Extraer texto de resultados
         const texto = await page.evaluate(() => {
             const selectors = [
                 '[id*="BIyXQFHVaYaq"] .portlet-body',
@@ -304,29 +334,18 @@ app.post("/publicaciones/consultar", async (req, res) => {
             ];
             for (const sel of selectors) {
                 const el = document.querySelector(sel);
-                if (el && el.innerText.includes('Fecha de Publicaci')) return el.innerText;
+                if (el && el.innerText.includes('Categor')) return el.innerText;
             }
             return document.body.innerText;
         });
 
+        console.log(`  Tiene Categorías: ${texto.includes('Categor')}`);
         console.log(`  Tiene Fecha Publicación: ${texto.includes('Fecha de Publicaci')}`);
-        console.log(`  Texto (400): ${texto.substring(0,400).replace(/\n/g,' ')}`);
+        console.log(`  Texto (300): ${texto.substring(0, 300).replace(/\n/g,' ')}`);
 
         await context.close();
 
-        // Parsear todas las publicaciones del municipio
-        // Filtrar las que corresponden a nuestro despacho específico
-        const todasPublicaciones = parsearPublicaciones(texto, codigo_despacho);
-        const publicaciones = todasPublicaciones.filter(p => {
-            // Si no hay despacho en la publicación, incluir todas
-            if (!p.despacho) return true;
-            // Filtrar por código: el despacho del portal puede tener formato diferente
-            // Comparar los primeros 12 chars numéricos del código
-            const codNuestro = codigo_despacho.replace(/[^0-9]/g,'').substring(0,12);
-            const codPortal  = p.despacho.replace(/[^0-9]/g,'').substring(0,12);
-            return codPortal === codNuestro || codPortal.startsWith(codNuestro.substring(0,10));
-        });
-        console.log(`  Total municipio: ${todasPublicaciones.length} | Filtradas despacho: ${publicaciones.length}`);
+        const publicaciones = parsearPublicaciones(texto, codigo_despacho);
         console.log(`  ✓ ${publicaciones.length} publicaciones (${Date.now()-t0}ms)`);
         res.json({ publicaciones });
 

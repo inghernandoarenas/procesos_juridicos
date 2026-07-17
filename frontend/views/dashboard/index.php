@@ -469,23 +469,30 @@ function cargarPublicaciones() {
                 return;
             }
             const fmtF = f => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-            div.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr)">' +
-                data.map(a => {
+            // Tabla compacta con scroll
+            div.innerHTML = '<div style="overflow-y:auto;max-height:320px">' +
+                '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+                '<thead><tr style="background:#f0faf8;position:sticky;top:0;z-index:1">' +
+                '<th style="padding:7px 10px;text-align:left;font-weight:700;color:#16a085;border-bottom:2px solid #b2dfdb">Radicado</th>' +
+                '<th style="padding:7px 10px;text-align:left;font-weight:700;color:#16a085;border-bottom:2px solid #b2dfdb">Publicación</th>' +
+                '<th style="padding:7px 10px;text-align:left;font-weight:700;color:#16a085;border-bottom:2px solid #b2dfdb">Cliente</th>' +
+                '<th style="padding:7px 10px;text-align:left;font-weight:700;color:#16a085;border-bottom:2px solid #b2dfdb;white-space:nowrap">Fecha</th>' +
+                '<th style="padding:7px 10px;text-align:left;font-weight:700;color:#16a085;border-bottom:2px solid #b2dfdb">Tipo</th>' +
+                '</tr></thead><tbody>' +
+                data.map((a,i) => {
                     const tip = a.observaciones ? a.observaciones : '';
-                    return `<div class="dash-item" style="border-left:3px solid #16a085;cursor:pointer"
-                         onclick="verActuaciones(${a.proceso_id})" title="Ver timeline del proceso">
-                        <div class="dash-item-icon" style="background:#e8f8f5;color:#16a085;flex-shrink:0">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <div class="dash-item-info" style="min-width:0">
-                            <div class="dash-item-radicado">${a.numero_radicado}</div>
-                            <div class="dash-item-cliente">${a.actuacion}</div>
-                            <div class="dash-item-meta">${a.nombre} ${a.apellido} · ${fmtF(a.fecha)}</div>
-                            ${tip ? '<div style="font-size:10px;color:#95a5a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+tip+'</div>' : ''}
-                        </div>
-                    </div>`;
+                    const bg  = i % 2 === 0 ? '#fff' : '#f9fffe';
+                    return `<tr style="background:${bg};cursor:pointer;border-bottom:1px solid #e8f5f3"
+                         onclick="verActuaciones(${a.proceso_id})" title="Ver timeline del proceso"
+                         onmouseover="this.style.background='#e8f8f5'" onmouseout="this.style.background='${bg}'">
+                        <td style="padding:6px 10px;font-weight:600;color:#2980b9;white-space:nowrap">${a.numero_radicado}</td>
+                        <td style="padding:6px 10px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.actuacion}">${a.actuacion}</td>
+                        <td style="padding:6px 10px;white-space:nowrap">${a.nombre} ${a.apellido}</td>
+                        <td style="padding:6px 10px;white-space:nowrap;color:#7f8c8d">${fmtF(a.fecha)}</td>
+                        <td style="padding:6px 10px;font-size:11px;color:#16a085">${tip.replace('Tipo: ','').split('|')[0]}</td>
+                    </tr>`;
                 }).join('') +
-            '</div>';
+                '</tbody></table></div>';
         })
         .catch(() => {
             div.innerHTML = '<div style="padding:16px;text-align:center;color:#e74c3c;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Error al cargar publicaciones</div>';
