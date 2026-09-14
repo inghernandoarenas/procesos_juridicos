@@ -1,45 +1,45 @@
 
-[2026-07-17 03:17:24] === INICIO SYNC PUBLICACIONES ===
-Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
-Despachos únicos: 3
-[03:17:24] GET despacho=080012213004L rango=2026-07-10/2026-07-17
-[03:17:37]   Encontradas: 1 publicaciones (13012ms)
-  Despacho 080012213004L — 1 publicaciones
-[03:17:37] GET despacho=080014189002G rango=2026-07-10/2026-07-17
-[03:17:47]   Encontradas: 2 publicaciones (9837ms)
-  Despacho 080014189002G — 2 publicaciones
-[03:17:47] GET despacho=080012213000 rango=2026-07-10/2026-07-17
-[03:17:58]   Encontradas: 1 publicaciones (10852ms)
-  Despacho 080012213000 — 1 publicaciones
-[03:17:58] FIN — insertadas: 0 | errores: 0
-
-[2026-07-17 03:18:05] === INICIO SYNC PUBLICACIONES ===
-Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
-Despachos únicos: 3
-[03:18:05] GET despacho=080012213004L rango=2026-07-10/2026-07-17
-[03:18:17]   Encontradas: 1 publicaciones (12537ms)
-  Despacho 080012213004L — 1 publicaciones
-[03:18:17] GET despacho=080014189002G rango=2026-07-10/2026-07-17
-[03:18:40]   Encontradas: 2 publicaciones (22494ms)
-  Despacho 080014189002G — 2 publicaciones
-[03:18:40] GET despacho=080012213000 rango=2026-07-10/2026-07-17
-[03:18:49]   Encontradas: 1 publicaciones (9111ms)
-  Despacho 080012213000 — 1 publicaciones
-[03:18:49] FIN — insertadas: 0 | errores: 0
-
-[2026-07-17 03:22:50] === INICIO SYNC PUBLICACIONES ===
-Procesos: 3 | Rango: 2026-07-10 → 2026-07-17
-Despachos únicos: 3
-[03:22:50] GET despacho=080012213004L rango=2026-07-10/2026-07-17
-[03:23:24]   Encontradas: 1 publicaciones (33885ms)
-  Despacho 080012213004L — 1 publicaciones
-[03:23:24] GET despacho=080014189002G rango=2026-07-10/2026-07-17
-[03:24:09]   ERROR del servicio: page.goto: Timeout 45000ms exceeded.
+[2026-08-04 15:21:00] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Despachos: 3 | Rango: 2026-07-28 → 2026-08-04
+[15:21:00] GET despacho=080012213004L rango=2026-07-28/2026-08-04
+[15:21:13]   Encontradas: 0 publicaciones (13114ms)
+  Sin publicaciones: 080012213004L
+[15:21:13] GET despacho=080014189002G rango=2026-07-28/2026-08-04
+[15:21:23]   Encontradas: 0 publicaciones (9875ms)
+  Sin publicaciones: 080014189002G
+[15:21:23] GET despacho=080012213000 rango=2026-07-28/2026-08-04
+[15:22:08]   ERROR del servicio: page.goto: Timeout 45000ms exceeded.
 Call log:
-[2m  - navigating to "https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio?p_p_id=co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_action=busqueda&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaInicio=2026-07-10&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaFin=2026-07-17&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDepto=08&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idMuni=08001&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_verTotales=true", waiting until "domcontentloaded"[22m
+[2m  - navigating to "https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio?p_p_id=co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_action=busqueda&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaInicio=2026-07-28&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaFin=2026-08-04&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDepto=08&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idMuni=08001&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_verTotales=true", waiting until "domcontentloaded"[22m
 
-  ERROR despacho 080014189002G
-[03:24:09] GET despacho=080012213000 rango=2026-07-10/2026-07-17
-[03:24:19]   Encontradas: 1 publicaciones (9826ms)
+  ERROR conectando despacho 080012213000
+[15:22:08] FIN — actuaciones: 0 | PDFs: 0 | errores: 1
+
+[2026-08-04 16:22:55] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Despachos: 3 | Rango: 2026-07-28 → 2026-08-04
+[16:22:55] GET despacho=080012213004L rango=2026-07-28/2026-08-04
+[16:23:16]   Encontradas: 0 publicaciones (20968ms)
+  Sin publicaciones: 080012213004L
+[16:23:16] GET despacho=080014189002G rango=2026-07-28/2026-08-04
+[16:23:26]   Encontradas: 0 publicaciones (9406ms)
+  Sin publicaciones: 080014189002G
+[16:23:26] GET despacho=080012213000 rango=2026-07-28/2026-08-04
+[16:23:36]   Encontradas: 0 publicaciones (10061ms)
+  Sin publicaciones: 080012213000
+[16:23:36] FIN — actuaciones: 0 | PDFs: 0 | errores: 0
+
+[2026-08-25 21:53:54] === INICIO SYNC PUBLICACIONES ===
+Procesos: 3 | Despachos: 3 | Rango: 2026-08-18 → 2026-08-25
+[21:53:54] GET despacho=080012213004L rango=2026-08-18/2026-08-25
+[21:54:40]   ERROR del servicio: page.goto: Timeout 45000ms exceeded.
+Call log:
+[2m  - navigating to "https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio?p_p_id=co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_action=busqueda&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaInicio=2026-08-18&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_fechaFin=2026-08-25&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idDepto=08&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_idMuni=08001&_co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq_verTotales=true", waiting until "domcontentloaded"[22m
+
+  ERROR conectando despacho 080012213004L
+[21:54:40] GET despacho=080014189002G rango=2026-08-18/2026-08-25
+[21:54:50]   Encontradas: 0 publicaciones (9887ms)
+  Sin publicaciones: 080014189002G
+[21:54:50] GET despacho=080012213000 rango=2026-08-18/2026-08-25
+[21:55:00]   Encontradas: 1 publicaciones (9377ms)
   Despacho 080012213000 — 1 publicaciones
-[03:24:19] FIN — insertadas: 0 | errores: 1
+[21:55:00] FIN — actuaciones: 0 | PDFs: 0 | errores: 1

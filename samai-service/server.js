@@ -294,7 +294,8 @@ app.post("/publicaciones/consultar", async (req, res) => {
         await page.waitForTimeout(4000);
 
         // 3. Extraer texto
-        const texto = await page.evaluate(() => {
+        // 6. Extraer texto Y links de detalle (articleId)
+        const resultado = await page.evaluate(() => {
             const selectors = [
                 '[id*="BIyXQFHVaYaq"] .portlet-body',
                 '[id*="BIyXQFHVaYaq"]',
@@ -302,31 +303,72 @@ app.post("/publicaciones/consultar", async (req, res) => {
                 '#content',
                 'main',
             ];
+            let textoEl = null;
             for (const sel of selectors) {
                 const el = document.querySelector(sel);
-                if (el && el.innerText.includes('Fecha de Publicaci')) return el.innerText;
+                if (el && el.innerText.includes('Fecha de Publicaci')) { textoEl = el; break; }
             }
-            return document.body.innerText;
+            const texto = textoEl ? textoEl.innerText : document.body.innerText;
+
+            // Extraer articleId por cada publicación
+            const detalles = [];
+            document.querySelectorAll('a[href*="articleId"]').forEach(a => {
+                const m = a.href.match(/articleId=(\d+)/);
+                if (m && !detalles.find(d => d.articleId === m[1])) {
+                    detalles.push({ articleId: m[1], href: a.href });
+                }
+            });
+            return { texto, detalles };
         });
 
+        const texto   = resultado.texto;
+        const detalles = resultado.detalles;
         console.log(`  Tiene Fecha Publicación: ${texto.includes('Fecha de Publicaci')}`);
-        console.log(`  Texto (400): ${texto.substring(0,400).replace(/\n/g,' ')}`);
+        console.log(`  ArticleIds encontrados: ${detalles.length}`);
 
         await context.close();
 
         // Parsear todas las publicaciones del municipio
-        // Filtrar las que corresponden a nuestro despacho específico
         const todasPublicaciones = parsearPublicaciones(texto, codigo_despacho);
+
+        // Debug: mostrar despachos únicos encontrados
+        const despachosEncontrados = [...new Set(todasPublicaciones.map(p => p.despacho))];
+        console.log(`  Despachos en portal: ${JSON.stringify(despachosEncontrados)}`);
+        console.log(`  Buscando código: ${codigo_despacho}`);
+
+        // Filtrar por despacho: comparar código numérico (primeros 12 dígitos)
+        // El portal devuelve: "080012213000 - NOMBRE DEL DESPACHO"
+        // Nuestro código: "080012213000" o "080012213000X"
+        const codNuestro = codigo_despacho.replace(/[^0-9]/g,'').substring(0,12);
         const publicaciones = todasPublicaciones.filter(p => {
-            // Si no hay despacho en la publicación, incluir todas
-            if (!p.despacho) return true;
-            // Filtrar por código: el despacho del portal puede tener formato diferente
-            // Comparar los primeros 12 chars numéricos del código
-            const codNuestro = codigo_despacho.replace(/[^0-9]/g,'').substring(0,12);
-            const codPortal  = p.despacho.replace(/[^0-9]/g,'').substring(0,12);
-            return codPortal === codNuestro || codPortal.startsWith(codNuestro.substring(0,10));
+            if (!p.despacho) return false; // si no tiene despacho, NO incluir
+            const codPortal = p.despacho.replace(/[^0-9]/g,'').substring(0,12);
+            const match = codPortal === codNuestro;
+            if (!match) console.log(`  SKIP: ${codPortal} != ${codNuestro}`);
+            return match;
         });
-        console.log(`  Total municipio: ${todasPublicaciones.length} | Filtradas despacho: ${publicaciones.length}`);
+        console.log(`  Total municipio: ${todasPublicaciones.length} | Filtradas: ${publicaciones.length}`);
+
+        // Asociar articleId a cada publicación
+        // Primero construir mapa titulo→articleId de los links
+        // Los títulos de los links coinciden con los títulos de las publicaciones
+        publicaciones.forEach((pub) => {
+            const titulo = pub.titulo.toLowerCase().trim();
+            // Buscar coincidencia por título en los detalles
+            const det = detalles.find(d => {
+                // Comparar por texto del link (innerText) con el título
+                return titulo && d.href && d.href.includes('articleId');
+            });
+            // Si no hay coincidencia exacta, asignar por orden
+            if (!pub.articleId) {
+                const idx = publicaciones.indexOf(pub);
+                if (detalles[idx]) pub.articleId = detalles[idx].articleId;
+            }
+        });
+        // Asignación por orden como fallback confiable
+        publicaciones.forEach((pub, i) => {
+            if (!pub.articleId && detalles[i]) pub.articleId = detalles[i].articleId;
+        });
         console.log(`  ✓ ${publicaciones.length} publicaciones (${Date.now()-t0}ms)`);
         res.json({ publicaciones });
 
@@ -339,15 +381,271 @@ app.post("/publicaciones/consultar", async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
+//  PUBLICACIONES - DETALLE (PDFs)
+// ═══════════════════════════════════════════════════════════════
+
+app.post("/publicaciones/detalle", async (req, res) => {
+    const { article_id, detail_url } = req.body;
+    if (!article_id && !detail_url)
+        return res.status(400).json({ error: "Faltan parámetros: article_id o detail_url" });
+
+    console.log(`[${new Date().toLocaleTimeString()}] DETALLE articleId=${article_id}`);
+
+    let context, page;
+    try {
+        const br = await getBrowser();
+        context  = await br.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        });
+        page = await context.newPage();
+
+        const url = detail_url || `${PUB_BASE}/web/publicaciones-procesales/inicio`
+            + `?p_p_id=${encodeURIComponent(PORTLET)}`
+            + `&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view`
+            + `&_${encodeURIComponent(PORTLET)}_jspPage=%2FMETA-INF%2Fresources%2Fdetail.jsp`
+            + `&_${encodeURIComponent(PORTLET)}_articleId=${article_id}`;
+
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForTimeout(2000);
+
+        // Esperar que cargue la tabla de documentos
+        await page.waitForTimeout(2000);
+
+        // Extraer links de PDFs y fechas
+        const datos = await page.evaluate((base) => {
+            const pdfs = [];
+
+            // Selector principal: links con uuid (formato real del portal)
+            document.querySelectorAll('a[href*="uuid"], a[href*="document_library/get_file"], a[href*=".pdf"]').forEach(a => {
+                const href = a.href || '';
+                if (!href) return;
+                const nombre = (a.innerText || '').trim() || href.split('?')[0].split('/').pop();
+                const url = href.startsWith('http') ? href : base + href;
+                if (!pdfs.find(p => p.url === url)) {
+                    pdfs.push({ url, nombre: nombre.substring(0, 250) });
+                }
+            });
+
+            // Extraer fechas de la tabla
+            const fechas = [];
+            document.querySelectorAll('td').forEach(td => {
+                const t = (td.innerText || '').trim();
+                if (/\d{2}-[a-z]{3}-\d{4}/i.test(t)) fechas.push(t);
+            });
+
+            // Debug info
+            const allLinks = Array.from(document.querySelectorAll('a')).map(a => a.href).filter(h => h.includes('document') || h.includes('pdf') || h.includes('uuid')).slice(0,5);
+
+            return { pdfs, fechas: [...new Set(fechas)].slice(0, 10), debugLinks: allLinks };
+        }, PUB_BASE);
+
+        console.log(`  Debug links: ${JSON.stringify(datos.debugLinks)}`);
+
+        await context.close();
+        console.log(`  PDFs encontrados: ${datos.pdfs.length}`);
+        res.json({ pdfs: datos.pdfs, fechas: datos.fechas });
+
+    } catch (error) {
+        if (context) await context.close().catch(() => {});
+        if (browser && !browser.isConnected()) browser = null;
+        console.error(`  ✗ DETALLE error: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  TYBA — Justicia XXI Web
+// ═══════════════════════════════════════════════════════════════
+
+const TYBA_BASE = 'https://procesojudicial.ramajudicial.gov.co/Justicia21';
+const TYBA_CONSULTA  = `${TYBA_BASE}/Administracion/Ciudadanos/frmConsulta.aspx?opcion=consulta`;
+const TYBA_DETALLE   = `${TYBA_BASE}/Administracion/Ciudadanos/frmConsultaProceso.aspx`;
+
+app.post("/tyba/actuaciones", async (req, res) => {
+    const { radicado } = req.body;
+    if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
+
+    const t0 = Date.now();
+    console.log(`[${new Date().toLocaleTimeString()}] TYBA ${radicado}`);
+
+    let context, page;
+    try {
+        const br = await getBrowser();
+        context  = await br.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            locale: 'es-CO',
+        });
+        page = await context.newPage();
+
+        // 1. Cargar página de consulta
+        await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        console.log(`  Página cargada (${Date.now()-t0}ms)`);
+        await page.waitForTimeout(2000);
+
+        // 2. Llenar radicado
+        await page.fill('#MainContent_txtCodigoProceso', radicado);
+        console.log(`  Radicado ingresado`);
+
+        // 3. Esperar que reCAPTCHA esté listo y hacer submit
+        // El reCAPTCHA v2 se resuelve automáticamente cuando Playwright lo carga
+        // Intentar click en el checkbox del captcha si existe
+        try {
+            const captchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"]').first();
+            await captchaFrame.locator('#recaptcha-anchor').click({ timeout: 5000 });
+            console.log(`  reCAPTCHA clicked`);
+            await page.waitForTimeout(2000);
+        } catch(e) {
+            console.log(`  reCAPTCHA no encontrado o ya resuelto`);
+        }
+
+        // 4. Click en Consultar
+        await page.click('#MainContent_btnConsultar');
+        await page.waitForTimeout(3000);
+        console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
+
+        // 5. Extraer resultado de la tabla
+        const resultados = await page.evaluate(() => {
+            const filas = document.querySelectorAll('#MainContent_gvResultado tr, table tr');
+            const datos = [];
+            filas.forEach((fila, i) => {
+                if (i === 0) return; // skip header
+                const celdas = fila.querySelectorAll('td');
+                if (celdas.length >= 3) {
+                    // Buscar link de detalle
+                    const link = fila.querySelector('a, input[type=image]');
+                    datos.push({
+                        codigo: celdas[1]?.innerText?.trim() || '',
+                        clase:  celdas[2]?.innerText?.trim() || '',
+                        depto:  celdas[3]?.innerText?.trim() || '',
+                        ciudad: celdas[4]?.innerText?.trim() || '',
+                        despacho: celdas[5]?.innerText?.trim() || '',
+                        href:   link?.href || '',
+                        onclick: link?.getAttribute('onclick') || '',
+                    });
+                }
+            });
+            return datos;
+        });
+
+        console.log(`  Resultados encontrados: ${resultados.length}`);
+
+        if (resultados.length === 0) {
+            await context.close();
+            return res.json({ actuaciones: [], mensaje: 'No encontrado en TYBA' });
+        }
+
+        // 6. Ir al detalle del primer resultado — click en la lupa
+        try {
+            // Intentar click en el ícono de la lupa (primer resultado)
+            const lupa = await page.$('#MainContent_gvResultado td a, #MainContent_gvResultado td input[type=image], table td a img');
+            if (lupa) {
+                await Promise.all([
+                    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                    lupa.click(),
+                ]);
+            } else {
+                // Intentar navegar por onclick
+                const onclick = resultados[0].onclick;
+                if (onclick) {
+                    await page.evaluate((oc) => eval(oc), onclick);
+                    await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
+                }
+            }
+            console.log(`  Detalle cargado (${Date.now()-t0}ms)`);
+        } catch(e) {
+            console.log(`  Error navegando al detalle: ${e.message.split('\n')[0]}`);
+        }
+
+        await page.waitForTimeout(2000);
+
+        // 7. Extraer actuaciones del detalle
+        const actuaciones = await page.evaluate(() => {
+            // Buscar tab de actuaciones y hacer click
+            const tabs = document.querySelectorAll('a[href*="Actuaciones"], li a, .nav-tabs a');
+            let actTab = null;
+            tabs.forEach(t => {
+                if ((t.innerText || '').toLowerCase().includes('actuac')) actTab = t;
+            });
+            if (actTab) actTab.click();
+
+            // Extraer datos del proceso
+            const getVal = (label) => {
+                const inputs = document.querySelectorAll('input[type=text], input[readonly]');
+                for (const inp of inputs) {
+                    const lbl = inp.previousElementSibling || inp.closest('td')?.previousElementSibling;
+                    if (lbl && (lbl.innerText || '').includes(label)) return inp.value || '';
+                }
+                return '';
+            };
+
+            // Extraer filas de actuaciones
+            const actuaciones = [];
+            const tablas = document.querySelectorAll('table');
+            tablas.forEach(tabla => {
+                const headers = tabla.querySelector('tr');
+                if (!headers) return;
+                const headerText = headers.innerText.toLowerCase();
+                if (!headerText.includes('fecha') && !headerText.includes('actuac')) return;
+
+                const filas = tabla.querySelectorAll('tr');
+                filas.forEach((fila, i) => {
+                    if (i === 0) return;
+                    const celdas = fila.querySelectorAll('td');
+                    if (celdas.length >= 2) {
+                        const textos = Array.from(celdas).map(c => c.innerText.trim());
+                        // Buscar fecha en las celdas
+                        const fechaCell = textos.find(t => /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(t) || /\d{4}-\d{2}-\d{2}/.test(t));
+                        const actCell   = textos.find(t => t.length > 3 && !(/^\d{1,2}[\/\-]/.test(t)));
+                        if (fechaCell) {
+                            actuaciones.push({
+                                fecha:         fechaCell,
+                                actuacion:     actCell || textos[1] || '',
+                                observaciones: textos[2] || null,
+                            });
+                        }
+                    }
+                });
+            });
+            return actuaciones;
+        });
+
+        console.log(`  ✓ ${actuaciones.length} actuaciones TYBA (${Date.now()-t0}ms)`);
+        await context.close();
+
+        // Normalizar fechas DD/MM/YYYY → YYYY-MM-DD
+        const normalizarFecha = (f) => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(f)) return f;
+            const m = f.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (!m) return f;
+            const y = m[3].length === 2 ? '20' + m[3] : m[3];
+            return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+        };
+
+        res.json({
+            actuaciones: actuaciones.map(a => ({
+                ...a,
+                fecha: normalizarFecha(a.fecha),
+            }))
+        });
+
+    } catch (error) {
+        if (context) await context.close().catch(() => {});
+        if (browser && !browser.isConnected()) browser = null;
+        console.error(`  ✗ TYBA error: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
 //  HEALTH + START
 // ═══════════════════════════════════════════════════════════════
 
 app.get("/health", (req, res) => res.json({
     status: "ok",
     browser: browser?.isConnected() ?? false,
-    endpoints: ['/samai/actuaciones', '/publicaciones/consultar']
+    endpoints: ['/samai/actuaciones', '/publicaciones/consultar', '/tyba/actuaciones']
 }));
 
 getBrowser().catch(e => console.error("Error pre-lanzando browser:", e));
 
-app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - Publicaciones: POST /publicaciones/consultar\n`));
+app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - Publicaciones: POST /publicaciones/consultar\n   - TYBA:          POST /tyba/actuaciones\n`));

@@ -425,7 +425,6 @@ let paginaActualProcesos = 1;
 let totalPaginasProcesos = 1;
 let terminoBusqueda = '';
 let procesoActual = 0;
-let _pubNuevas = {}; // proceso_id → count publicaciones recientes (7 días)
 
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
@@ -585,8 +584,8 @@ function fetchWithAuth(url, options = {}) {
                     <option value="">— Seleccionar portal —</option>
                     <option value="rama">⚖️ Rama Judicial (Civil / Laboral / Familia)</option>
                     <option value="samai">🏛️ SAMAI — Consejo de Estado (Administrativo)</option>
-                    <option value="penal">🔒 SIUGJ — Penal (próximamente)</option>
-                    <option value="tyba">📁 TYBA — Civil antiguo (próximamente)</option>
+                    <option value="penal">🔒 SIUGJ — Laboral (próximamente)</option>
+                    <option value="tyba">📁 TYBA — Justicia XXI Web</option>
                     <option value="ninguna">❌ Sin portal asignado</option>
                 </select>
             </div>
@@ -865,10 +864,10 @@ document.addEventListener('click', () => cerrarAcc());
 const FUENTES = {
     rama:    { label: 'Rama Judicial', icon: 'fa-balance-scale', color: '#2980b9', controller: 'SincronizarRamaController.php'  },
     samai:   { label: 'SAMAI',         icon: 'fa-landmark',      color: '#7c3aed', controller: 'Sincronizarsamaicontroller.php' },
-    penal:   { label: 'SIUGJ (Penal)', icon: 'fa-gavel',         color: '#c0392b', controller: null },
-    tyba:    { label: 'TYBA',          icon: 'fa-folder-open',   color: '#e67e22', controller: null },
+    penal:   { label: 'SIUGJ (Laboral)', icon: 'fa-gavel',         color: '#c0392b', controller: null },
+    tyba:    { label: 'TYBA',          icon: 'fa-folder-open',   color: '#e67e22', controller: 'SincronizarTybaController.php' },
     ninguna:       { label: 'Sin portal',    icon: 'fa-ban',           color: '#95a5a6', controller: null },
-    publicaciones: { label: 'Publicaciones', icon: 'fa-newspaper',     color: '#16a085', controller: null },
+    // publicaciones: { label: 'Publicaciones', icon: 'fa-newspaper', color: '#16a085', controller: null }, // PAUSADO
 };
 let fuenteActual = 'ninguna';
 
@@ -1032,6 +1031,9 @@ function sincronizarRama() {
             const cfg2 = FUENTES[fuenteActual] || FUENTES.rama;
             btn.style.background = cfg2.color;
             btn.innerHTML = `<i class="fas fa-sync-alt"></i> ${cfg2.label}`;
+            // Recargar badges de publicaciones
+            fetchWithAuth('/procesos_juridicos/backend/controllers/ActuacionController.php?action=nuevas_por_proceso')
+                .then(r=>r.json()).then(m=>{ _pubNuevas=m; cargarProcesos(paginaActualProcesos, terminoBusqueda); }).catch(()=>{});
         });
 }
 
@@ -1055,10 +1057,6 @@ function limpiarBusqueda() {
 function cargarProcesos(pagina = 1, buscar = '') {
     let url = `/procesos_juridicos/backend/controllers/ProcesoController.php?action=list&por_pagina=10&pagina=${pagina}`;
     if (buscar) url += `&buscar=${encodeURIComponent(buscar)}`;
-
-    // Badges de publicaciones nuevas en paralelo
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ActuacionController.php?action=nuevas_por_proceso')
-        .then(r=>r.json()).then(m=>{ _pubNuevas=m; }).catch(()=>{});
 
     fetchWithAuth(url).then(r => r.json()).then(result => {
         paginaActualProcesos = result.pagina;
@@ -1094,7 +1092,6 @@ function cargarProcesos(pagina = 1, buscar = '') {
                 <tr${privado ? ' style="background:#fffbf0"' : ''}>
                     <td style="font-size:12px"><strong style="color:#2980b9">${p.numero_radicado}</strong>
                         ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7',publicaciones:'#e8f8f5'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',publicaciones:'#16a085'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : ''}
-                        ${_pubNuevas[p.id] ? `<span title="${_pubNuevas[p.id]} publicación(es) nueva(s)" style="display:inline-flex;align-items:center;justify-content:center;background:#16a085;color:white;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;margin-left:3px;vertical-align:middle;cursor:pointer" onclick="event.stopPropagation();verActuaciones(${p.id})">${_pubNuevas[p.id]}</span>` : ''}
                     </td>
                     <td style="font-size:12px">${p.nombre} ${p.apellido}</td>
                     <td style="font-size:12px">${p.tipo_proceso_nombre || '—'}</td>
@@ -1269,7 +1266,7 @@ function verProceso(id) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/ProcesoController.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(p => {
-            const fuenteLabels = {rama:'⚖️ Rama Judicial',samai:'🏛️ SAMAI',penal:'🔒 SIUGJ Penal',tyba:'📁 TYBA',ninguna:'❌ Sin portal'};
+            const fuenteLabels = {rama:'⚖️ Rama Judicial',samai:'🏛️ SAMAI',penal:'🔒 SIUGJ Laboral',tyba:'📁 TYBA',ninguna:'❌ Sin portal'};
             const fuenteColors = {rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',publicaciones:'#16a085',ninguna:'#95a5a6'};
             const fv = p.fecha_vencimiento;
             const vencidoStyle = (fv && new Date(fv) < new Date()) ? 'color:#e74c3c;font-weight:bold' : '';

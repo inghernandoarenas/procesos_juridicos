@@ -181,7 +181,7 @@
         </div>
 
         <!-- ══ PUBLICACIONES PROCESALES ════════════════════════════ -->
-        <div class="dash-card" id="cardPublicaciones" style="grid-column:span 3;border-left:4px solid #16a085">
+        <div class="dash-card" id="cardPublicaciones" style="display:none" style="grid-column:span 3;border-left:4px solid #16a085">
             <div class="dash-card-header" onclick="toggleCard('pubBody','pubToggle')">
                 <div class="dash-card-title" style="display:flex;align-items:center;gap:10px">
                     <i class="fas fa-newspaper" style="color:#16a085;font-size:16px"></i>
@@ -525,6 +525,7 @@ function sincronizarPublicaciones() {
 
 // ── Init ──────────────────────────────────────────────────────
 cargarFinanzas();
+cargarPublicaciones();
 cargarProximosVencer();
 cargarEnEspera();
 cargarSinMovimiento();
