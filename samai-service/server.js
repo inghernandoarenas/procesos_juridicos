@@ -454,12 +454,11 @@ app.post("/publicaciones/detalle", async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  TYBA — Justicia XXI Web
+//  TYBA — Justicia XXI Web (CORREGIDO)
 // ═══════════════════════════════════════════════════════════════
 
 const TYBA_BASE = 'https://procesojudicial.ramajudicial.gov.co/Justicia21';
 const TYBA_CONSULTA  = `${TYBA_BASE}/Administracion/Ciudadanos/frmConsulta.aspx?opcion=consulta`;
-const TYBA_DETALLE   = `${TYBA_BASE}/Administracion/Ciudadanos/frmConsultaProceso.aspx`;
 
 app.post("/tyba/actuaciones", async (req, res) => {
     const { radicado } = req.body;
@@ -479,144 +478,134 @@ app.post("/tyba/actuaciones", async (req, res) => {
 
         // 1. Cargar página de consulta
         await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        console.log(`  Página cargada (${Date.now()-t0}ms)`);
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1500);
 
         // 2. Llenar radicado
         await page.fill('#MainContent_txtCodigoProceso', radicado);
-        console.log(`  Radicado ingresado`);
+        
+        // 3. Click en Consultar
+        await Promise.all([
+            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+            page.click('#MainContent_btnConsultar'),
+        ]);
+        await page.waitForTimeout(1500);
 
-        // 3. Esperar que reCAPTCHA esté listo y hacer submit
-        // El reCAPTCHA v2 se resuelve automáticamente cuando Playwright lo carga
-        // Intentar click en el checkbox del captcha si existe
-        try {
-            const captchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"]').first();
-            await captchaFrame.locator('#recaptcha-anchor').click({ timeout: 5000 });
-            console.log(`  reCAPTCHA clicked`);
-            await page.waitForTimeout(2000);
-        } catch(e) {
-            console.log(`  reCAPTCHA no encontrado o ya resuelto`);
-        }
-
-        // 4. Click en Consultar
-        await page.click('#MainContent_btnConsultar');
-        await page.waitForTimeout(3000);
-        console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
-
-        // 5. Extraer resultado de la tabla
+        // 4. Extraer resultado de la tabla de resultados
         const resultados = await page.evaluate(() => {
-            const filas = document.querySelectorAll('#MainContent_gvResultado tr, table tr');
+            const posiblesTables = ['#MainContent_gvResultado', '#tblResultado', '.datatable', 'table'];
+            let filas = [];
+            for (const sel of posiblesTables) {
+                const tabla = document.querySelector(sel);
+                if (tabla) {
+                    filas = Array.from(tabla.querySelectorAll('tr'));
+                    if (filas.length > 1) break;
+                }
+            }
             const datos = [];
             filas.forEach((fila, i) => {
-                if (i === 0) return; // skip header
+                if (i === 0) return;
                 const celdas = fila.querySelectorAll('td');
                 if (celdas.length >= 3) {
-                    // Buscar link de detalle
                     const link = fila.querySelector('a, input[type=image]');
                     datos.push({
-                        codigo: celdas[1]?.innerText?.trim() || '',
-                        clase:  celdas[2]?.innerText?.trim() || '',
-                        depto:  celdas[3]?.innerText?.trim() || '',
-                        ciudad: celdas[4]?.innerText?.trim() || '',
+                        codigo:   celdas[1]?.innerText?.trim() || celdas[0]?.innerText?.trim() || '',
+                        clase:    celdas[2]?.innerText?.trim() || '',
+                        depto:    celdas[3]?.innerText?.trim() || '',
+                        ciudad:   celdas[4]?.innerText?.trim() || '',
                         despacho: celdas[5]?.innerText?.trim() || '',
-                        href:   link?.href || '',
-                        onclick: link?.getAttribute('onclick') || '',
+                        href:     link?.href || '',
+                        onclick:  link?.getAttribute('onclick') || link?.closest('tr')?.querySelector('[onclick]')?.getAttribute('onclick') || '',
                     });
                 }
             });
             return datos;
         });
 
-        console.log(`  Resultados encontrados: ${resultados.length}`);
-
         if (resultados.length === 0) {
             await context.close();
             return res.json({ actuaciones: [], mensaje: 'No encontrado en TYBA' });
         }
 
-        // 6. Ir al detalle del primer resultado — click en la lupa
+        // 5. Ir al detalle del primer resultado
         try {
-            // Intentar click en el ícono de la lupa (primer resultado)
-            const lupa = await page.$('#MainContent_gvResultado td a, #MainContent_gvResultado td input[type=image], table td a img');
+            const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
             if (lupa) {
                 await Promise.all([
                     page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
                     lupa.click(),
                 ]);
-            } else {
-                // Intentar navegar por onclick
-                const onclick = resultados[0].onclick;
-                if (onclick) {
-                    await page.evaluate((oc) => eval(oc), onclick);
-                    await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
-                }
+            } else if (resultados[0]?.onclick) {
+                await page.evaluate((oc) => { try { eval(oc); } catch(e) {} }, resultados[0].onclick);
+                await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
             }
-            console.log(`  Detalle cargado (${Date.now()-t0}ms)`);
         } catch(e) {
             console.log(`  Error navegando al detalle: ${e.message.split('\n')[0]}`);
         }
 
-        await page.waitForTimeout(2000);
+        // 6. Esperar la tabla de actuaciones (selector más robusto)
+        try {
+            await page.waitForSelector('#MainContent_grdActuaciones, table[id*="grdActuaciones"]', { timeout: 15000 });
+        } catch(e) {
+            console.log('  Tabla actuaciones no encontrada inmediatamente, esperando 3s adicionales...');
+            await page.waitForTimeout(3000);
+        }
 
-        // 7. Extraer actuaciones del detalle
+        // 7. Extraer actuaciones con mapeo CORREGIDO de columnas
         const actuaciones = await page.evaluate(() => {
-            // Buscar tab de actuaciones y hacer click
-            const tabs = document.querySelectorAll('a[href*="Actuaciones"], li a, .nav-tabs a');
-            let actTab = null;
-            tabs.forEach(t => {
-                if ((t.innerText || '').toLowerCase().includes('actuac')) actTab = t;
-            });
-            if (actTab) actTab.click();
+            const tabla = document.querySelector('#MainContent_grdActuaciones') || document.querySelector('table[id*="grdActuaciones"]');
+            if (!tabla) return [];
 
-            // Extraer datos del proceso
-            const getVal = (label) => {
-                const inputs = document.querySelectorAll('input[type=text], input[readonly]');
-                for (const inp of inputs) {
-                    const lbl = inp.previousElementSibling || inp.closest('td')?.previousElementSibling;
-                    if (lbl && (lbl.innerText || '').includes(label)) return inp.value || '';
+            // Leemos los encabezados para identificar las columnas dinámicamente (a prueba de cambios de TYBA)
+            const headers = Array.from(tabla.querySelectorAll('th')).map(th => th.innerText.trim().toLowerCase());
+            
+            // Índices por defecto en TYBA (Justicia XXI)
+            let idxFecha = 1;
+            let idxActuacion = 2;
+            let idxRegistro = 3;
+
+            // Ajuste dinámico si los encabezados coinciden
+            headers.forEach((h, i) => {
+                if (h.includes('fecha') && h.includes('actuaci')) idxFecha = i;
+                else if (h.includes('actuaci') || h.includes('descripci') || h.includes('evento')) idxActuacion = i;
+                else if (h.includes('registro') || h.includes('anotaci')) idxRegistro = i;
+            });
+
+            const filas = tabla.querySelectorAll('tr');
+            const resultado = [];
+
+            filas.forEach((fila, i) => {
+                if (i === 0) return; // saltar encabezado
+                const celdas = Array.from(fila.querySelectorAll('td'));
+                if (celdas.length < 3) return;
+
+                // ¡AQUÍ ESTABA EL ERROR! Se habían invertido fecha y tipo
+                const fechaAct  = celdas[idxFecha]?.innerText?.trim() || '';
+                const tipo      = celdas[idxActuacion]?.innerText?.trim() || '';
+                const fechaReg  = celdas[idxRegistro]?.innerText?.trim() || '';
+
+                if (fechaAct && tipo) {
+                    resultado.push({
+                        fecha:         fechaAct,
+                        actuacion:     tipo,
+                        observaciones: fechaReg || null,
+                    });
                 }
-                return '';
-            };
-
-            // Extraer filas de actuaciones
-            const actuaciones = [];
-            const tablas = document.querySelectorAll('table');
-            tablas.forEach(tabla => {
-                const headers = tabla.querySelector('tr');
-                if (!headers) return;
-                const headerText = headers.innerText.toLowerCase();
-                if (!headerText.includes('fecha') && !headerText.includes('actuac')) return;
-
-                const filas = tabla.querySelectorAll('tr');
-                filas.forEach((fila, i) => {
-                    if (i === 0) return;
-                    const celdas = fila.querySelectorAll('td');
-                    if (celdas.length >= 2) {
-                        const textos = Array.from(celdas).map(c => c.innerText.trim());
-                        // Buscar fecha en las celdas
-                        const fechaCell = textos.find(t => /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(t) || /\d{4}-\d{2}-\d{2}/.test(t));
-                        const actCell   = textos.find(t => t.length > 3 && !(/^\d{1,2}[\/\-]/.test(t)));
-                        if (fechaCell) {
-                            actuaciones.push({
-                                fecha:         fechaCell,
-                                actuacion:     actCell || textos[1] || '',
-                                observaciones: textos[2] || null,
-                            });
-                        }
-                    }
-                });
             });
-            return actuaciones;
+            return resultado;
         });
 
         console.log(`  ✓ ${actuaciones.length} actuaciones TYBA (${Date.now()-t0}ms)`);
         await context.close();
 
-        // Normalizar fechas DD/MM/YYYY → YYYY-MM-DD
+        // 8. Normalizar fechas de forma más robusta (maneja espacios y formatos variados)
         const normalizarFecha = (f) => {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(f)) return f;
-            const m = f.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-            if (!m) return f;
+            if (!f) return null;
+            const cleanF = f.replace(/\s+/g, ''); // Eliminar todos los espacios
+            if (/^\d{4}-\d{2}-\d{2}$/.test(cleanF)) return cleanF;
+            
+            const m = cleanF.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (!m) return f; // Si no parece una fecha, devolver el texto original sin romper
+            
             const y = m[3].length === 2 ? '20' + m[3] : m[3];
             return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
         };
