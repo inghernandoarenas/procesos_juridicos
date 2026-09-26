@@ -61,5 +61,60 @@ class ApiTyba {
         $this->log("✓ " . count($actuaciones) . " actuaciones ({$ms}ms)");
         return $actuaciones;
     }
+
+
+    /**
+     * Consulta los anexos de un proceso en TYBA a través del servicio Node.js
+     * 
+     * @param string $radicado El número de radicado del proceso
+     * @return array|null Retorna un array con los anexos o null si hay error de conexión
+     */
+    public function consultarAnexosPorRadicado($radicado) {
+        $url = 'http://localhost:3001/tyba/anexos';
+        
+        $data = [
+            'radicado' => trim($radicado)
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen(json_encode($data))
+        ]);
+        
+        // Aumentamos el timeout a 60 segundos porque TYBA a veces demora en cargar la pestaña de anexos
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60); 
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        // 1. Validar errores de red
+        if ($error) {
+            error_log("Error cURL en ApiTyba (Anexos): " . $error);
+            return null;
+        }
+
+        // 2. Validar respuesta del servidor Node
+        if ($httpCode !== 200) {
+            error_log("Error HTTP en ApiTyba (Anexos): Código " . $httpCode . " - Respuesta: " . $response);
+            return null;
+        }
+
+        // 3. Decodificar la respuesta
+        $result = json_decode($response, true);
+        
+        // El servicio Node devuelve: { "anexos": [...] } o { "error": "..." }
+        if (isset($result['anexos']) && is_array($result['anexos'])) {
+            return $result['anexos'];
+        }
+
+        // Si no hay anexos o vino un mensaje de "No encontrado", retornamos array vacío
+        return [];
+    }
 }
 ?>
