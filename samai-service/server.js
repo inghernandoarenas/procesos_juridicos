@@ -28,7 +28,7 @@ async function getBrowser() {
 
 // ═══════════════════════════════════════════════════════════════
 //  SAMAI
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
 async function obtenerGuid(radicado) {
     const corp = radicado.replace(/\D/g, '').substring(0, 7);
@@ -177,14 +177,14 @@ app.post("/samai/actuaciones", async (req, res) => {
     } catch (error) {
         if (context) await context.close().catch(() => {});
         if (browser && !browser.isConnected()) browser = null;
-        console.error(`  ✗ ${error.message}`);
+        console.error(`   ${error.message}`);
         res.status(500).json({ error: error.message });
     }
 });
 
 // ═══════════════════════════════════════════════════════════════
 //  PUBLICACIONES PROCESALES
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
 const PORTLET = 'co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq';
 const PUB_BASE = 'https://publicacionesprocesales.ramajudicial.gov.co';
@@ -329,7 +329,7 @@ app.post("/publicaciones/consultar", async (req, res) => {
         await context.close();
 
         // Parsear todas las publicaciones del municipio
-        const todasPublicaciones = parsearPublicaciones(texto, codigo_despacho);
+        const todasPublicaciones = parsearPublicaciones(texto, codigoDespacho);
 
         // Debug: mostrar despachos únicos encontrados
         const despachosEncontrados = [...new Set(todasPublicaciones.map(p => p.despacho))];
@@ -478,20 +478,29 @@ app.post("/tyba/actuaciones", async (req, res) => {
 
         // 1. Cargar página de consulta
         await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await page.waitForTimeout(1500);
+        console.log(`  Página cargada (${Date.now()-t0}ms)`);
+        await page.waitForTimeout(2000);
 
         // 2. Llenar radicado
         await page.fill('#MainContent_txtCodigoProceso', radicado);
-        
-        // 3. Click en Consultar
+        console.log(`  Radicado ingresado`);
+        await page.waitForTimeout(1000);
+
+        // 3. Click en Consultar (es input[type=submit] no button)
         await Promise.all([
             page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
             page.click('#MainContent_btnConsultar'),
         ]);
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(2000);
+        console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
 
-        // 4. Extraer resultado de la tabla de resultados
+        // 4. Ver qué hay en la página después del submit
+        const pageText = await page.evaluate(() => document.body.innerText.substring(0, 500));
+        console.log(`  Página post-submit: ${pageText.replace(/\n/g,' ').substring(0,200)}`);
+
+        // 5. Extraer resultado de la tabla de resultados
         const resultados = await page.evaluate(() => {
+            // Buscar tabla con resultados - puede ser gvResultado o DataTable
             const posiblesTables = ['#MainContent_gvResultado', '#tblResultado', '.datatable', 'table'];
             let filas = [];
             for (const sel of posiblesTables) {
@@ -521,73 +530,86 @@ app.post("/tyba/actuaciones", async (req, res) => {
             return datos;
         });
 
+        console.log(`  Resultados encontrados: ${resultados.length}`);
+
         if (resultados.length === 0) {
             await context.close();
             return res.json({ actuaciones: [], mensaje: 'No encontrado en TYBA' });
         }
 
-        // 5. Ir al detalle del primer resultado
+        // 6. Ir al detalle del primer resultado — click en la lupa
         try {
+            // Debug: ver qué links hay en la tabla
+            const links = await page.evaluate(() => {
+                return Array.from(document.querySelectorAll('table td a, table td input[type=image]'))
+                    .slice(0,3)
+                    .map(el => ({ tag: el.tagName, href: el.href||'', onclick: el.getAttribute('onclick')||'', src: el.src||'' }));
+            });
+            console.log(`  Links en tabla: ${JSON.stringify(links)}`);
+
+            // Click en primer link/imagen de la tabla de resultados
             const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
             if (lupa) {
                 await Promise.all([
                     page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
                     lupa.click(),
                 ]);
+                console.log(`  Detalle cargado (${Date.now()-t0}ms)`);
             } else if (resultados[0]?.onclick) {
                 await page.evaluate((oc) => { try { eval(oc); } catch(e) {} }, resultados[0].onclick);
                 await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
+                console.log(`  Detalle cargado via onclick (${Date.now()-t0}ms)`);
+            } else {
+                console.log(`  No se encontró link al detalle`);
             }
         } catch(e) {
             console.log(`  Error navegando al detalle: ${e.message.split('\n')[0]}`);
         }
 
-        // 6. Esperar la tabla de actuaciones (selector más robusto)
+        // Esperar que cargue la tabla de actuaciones específicamente
         try {
-            await page.waitForSelector('#MainContent_grdActuaciones, table[id*="grdActuaciones"]', { timeout: 15000 });
+            await page.waitForSelector('#MainContent_grdActuaciones', { timeout: 10000 });
+            console.log('  Tabla actuaciones encontrada');
         } catch(e) {
-            console.log('  Tabla actuaciones no encontrada inmediatamente, esperando 3s adicionales...');
+            console.log('  Tabla actuaciones no encontrada, esperando más...');
             await page.waitForTimeout(3000);
         }
 
-        // 7. Extraer actuaciones con mapeo CORREGIDO de columnas
+        // 7. Extraer actuaciones SOLO de #MainContent_grdActuaciones
+        // Columnas: CICLO | TIPO ACTUACIÓN | FECHA ACTUACIÓN | FECHA DE REGISTRO
         const actuaciones = await page.evaluate(() => {
-            const tabla = document.querySelector('#MainContent_grdActuaciones') || document.querySelector('table[id*="grdActuaciones"]');
+            const tabla = document.querySelector('#MainContent_grdActuaciones');
             if (!tabla) return [];
-
-            // Leemos los encabezados para identificar las columnas dinámicamente (a prueba de cambios de TYBA)
-            const headers = Array.from(tabla.querySelectorAll('th')).map(th => th.innerText.trim().toLowerCase());
-            
-            // Índices por defecto en TYBA (Justicia XXI)
-            let idxFecha = 1;
-            let idxActuacion = 2;
-            let idxRegistro = 3;
-
-            // Ajuste dinámico si los encabezados coinciden
-            headers.forEach((h, i) => {
-                if (h.includes('fecha') && h.includes('actuaci')) idxFecha = i;
-                else if (h.includes('actuaci') || h.includes('descripci') || h.includes('evento')) idxActuacion = i;
-                else if (h.includes('registro') || h.includes('anotaci')) idxRegistro = i;
-            });
 
             const filas = tabla.querySelectorAll('tr');
             const resultado = [];
 
             filas.forEach((fila, i) => {
-                if (i === 0) return; // saltar encabezado
+                if (i === 0) return; // skip header
                 const celdas = Array.from(fila.querySelectorAll('td'));
                 if (celdas.length < 3) return;
 
-                // ¡AQUÍ ESTABA EL ERROR! Se habían invertido fecha y tipo
-                const fechaAct  = celdas[idxFecha]?.innerText?.trim() || '';
-                const tipo      = celdas[idxActuacion]?.innerText?.trim() || '';
-                const fechaReg  = celdas[idxRegistro]?.innerText?.trim() || '';
+                const ciclo     = celdas[0]?.innerText?.trim() || '';
+                const tipo      = celdas[1]?.innerText?.trim() || '';
+                const fechaAct  = celdas[2]?.innerText?.trim() || '';
+                const fechaReg  = celdas[3]?.innerText?.trim() || '';
 
-                if (fechaAct && tipo) {
+                if (fechaAct) {
+                    // ══════════════════════════════════════════════════════════
+                    // CAMBIO: Generar id_api determinístico para evitar duplicados
+                    // ═══════════════════════════════════════════════════════════
+                    const raw = `${fechaAct}|${tipo}|${fechaReg}`;
+                    let hash = 5381;
+                    for (let j = 0; j < raw.length; j++) {
+                        hash = ((hash << 5) + hash) + raw.charCodeAt(j);
+                    }
+                    const idApi = 'TYBA_' + (hash >>> 0).toString(16).padStart(8, '0');
+
                     resultado.push({
+                        id_api:        idApi,
                         fecha:         fechaAct,
                         actuacion:     tipo,
-                        observaciones: fechaReg || null,
+                        observaciones: ciclo ? `Ciclo: ${ciclo} | Registro: ${fechaReg}` : (fechaReg ? `Registro: ${fechaReg}` : null),
                     });
                 }
             });
@@ -597,15 +619,11 @@ app.post("/tyba/actuaciones", async (req, res) => {
         console.log(`  ✓ ${actuaciones.length} actuaciones TYBA (${Date.now()-t0}ms)`);
         await context.close();
 
-        // 8. Normalizar fechas de forma más robusta (maneja espacios y formatos variados)
+        // Normalizar fechas DD/MM/YYYY → YYYY-MM-DD
         const normalizarFecha = (f) => {
-            if (!f) return null;
-            const cleanF = f.replace(/\s+/g, ''); // Eliminar todos los espacios
-            if (/^\d{4}-\d{2}-\d{2}$/.test(cleanF)) return cleanF;
-            
-            const m = cleanF.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-            if (!m) return f; // Si no parece una fecha, devolver el texto original sin romper
-            
+            if (/^\d{4}-\d{2}-\d{2}$/.test(f)) return f;
+            const m = f.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (!m) return f;
             const y = m[3].length === 2 ? '20' + m[3] : m[3];
             return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
         };
@@ -624,6 +642,118 @@ app.post("/tyba/actuaciones", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+
+// ═══════════════════════════════════════════════════════════════
+//  TYBA — ANEXOS
+// ═══════════════════════════════════════════════════════════════
+
+app.post("/tyba/anexos", async (req, res) => {
+    const { radicado } = req.body;
+    if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
+
+    const t0 = Date.now();
+    console.log(`[${new Date().toLocaleTimeString()}] TYBA ANEXOS ${radicado}`);
+
+    let context, page;
+    try {
+        const br = await getBrowser();
+        context = await br.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            locale: 'es-CO',
+        });
+        page = await context.newPage();
+
+        // 1. Ir a consulta
+        await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForTimeout(1500);
+        await page.fill('#MainContent_txtCodigoProceso', radicado);
+        
+        await Promise.all([
+            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+            page.click('#MainContent_btnConsultar'),
+        ]);
+        await page.waitForTimeout(1500);
+
+        // 2. Click en el primer resultado (lupa)
+        const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
+        if (lupa) {
+            await Promise.all([
+                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                lupa.click(),
+            ]);
+        } else {
+            await context.close();
+            return res.json({ anexos: [], mensaje: 'No se encontró el proceso para extraer anexos' });
+        }
+        await page.waitForTimeout(2000);
+
+        // 3. Buscar y hacer clic en la pestaña "Anexos"
+        // TYBA usa controles de pestañas que a veces son links o spans con texto específico
+        await page.evaluate(() => {
+            const elementos = Array.from(document.querySelectorAll('a, span, div, td'));
+            const tabAnexos = elementos.find(el => el.innerText.trim().toLowerCase().includes('anexos'));
+            if (tabAnexos) {
+                tabAnexos.click();
+            }
+        });
+        await page.waitForTimeout(3000); // Dar tiempo a que cargue la grilla de anexos vía AJAX
+
+        // 4. Extraer la tabla de anexos
+        const anexos = await page.evaluate(() => {
+            const tablas = Array.from(document.querySelectorAll('table'));
+            let tablaAnexos = null;
+            
+            // Buscar la tabla que contenga columnas típicas de anexos
+            for (const t of tablas) {
+                const texto = t.innerText.toLowerCase();
+                if (texto.includes('nombre del documento') || texto.includes('tipo de documento') || texto.includes('no se encontraron registros')) {
+                    tablaAnexos = t;
+                    break;
+                }
+            }
+
+            if (!tablaAnexos) return [];
+
+            const filas = tablaAnexos.querySelectorAll('tr');
+            const resultado = [];
+
+            for (let i = 1; i < filas.length; i++) { // Saltar encabezado
+                const celdas = filas[i].querySelectorAll('td');
+                if (celdas.length >= 3) {
+                    const fecha = celdas[0]?.innerText?.trim() || '';
+                    const tipo = celdas[1]?.innerText?.trim() || '';
+                    const nombre = celdas[2]?.innerText?.trim() || '';
+                    
+                    // Buscar el link o botón de descarga en la última celda
+                    const linkEl = celdas[3]?.querySelector('a') || celdas[3]?.querySelector('input[type="image"]');
+                    let url = '';
+                    if (linkEl) {
+                        url = linkEl.href || linkEl.getAttribute('onclick') || '';
+                    }
+
+                    // Filtrar filas vacías o de paginación
+                    if (nombre && nombre.length > 3 && !nombre.toLowerCase().includes('no se encontraron')) {
+                        resultado.push({ fecha, tipo, nombre, url });
+                    }
+                }
+            }
+            return resultado;
+        });
+
+        console.log(`  ✓ ${anexos.length} anexos encontrados en TYBA (${Date.now()-t0}ms)`);
+        await context.close();
+        res.json({ anexos });
+
+    } catch (error) {
+        if (context) await context.close().catch(() => {});
+        if (browser && !browser.isConnected()) browser = null;
+        console.error(`  ✗ TYBA ANEXOS error: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 // ═══════════════════════════════════════════════════════════════
 //  HEALTH + START

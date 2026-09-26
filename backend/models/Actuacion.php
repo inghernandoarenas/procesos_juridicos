@@ -45,7 +45,8 @@ class Actuacion {
         // Filtrar solo las nuevas
         $nuevas = [];
         foreach ($actuaciones as $act) {
-            $key = ((string)$act['id']) . '||' . ($act['despacho'] ?? '');
+            // CAMBIO 1: $act['id'] → $act['id_api']
+            $key = ((string)($act['id_api'] ?? '')) . '||' . ($act['despacho'] ?? '');
             if (!isset($existentes[$key])) {
                 $nuevas[] = $act;
             }
@@ -59,7 +60,8 @@ class Actuacion {
         foreach ($nuevas as $i => $act) {
             $placeholders[] = "(:pid{$i}, :id_api{$i}, :fuente{$i}, :despacho{$i}, :fecha{$i}, :actuacion{$i}, :obs{$i})";
             $params[":pid{$i}"]       = $proceso_id;
-            $params[":id_api{$i}"]    = (string)($act['id'] ?? 'samai_' . $i . '_' . substr(md5(($act['fecha']??'').($act['actuacion']??'')), 0, 8));
+            // CAMBIO 2: $act['id'] → $act['id_api']
+            $params[":id_api{$i}"]    = (string)($act['id_api'] ?? 'samai_' . $i . '_' . substr(md5(($act['fecha']??'').($act['actuacion']??'')), 0, 8));
             $params[":fuente{$i}"]    = $fuente;
             $params[":despacho{$i}"]  = $act['despacho'] ?? null;
             $params[":fecha{$i}"]     = substr((string)($act['fecha'] ?? ''), 0, 10);
@@ -78,7 +80,8 @@ class Actuacion {
 
         // Para notificaciones: obtener los IDs de las nuevas insertadas
         // Buscamos por id_api IN (...) de las que intentamos insertar
-        $ids_api = array_map(fn($a) => (string)$a['id'], $nuevas);
+        // CAMBIO 3: $a['id'] → $a['id_api']
+        $ids_api = array_map(fn($a) => (string)($a['id_api'] ?? ''), $nuevas);
         $in      = implode(',', array_fill(0, count($ids_api), '?'));
         $stmt2   = $this->conn->prepare(
             "SELECT id, id_api, despacho, fecha, actuacion, observaciones

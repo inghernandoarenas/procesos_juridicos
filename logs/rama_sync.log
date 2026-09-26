@@ -190,3 +190,26 @@
 [22:38:59] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
 [22:39:30] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [17:17:30] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[00:41:02] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[00:41:13] list proceso_id=4 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:41:17] === INICIO radicado=70001333300920260001700 ===
+[00:41:17] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=70001333300920260001700&SoloActivos=false&pagina=1
+[00:41:18]   OK 831ms — 765 bytes
+[00:41:18]   Pag 1 — despachos en esta pagina: 1
+[00:41:18]   totalPaginas=1 (registros=1, porPagina=20)
+[00:41:18] Total despachos encontrados: 1
+[00:41:18] -- Despacho 0: idProceso=221192660 | JUZGADO 009 ADMINISTRATIVO  DE SINCELEJO
+[00:41:18] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/221192660?pagina=1
+[00:41:19]   OK 822ms — 2718 bytes
+[00:41:19]   Pag 1 — actuaciones recibidas: 7
+[00:41:19]   totalPaginas=1 (registros=7, porPagina=40)
+[00:41:19]   Pag 1 completada. totalPaginas=1
+[00:41:19]   Despacho 221192660 — total actuaciones extraidas: 7
+[00:41:19] === FIN — total resultado: 7 actuaciones ===
+[00:41:19] SYNC FIN proceso_id=4 — API:7 insertadas:7 ya_existian:0
+[00:41:37] list proceso_id=4 — filas BD: 7 — nulas_fecha: 0 — nulos_id: 0
+[03:29:26] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:33:17] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[03:33:31] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[03:34:28] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:34:54] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
