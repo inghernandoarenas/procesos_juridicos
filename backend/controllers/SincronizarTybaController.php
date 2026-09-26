@@ -1,9 +1,9 @@
 <?php
-set_time_limit(120);
+set_time_limit(180); // antes 120 — margen porque anexos ahora corre después, en background
 
 require_once __DIR__ . '/../api/ApiTyba.php';
 require_once __DIR__ . '/../models/Actuacion.php';
-require_once __DIR__ . '/../models/Anexo.php'; // <-- AGREGAR ESTA LÍNEA
+require_once __DIR__ . '/../models/Anexo.php';
 require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
@@ -27,7 +27,12 @@ if (empty($proceso['numero_radicado'])) {
 
 $api = new ApiTyba();
 
-// 1. Traer y guardar actuaciones
+// 1. Traer y guardar actuaciones — esto es lo único que el usuario espera ver rápido.
+//    Antes, el request seguía bloqueado consultando anexos (otro scrape completo de
+//    TYBA) antes de responder, lo que sumaba ~20-60s extra y a menudo superaba el
+//    timeout de Apache (por defecto 60s) o el set_time_limit del script, cortando
+//    la conexión a medio camino. El frontend interpretaba eso como "Error de
+//    conexión al sincronizar" aunque no era un problema real de red.
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 if ($actuaciones === null) {
     echo json_encode(['success' => false, 'message' => 'No se pudo conectar con TYBA — verifica que el servicio Node esté corriendo']);
@@ -39,35 +44,46 @@ $insertadasAct = $actuacionModel->insertarLote($actuaciones, $proceso_id, 'tyba'
 $contadorAct = count($insertadasAct);
 $totalAct = count($actuaciones);
 
-// 2. Traer y guardar anexos (NUEVO)
-$anexosTyba = $api->consultarAnexosPorRadicado($proceso['numero_radicado']); // <-- Ver nota abajo*
-$contadorAnexos = 0;
-if ($anexosTyba !== null && is_array($anexosTyba)) {
-    $anexoModel = new Anexo();
-    $resultadoAnexos = $anexoModel->insertarLoteTyba($anexosTyba, $proceso_id, $usuario_id);
-    $contadorAnexos = $resultadoAnexos['insertados'];
-}
-
-// Respuesta inmediata
-$mensaje = [];
-if ($contadorAct > 0) $mensaje[] = "{$contadorAct} actuaciones nuevas";
-if ($contadorAnexos > 0) $mensaje[] = "{$contadorAnexos} anexos nuevos";
-
+// ── Responder YA al frontend con el resultado de actuaciones ──────────────
 echo json_encode([
     'success' => true,
-    'message' => count($mensaje) > 0 ? "TYBA: " . implode(", ", $mensaje) : "TYBA: todo al día",
+    'message' => $contadorAct > 0
+        ? "TYBA: {$contadorAct} actuaciones nuevas"
+        : "TYBA: todo al día (actuaciones)",
 ]);
 
-// Notificaciones en background (solo por actuaciones, como ya lo tenías)
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
+} else {
+    while (ob_get_level() > 0) {
+        ob_end_flush();
+    }
+    flush();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// A PARTIR DE AQUÍ: el usuario ya recibió su respuesta y el botón se
+// reactivó en el frontend. Todo lo siguiente corre en background y ya
+// no puede producir el mensaje "Error de conexión al sincronizar".
+// ═══════════════════════════════════════════════════════════════════════
+
+// 2. Traer y guardar anexos (puede tardar 15-60s adicionales, ya no importa)
+$anexosTyba = $api->consultarAnexosPorRadicado($proceso['numero_radicado']);
+if ($anexosTyba !== null && is_array($anexosTyba)) {
+    $anexoModel = new Anexo();
+    $anexoModel->insertarLoteTyba($anexosTyba, $proceso_id, $usuario_id);
+}
+
+// 3. Notificaciones por actuaciones nuevas
 if ($contadorAct > 0) {
-    if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-    else { while (ob_get_level() > 0) ob_end_flush(); flush(); }
-    
     require_once __DIR__ . '/../services/NotificacionService.php';
     $svc = new NotificacionService();
     foreach ($insertadasAct as $act) {
-        try { $svc->notificarNuevaActuacion($proceso, $act); }
-        catch (Exception $e) {}
+        try {
+            $svc->notificarNuevaActuacion($proceso, $act);
+        } catch (Exception $e) {
+            /* no interrumpir */
+        }
     }
 }
 ?>

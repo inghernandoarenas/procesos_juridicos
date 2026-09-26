@@ -51,9 +51,33 @@ async function obtenerGuid(radicado) {
         }
     );
     const data = await r.json();
-    if (!Array.isArray(data) || !data.length) return null;
-    const m = (data[0].ACCIONES || '').match(/goprocs_gestion\('([^']+)','([^']+)'/);
-    return m ? m[1] + m[2] : null;
+    if (!Array.isArray(data) || !data.length) {
+        console.log(`  GUID: sin resultados para ${radicado}`);
+        return null;
+    }
+
+    console.log(`  GUID: ${data.length} registro(s) encontrados para ${radicado}`);
+
+    // FIX: antes solo se miraba data[0]. Cuando SAMAI empezó a devolver
+    // más de un registro para el mismo radicado (cuadernos/duplicados),
+    // data[0] podía no traer el patrón goprocs_gestion y el proceso se
+    // reportaba como "no encontrado" sin abrir el navegador.
+    // Ahora: se filtra por el radicado exacto (si hay coincidencia) y se
+    // recorren todos los candidatos hasta encontrar uno con GUID válido.
+    const limpio = radicado.replace(/[^0-9]/g, '');
+    let candidatos = data.filter(item => {
+        const rad = (item.RADICADO || '').replace(/[^0-9]/g, '');
+        return rad === limpio;
+    });
+    if (candidatos.length === 0) candidatos = data; // fallback: probar todos igual
+
+    for (const item of candidatos) {
+        const m = (item.ACCIONES || '').match(/goprocs_gestion\('([^']+)','([^']+)'/);
+        if (m) return m[1] + m[2];
+    }
+
+    console.log(`  GUID: ningún registro de los ${data.length} tenía patrón goprocs_gestion válido`);
+    return null;
 }
 
 async function resolverCaptcha(page) {

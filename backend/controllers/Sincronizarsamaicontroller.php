@@ -1,4 +1,5 @@
 <?php
+//Sincronizarsamaicontroller.php
 set_time_limit(120);
 
 require_once __DIR__ . '/../api/ApiSamai.php';
