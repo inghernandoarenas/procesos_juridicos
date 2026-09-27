@@ -1,0 +1,22 @@
+[21:26:56] === SAMAI INICIO radicado=08001333300320260007300 ===
+[21:26:56] === SAMAI buscarProceso: 08001333300320260007300 ===
+[21:26:56]   Registros: 2
+[21:26:56]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[21:26:56]   Health OK (28ms) — iniciando consulta Playwright...
+[21:26:57]   ✓ Servicio devolvió 0 actuaciones (753ms)
+[21:26:57] === SAMAI FIN — 0 actuaciones ===
+[21:27:05] === SAMAI INICIO radicado=08001333300320260007300 ===
+[21:27:05] === SAMAI buscarProceso: 08001333300320260007300 ===
+[21:27:05]   Registros: 2
+[21:27:05]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[21:27:05]   Health OK (2ms) — iniciando consulta Playwright...
+[21:27:06]   ✓ Servicio devolvió 0 actuaciones (575ms)
+[21:27:06] === SAMAI FIN — 0 actuaciones ===
+ 
+[23:07:30] === SAMAI INICIO radicado=08001333300320260007300 ===
+[23:07:30] === SAMAI buscarProceso: 08001333300320260007300 ===
+[23:07:30]   Registros: 2
+[23:07:30]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[23:07:30]   Health OK (15ms) — iniciando consulta Playwright...
+[23:07:45]   ✓ Servicio devolvió 5 actuaciones (14299ms)
+[23:07:45] === SAMAI FIN — 5 actuaciones ===

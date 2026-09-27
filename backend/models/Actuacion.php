@@ -30,6 +30,24 @@ class Actuacion {
     public function insertarLote(array $actuaciones, int $proceso_id, string $fuente = 'rama'): array {
         if (empty($actuaciones)) return [];
 
+        // FIX: cada fuente (SAMAI, TYBA, RAMA, y cualquiera futura) puede
+        // traer el identificador único bajo la clave 'id_api' o simplemente
+        // 'id' (SAMAI y RAMA usan 'id'; TYBA ya usa 'id_api'). Antes solo se
+        // leía 'id_api', así que para SAMAI/RAMA siempre quedaba vacío y el
+        // control de duplicados no funcionaba correctamente. Se normaliza
+        // aquí UNA sola vez, de forma centralizada, para que el resto del
+        // método (y cualquier fuente nueva que se agregue) funcione igual
+        // sin importar qué clave use cada API.
+        $actuaciones = array_map(function ($act) use ($fuente) {
+            $idApi = (string)($act['id_api'] ?? $act['id'] ?? '');
+            if ($idApi === '') {
+                // Fallback determinístico si la fuente no trae ningún id
+                $idApi = $fuente . '_' . substr(md5(($act['fecha'] ?? '') . '|' . ($act['actuacion'] ?? '') . '|' . ($act['despacho'] ?? '')), 0, 16);
+            }
+            $act['id_api'] = $idApi;
+            return $act;
+        }, $actuaciones);
+
         // Primero: cargar los id_api que ya existen para este proceso
         // Un solo SELECT vs 52 SELECTs individuales
         $stmt = $this->conn->prepare(
@@ -45,8 +63,7 @@ class Actuacion {
         // Filtrar solo las nuevas
         $nuevas = [];
         foreach ($actuaciones as $act) {
-            // CAMBIO 1: $act['id'] → $act['id_api']
-            $key = ((string)($act['id_api'] ?? '')) . '||' . ($act['despacho'] ?? '');
+            $key = $act['id_api'] . '||' . ($act['despacho'] ?? '');
             if (!isset($existentes[$key])) {
                 $nuevas[] = $act;
             }
@@ -60,8 +77,7 @@ class Actuacion {
         foreach ($nuevas as $i => $act) {
             $placeholders[] = "(:pid{$i}, :id_api{$i}, :fuente{$i}, :despacho{$i}, :fecha{$i}, :actuacion{$i}, :obs{$i})";
             $params[":pid{$i}"]       = $proceso_id;
-            // CAMBIO 2: $act['id'] → $act['id_api']
-            $params[":id_api{$i}"]    = (string)($act['id_api'] ?? 'samai_' . $i . '_' . substr(md5(($act['fecha']??'').($act['actuacion']??'')), 0, 8));
+            $params[":id_api{$i}"]    = $act['id_api'];
             $params[":fuente{$i}"]    = $fuente;
             $params[":despacho{$i}"]  = $act['despacho'] ?? null;
             $params[":fecha{$i}"]     = substr((string)($act['fecha'] ?? ''), 0, 10);
@@ -79,9 +95,7 @@ class Actuacion {
         $insertadas = $stmt->rowCount();
 
         // Para notificaciones: obtener los IDs de las nuevas insertadas
-        // Buscamos por id_api IN (...) de las que intentamos insertar
-        // CAMBIO 3: $a['id'] → $a['id_api']
-        $ids_api = array_map(fn($a) => (string)($a['id_api'] ?? ''), $nuevas);
+        $ids_api = array_map(fn($a) => $a['id_api'], $nuevas);
         $in      = implode(',', array_fill(0, count($ids_api), '?'));
         $stmt2   = $this->conn->prepare(
             "SELECT id, id_api, despacho, fecha, actuacion, observaciones

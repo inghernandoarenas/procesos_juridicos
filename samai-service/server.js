@@ -30,54 +30,77 @@ async function getBrowser() {
 //  SAMAI
 // ══════════════════════════════════════════════════════════════
 
-async function obtenerGuid(radicado) {
+// FIX: el fetch() nativo de Node recibe HTTP 404 de SAMAI (probablemente
+// un WAF/anti-bot que filtra por huella TLS/HTTP, no solo por cabeceras —
+// ya se probó igualando headers/User-Agent al de PHP y sigue en 404).
+// Un navegador Chromium real (Playwright) es indistinguible del tráfico
+// normal, así que ahora la búsqueda del GUID se hace DESDE la página,
+// con page.evaluate(fetch(...)), reusando las cookies de sesión que deja
+// la carga inicial de procesos.aspx — igual que lo haría un usuario real.
+//
+// NOTA (actualizado): SAMAI migró su endpoint de búsqueda. Ya no es
+// Jprocesos.ashx/listaprocesosdata (devolvía un array plano con ACCIONES
+// tipo HTML/onclick), sino Jprocesos.ashx/buscar (devuelve JSON limpio
+// { ok, data: { items, page, total, ... } } con el guid directamente en
+// cada item — confirmado capturando la petición real desde DevTools).
+async function obtenerGuidEnPagina(page, radicado) {
     const corp = radicado.replace(/\D/g, '').substring(0, 7);
-    const r = await fetch(
-        'https://samai.consejodeestado.gov.co/Vistas/Casos/Jprocesos.ashx/listaprocesosdata',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type':     'application/json; charset=UTF-8',
-                'Accept':           'application/json',
-                'Referer':          'https://samai.consejodeestado.gov.co/Vistas/Casos/procesos.aspx',
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({
-                FW_tipobusqueda: 'FW_Rbtradicado', FW_ppexacta: '',
-                FW_tipoarea: 'FW_RbtCorporacion', FW_Txtcriterios: radicado,
-                FW_LstCorporacion: corp, FW_LstSeccion: '', FW_LstPonente: '',
-                FW_FechaI: '', FW_FechaF: '', FW_LstcriterioV: '', FW_LstcriterioP: '',
-            }),
+
+    const buscar = (corpValue) => page.evaluate(async ({ radicado, corpValue }) => {
+        try {
+            const r = await fetch('/Vistas/Casos/Jprocesos.ashx/buscar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept':       'application/json',
+                },
+                body: JSON.stringify({
+                    tipoBusqueda: 'radicado',
+                    criterio:     radicado,
+                    fraseExacta:  false,
+                    ambito:       'corporacion',
+                    corporacion:  corpValue,
+                    seccion:      '',
+                    ponente:      '',
+                    fechaDesde:   '',
+                    fechaHasta:   '',
+                    estado:       '',
+                    tipoParte:    '',
+                    pagina:       1,
+                    tamanoPagina: 10,
+                }),
+            });
+            const status = r.status;
+            if (!r.ok) return { status, items: [] };
+            const json = await r.json().catch(() => null);
+            const items = (json && json.ok && json.data && Array.isArray(json.data.items))
+                ? json.data.items : [];
+            return { status, items };
+        } catch (e) {
+            return { status: 0, items: [], err: e.message };
         }
-    );
-    const data = await r.json();
-    if (!Array.isArray(data) || !data.length) {
-        console.log(`  GUID: sin resultados para ${radicado}`);
+    }, { radicado, corpValue });
+
+    let res = await buscar(corp);
+    console.log(`  GUID(browser): corp="${corp}" → HTTP ${res.status}, ${res.items.length} item(s)${res.err ? ' err=' + res.err : ''}`);
+    if (!res.items.length) {
+        res = await buscar('');
+        console.log(`  GUID(browser): corp="" → HTTP ${res.status}, ${res.items.length} item(s)${res.err ? ' err=' + res.err : ''}`);
+    }
+    if (!res.items.length) return null;
+
+    // Preferir el item cuyo radicado coincide exactamente; si ninguno
+    // coincide (no debería pasar), probar con todos igual.
+    const limpio = radicado.replace(/[^0-9]/g, '');
+    let candidatos = res.items.filter(it => (it.radicado || '').replace(/[^0-9]/g, '') === limpio);
+    if (!candidatos.length) candidatos = res.items;
+
+    const match = candidatos.find(it => !!it.guid);
+    if (!match) {
+        console.log(`  GUID(browser): ningún item de los ${res.items.length} traía campo guid`);
         return null;
     }
-
-    console.log(`  GUID: ${data.length} registro(s) encontrados para ${radicado}`);
-
-    // FIX: antes solo se miraba data[0]. Cuando SAMAI empezó a devolver
-    // más de un registro para el mismo radicado (cuadernos/duplicados),
-    // data[0] podía no traer el patrón goprocs_gestion y el proceso se
-    // reportaba como "no encontrado" sin abrir el navegador.
-    // Ahora: se filtra por el radicado exacto (si hay coincidencia) y se
-    // recorren todos los candidatos hasta encontrar uno con GUID válido.
-    const limpio = radicado.replace(/[^0-9]/g, '');
-    let candidatos = data.filter(item => {
-        const rad = (item.RADICADO || '').replace(/[^0-9]/g, '');
-        return rad === limpio;
-    });
-    if (candidatos.length === 0) candidatos = data; // fallback: probar todos igual
-
-    for (const item of candidatos) {
-        const m = (item.ACCIONES || '').match(/goprocs_gestion\('([^']+)','([^']+)'/);
-        if (m) return m[1] + m[2];
-    }
-
-    console.log(`  GUID: ningún registro de los ${data.length} tenía patrón goprocs_gestion válido`);
-    return null;
+    return match.guid;
 }
 
 async function resolverCaptcha(page) {
@@ -118,40 +141,52 @@ async function resolverCaptcha(page) {
     return true;
 }
 
+// ACTUALIZADO: antes se adivinaba la tabla/columnas con heurística genérica
+// (buscar valores con forma de fecha). Ahora se apunta directo a la tabla
+// real confirmada por HTML: #MainContent_GridViewHistoricoActuaciones, con
+// columnas fijas: 0 Ver | 1 Fecha registro | 2 Fecha actuación | 3 Actuación
+// | 4 Anotación/detalle | 5 Estado | 6 Anexos | 7 Índice.
+// "Anotación / detalle" (col 4) es el campo que en nuestra BD es "observaciones".
 async function extraerActuacionesSamai(page) {
     return page.evaluate(() => {
-        const esFecha    = v => /^\d{2}\/\d{2}\/\d{4}$/.test(v) || /^\d{4}-\d{2}-\d{2}$/.test(v);
         const parseFecha = v => {
-            if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
-                const p = v.split('/'); return `${p[2]}-${p[1]}-${p[0]}`;
-            }
-            return v.substring(0, 10);
+            const m = v.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})/); // dd/mm/yyyy (con o sin hora)
+            if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+            if (/^\d{4}-\d{2}-\d{2}/.test(v)) return v.substring(0, 10);
+            return null;
         };
+
+        let tabla = document.querySelector('#MainContent_GridViewHistoricoActuaciones');
+        if (!tabla) {
+            // Fallback por si el ID cambia: buscar tabla cuyo encabezado
+            // contenga "fecha actuaci" y "anotaci"/"detalle".
+            tabla = Array.from(document.querySelectorAll('table')).find(t => {
+                const h = (t.querySelectorAll('tr')[0]?.innerText || '').toLowerCase();
+                return h.includes('fecha actuaci') && (h.includes('anotaci') || h.includes('detalle'));
+            });
+        }
+        if (!tabla) return [];
+
+        const filas = tabla.querySelectorAll('tr');
+        if (filas.length < 2) return [];
+
         const resultado = [];
-        for (const tabla of document.querySelectorAll('table')) {
-            const filas = tabla.querySelectorAll('tr');
-            if (filas.length < 2) continue;
-            const header = filas[0].innerText.toLowerCase();
-            if (!header.includes('fecha') && !header.includes('actuaci')) continue;
-            for (let i = 1; i < filas.length; i++) {
-                const cols = Array.from(filas[i].querySelectorAll('td'))
-                    .map(c => c.innerText.trim().replace(/\s+/g, ' '));
-                if (cols.length < 2) continue;
-                let lastFechaIdx = -1;
-                for (let j = 0; j < cols.length; j++)
-                    if (esFecha(cols[j])) lastFechaIdx = j;
-                if (lastFechaIdx < 0) continue;
-                const fecha = parseFecha(cols[lastFechaIdx]);
-                let actuacion = null, obs = null;
-                for (let j = lastFechaIdx + 1; j < cols.length; j++) {
-                    const v = cols[j];
-                    if (!esFecha(v) && v.length > 2 && !actuacion) actuacion = v;
-                    else if (actuacion && obs === null) obs = v || null;
-                }
-                if (fecha && actuacion)
-                    resultado.push({ fecha, actuacion, observaciones: obs, _rowIdx: i });
+        for (let i = 1; i < filas.length; i++) {
+            const cols = Array.from(filas[i].querySelectorAll('td')).map(td => td.innerText.trim());
+            if (cols.length < 5) continue;
+
+            const fecha         = parseFecha(cols[2] || '');
+            const actuacion     = cols[3] || '';
+            const observaciones = cols[4] || '';
+
+            if (fecha && actuacion) {
+                resultado.push({
+                    fecha,
+                    actuacion,
+                    observaciones: observaciones || null,
+                    _rowIdx: i,
+                });
             }
-            if (resultado.length > 0) break;
         }
         return resultado;
     });
@@ -165,12 +200,6 @@ app.post("/samai/actuaciones", async (req, res) => {
     const t0 = Date.now();
     console.log(`[${new Date().toLocaleTimeString()}] SAMAI ${radicado}`);
 
-    let guid;
-    try { guid = await obtenerGuid(radicado); }
-    catch(e) { return res.status(500).json({ error: e.message }); }
-    if (!guid) return res.json({ actuaciones: [], mensaje: 'No encontrado en SAMAI' });
-    console.log(`  GUID: ${guid} (${Date.now()-t0}ms)`);
-
     let context, page;
     try {
         const br = await getBrowser();
@@ -179,6 +208,23 @@ app.post("/samai/actuaciones", async (req, res) => {
             locale: 'es-CO',
         });
         page = await context.newPage();
+
+        // 1. Cargar la página de búsqueda real primero — establece cookies/sesión
+        //    igual que un usuario real, antes de intentar el POST del listado.
+        await page.goto('https://samai.consejodeestado.gov.co/Vistas/Casos/procesos.aspx',
+            { waitUntil: 'domcontentloaded', timeout: 30000 });
+        console.log(`  Página búsqueda cargada (${Date.now()-t0}ms)`);
+
+        // 2. Buscar el GUID del proceso, haciendo el POST DESDE el navegador
+        const guid = await obtenerGuidEnPagina(page, radicado);
+        if (!guid) {
+            await context.close();
+            console.log(`  GUID no encontrado (${Date.now()-t0}ms)`);
+            return res.json({ actuaciones: [], mensaje: 'No encontrado en SAMAI' });
+        }
+        console.log(`  GUID: ${guid} (${Date.now()-t0}ms)`);
+
+        // 3. Ir al detalle del proceso con el guid encontrado
         const url = `https://samai.consejodeestado.gov.co/Vistas/Casos/list_procesos.aspx?guid=${guid}`;
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 

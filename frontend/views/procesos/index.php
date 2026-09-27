@@ -707,7 +707,7 @@ function fetchWithAuth(url, options = {}) {
                 <thead>
                     <tr style="background:#2c3e50;position:sticky;top:0;z-index:1">
                         <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;width:100px">Fecha</th>
-                        <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">Actuación</th>
+                        <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;width:35%">Actuación</th>
                         <th style="padding:10px 14px;color:white;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">Anotación</th>
                     </tr>
                 </thead>
@@ -976,9 +976,8 @@ function cargarTimeline(procesoId) {
                         <td style="padding:9px 14px;white-space:nowrap;font-size:12px;color:#6c757d;vertical-align:top">${fmtF(a.fecha)}</td>
                         <td style="padding:9px 14px;vertical-align:top">
                             <div style="font-size:13px;font-weight:700;color:#2c3e50">${a.actuacion}</div>
-                            ${a.observaciones ? `<div style="font-size:12px;color:#7f8c8d;margin-top:2px">${a.observaciones}</div>` : ''}
                         </td>
-                        <td style="width:0"></td>
+                        <td style="padding:9px 14px;vertical-align:top;font-size:12px;color:#7f8c8d">${a.observaciones || '—'}</td>
                     </tr>`);
             });
 
