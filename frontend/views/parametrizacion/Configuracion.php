@@ -202,7 +202,7 @@
         </div>
     </div>
 
-    <!-- SAMAI -->
+    <!-- 
     <div class="config-section">
         <div class="config-section-header" style="background:linear-gradient(135deg,#4a235a,#7c3aed)">
             <i class="fas fa-landmark"></i> SAMAI â Consejo de Estado
@@ -248,6 +248,7 @@
             </div>
         </div>
     </div>
+    SAMAI -->
 
     <div style="display:flex;gap:12px;align-items:center">
         <button type="submit" class="btn btn-primary" style="padding:12px 28px;font-size:14px">
