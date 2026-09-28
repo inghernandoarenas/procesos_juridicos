@@ -1,8 +1,15 @@
 <?php
 set_time_limit(180); // antes 120 — margen porque anexos ahora corre después, en background
 
+// Nunca imprimir warnings/notices/deprecated en la respuesta: contaminan el JSON
+// y el frontend lo muestra como "Error de conexión al sincronizar".
+// Se registran en el log de errores de PHP en su lugar.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 require_once __DIR__ . '/../api/ApiTyba.php';
 require_once __DIR__ . '/../models/Actuacion.php';
+require_once __DIR__ . '/../models/Proceso.php'; // FIX: se había perdido al agregar Anexo.php -> "Class Proceso not found"
 require_once __DIR__ . '/../models/Anexo.php';
 require_once __DIR__ . '/../libs/auth.php';
 
@@ -35,7 +42,7 @@ $api = new ApiTyba();
 //    conexión al sincronizar" aunque no era un problema real de red.
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 if ($actuaciones === null) {
-    echo json_encode(['success' => false, 'message' => 'No se pudo conectar con TYBA — verifica que el servicio Node esté corriendo']);
+    echo json_encode(['success' => false, 'message' => 'No se pudo consultar TYBA en este momento. Intenta de nuevo; si persiste, revisa logs/tyba_sync.log y que el servicio Node esté corriendo']);
     exit;
 }
 
@@ -45,16 +52,30 @@ $contadorAct = count($insertadasAct);
 $totalAct = count($actuaciones);
 
 // ── Responder YA al frontend con el resultado de actuaciones ──────────────
-echo json_encode([
+$respuesta = json_encode([
     'success' => true,
     'message' => $contadorAct > 0
         ? "TYBA: {$contadorAct} actuaciones nuevas"
         : "TYBA: todo al día (actuaciones)",
 ]);
 
+// Seguir corriendo aunque el navegador ya tenga su respuesta
+ignore_user_abort(true);
+// Liberar el lock de sesión: si no, cualquier otra petición del mismo usuario
+// (abrir el modal, otra sincronización) queda esperando hasta que termine el background.
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
 if (function_exists('fastcgi_finish_request')) {
+    echo $respuesta;
     fastcgi_finish_request();
 } else {
+    // XAMPP / mod_php: flush() solo NO cierra la conexión. Hay que decirle al
+    // navegador exactamente cuántos bytes esperar y que la conexión termina ahí.
+    header('Content-Length: ' . strlen($respuesta));
+    header('Connection: close');
+    echo $respuesta;
     while (ob_get_level() > 0) {
         ob_end_flush();
     }

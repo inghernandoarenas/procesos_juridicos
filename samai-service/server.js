@@ -546,27 +546,51 @@ app.post("/tyba/actuaciones", async (req, res) => {
         });
         page = await context.newPage();
 
-        // 1. Cargar página de consulta
-        await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        console.log(`  Página cargada (${Date.now()-t0}ms)`);
-        await page.waitForTimeout(2000);
+        // 1-4. Cargar la consulta, llenar el radicado y enviar.
+        // - Se restauran las esperas de 2s (tras cargar) y 1s (tras llenar): al quitarlas
+        //   TYBA respondía "¡Error! El valor de la Capcha no coincide".
+        // - Si TYBA aun así rechaza por captcha, se reintenta. Antes ese error se leía
+        //   como "0 resultados" y el frontend mostraba "todo sincronizado" sin haber
+        //   traído nada.
+        const MAX_INTENTOS = 3;
+        let pageText = '';
+        let rechazadoPorCaptcha = true;
+        for (let intento = 1; intento <= MAX_INTENTOS && rechazadoPorCaptcha; intento++) {
+            await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            console.log(`  [intento ${intento}/${MAX_INTENTOS}] Página cargada (${Date.now()-t0}ms)`);
+            await page.waitForTimeout(2000);
 
-        // 2. Llenar radicado
-        await page.fill('#MainContent_txtCodigoProceso', radicado);
-        console.log(`  Radicado ingresado`);
-        await page.waitForTimeout(1000);
+            // Diagnóstico: campos del formulario relacionados con el captcha
+            const infoCaptcha = await page.evaluate(() =>
+                Array.from(document.querySelectorAll('input, img, canvas'))
+                    .filter(el => /cap(t)?cha/i.test((el.id || '') + (el.name || '') + (el.getAttribute('src') || '')))
+                    .map(el => ({ tag: el.tagName, id: el.id, type: el.type || '', valorLen: (el.value || '').length }))
+            );
+            console.log(`  Campos captcha: ${JSON.stringify(infoCaptcha)}`);
 
-        // 3. Click en Consultar (es input[type=submit] no button)
-        await Promise.all([
-            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
-            page.click('#MainContent_btnConsultar'),
-        ]);
-        await page.waitForTimeout(2000);
-        console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
+            // 2. Llenar radicado
+            await page.fill('#MainContent_txtCodigoProceso', radicado);
+            console.log(`  Radicado ingresado`);
+            await page.waitForTimeout(1000);
 
-        // 4. Ver qué hay en la página después del submit
-        const pageText = await page.evaluate(() => document.body.innerText.substring(0, 500));
-        console.log(`  Página post-submit: ${pageText.replace(/\n/g,' ').substring(0,200)}`);
+            // 3. Click en Consultar (es input[type=submit] no button)
+            await Promise.all([
+                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                page.click('#MainContent_btnConsultar'),
+            ]);
+            await page.waitForTimeout(2000);
+            console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
+
+            // 4. Ver qué hay en la página después del submit
+            pageText = await page.evaluate(() => document.body.innerText.substring(0, 500));
+            console.log(`  Página post-submit: ${pageText.replace(/\n/g,' ').substring(0,200)}`);
+
+            rechazadoPorCaptcha = /¡\s*Error\s*!/i.test(pageText) && /cap(t)?cha/i.test(pageText);
+            if (rechazadoPorCaptcha) console.log(`  ⚠ TYBA rechazó por captcha (intento ${intento}/${MAX_INTENTOS})`);
+        }
+        if (rechazadoPorCaptcha) {
+            throw new Error(`TYBA rechazó la consulta por captcha ("El valor de la Capcha no coincide") tras ${MAX_INTENTOS} intentos`);
+        }
 
         // 5. Extraer resultado de la tabla de resultados
         const resultados = await page.evaluate(() => {
@@ -636,52 +660,63 @@ app.post("/tyba/actuaciones", async (req, res) => {
             console.log(`  Error navegando al detalle: ${e.message.split('\n')[0]}`);
         }
 
-        // Esperar que cargue la tabla de actuaciones específicamente
+        // Esperar la tabla de actuaciones. Antes: waitForSelector "visible" con 10s
+        // que fallaba y luego 3s fijos (13s perdidos en cada consulta). Ahora se
+        // espera solo a que existan filas en el DOM y se continúa apenas aparecen.
         try {
-            await page.waitForSelector('#MainContent_grdActuaciones', { timeout: 10000 });
-            console.log('  Tabla actuaciones encontrada');
+            await page.waitForSelector('#MainContent_grdActuaciones tr td', { state: 'attached', timeout: 25000 });
+            console.log(`  Tabla actuaciones lista (${Date.now()-t0}ms)`);
         } catch(e) {
-            console.log('  Tabla actuaciones no encontrada, esperando más...');
-            await page.waitForTimeout(3000);
+            console.log(`  Tabla actuaciones no apareció en 25s (${Date.now()-t0}ms)`);
         }
 
         // 7. Extraer actuaciones SOLO de #MainContent_grdActuaciones
-        // Columnas: CICLO | TIPO ACTUACIÓN | FECHA ACTUACIÓN | FECHA DE REGISTRO
+        // Columnas REALES (confirmadas con el HTML de la tabla):
+        //   0 [lupa/botón]  |  1 Ciclo  |  2 Tipo Actuación  |  3 Fecha Actuación  |  4 Fecha de Registro
+        // (antes se leía desde la celda 0 como si fuera "Ciclo", y todo quedaba corrido una posición)
         const actuaciones = await page.evaluate(() => {
             const tabla = document.querySelector('#MainContent_grdActuaciones');
             if (!tabla) return [];
 
+            const limpiar = v => (v || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
             const filas = tabla.querySelectorAll('tr');
             const resultado = [];
+            const vistos = {}; // para distinguir filas con datos idénticos sin depender del orden
 
             filas.forEach((fila, i) => {
-                if (i === 0) return; // skip header
+                if (i === 0) return; // encabezado
                 const celdas = Array.from(fila.querySelectorAll('td'));
-                if (celdas.length < 3) return;
+                if (celdas.length < 5) return; // descarta fila de paginación u otras
 
-                const ciclo     = celdas[0]?.innerText?.trim() || '';
-                const tipo      = celdas[1]?.innerText?.trim() || '';
-                const fechaAct  = celdas[2]?.innerText?.trim() || '';
-                const fechaReg  = celdas[3]?.innerText?.trim() || '';
+                const ciclo    = limpiar(celdas[1].innerText);
+                const tipo     = limpiar(celdas[2].innerText);
+                const fechaAct = limpiar(celdas[3].innerText);
+                const fechaReg = limpiar(celdas[4].innerText);
 
-                if (fechaAct) {
-                    // ══════════════════════════════════════════════════════════
-                    // CAMBIO: Generar id_api determinístico para evitar duplicados
-                    // ═══════════════════════════════════════════════════════════
-                    const raw = `${fechaAct}|${tipo}|${fechaReg}`;
-                    let hash = 5381;
-                    for (let j = 0; j < raw.length; j++) {
-                        hash = ((hash << 5) + hash) + raw.charCodeAt(j);
-                    }
-                    const idApi = 'TYBA_' + (hash >>> 0).toString(16).padStart(8, '0');
+                if (!fechaAct || !tipo) return;
 
-                    resultado.push({
-                        id_api:        idApi,
-                        fecha:         fechaAct,
-                        actuacion:     tipo,
-                        observaciones: ciclo ? `Ciclo: ${ciclo} | Registro: ${fechaReg}` : (fechaReg ? `Registro: ${fechaReg}` : null),
-                    });
+                // id_api determinístico (no depende de la posición de la fila, que
+                // cambia cuando llegan actuaciones nuevas). Si dos filas son idénticas
+                // se distinguen con un contador de repetición.
+                const raw = `${ciclo}|${tipo}|${fechaAct}|${fechaReg}`;
+                vistos[raw] = (vistos[raw] || 0) + 1;
+                const clave = vistos[raw] > 1 ? `${raw}#${vistos[raw]}` : raw;
+                let hash = 5381;
+                for (let j = 0; j < clave.length; j++) {
+                    hash = ((hash << 5) + hash) + clave.charCodeAt(j);
                 }
+                const idApi = 'TYBA_' + (hash >>> 0).toString(16).padStart(8, '0');
+
+                const partes = [];
+                if (ciclo)    partes.push(`Ciclo: ${ciclo}`);
+                if (fechaReg) partes.push(`Registro: ${fechaReg}`);
+
+                resultado.push({
+                    id_api:        idApi,
+                    fecha:         fechaAct,
+                    actuacion:     tipo,
+                    observaciones: partes.length ? partes.join(' | ') : null,
+                });
             });
             return resultado;
         });

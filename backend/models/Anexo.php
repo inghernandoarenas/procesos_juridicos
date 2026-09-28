@@ -49,7 +49,7 @@ class Anexo {
      * Inserta anexos traídos de TYBA, mapeando a la estructura existente.
      * Evita duplicados comparando proceso_id + nombre_archivo + ruta_archivo.
      */
-    public function insertarLoteTyba(array $anexosTyba, int $proceso_id, int $usuario_id = null): array {
+    public function insertarLoteTyba(array $anexosTyba, int $proceso_id, ?int $usuario_id = null): array {
         if (empty($anexosTyba)) return [];
 
         $insertados = 0;
