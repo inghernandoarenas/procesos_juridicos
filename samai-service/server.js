@@ -1,5 +1,6 @@
 import express from "express";
 import { chromium } from "playwright";
+import fs from "fs";
 
 const app  = express();
 const PORT = 3001;
@@ -530,6 +531,87 @@ app.post("/publicaciones/detalle", async (req, res) => {
 const TYBA_BASE = 'https://procesojudicial.ramajudicial.gov.co/Justicia21';
 const TYBA_CONSULTA  = `${TYBA_BASE}/Administracion/Ciudadanos/frmConsulta.aspx?opcion=consulta`;
 
+// Busca el proceso por radicado (con reintento si TYBA rechaza por captcha)
+// y abre su página de detalle. Compartido entre /tyba/actuaciones y /tyba/anexos
+// para no duplicar el flujo ni el fix del captcha.
+async function buscarYAbrirDetalleTyba(page, radicado, t0, etiqueta = 'TYBA') {
+    const MAX_INTENTOS = 3;
+    let pageText = '';
+    let rechazadoPorCaptcha = true;
+    for (let intento = 1; intento <= MAX_INTENTOS && rechazadoPorCaptcha; intento++) {
+        await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        console.log(`  [${etiqueta}][intento ${intento}/${MAX_INTENTOS}] Página cargada (${Date.now()-t0}ms)`);
+        await page.waitForTimeout(2000);
+
+        await page.fill('#MainContent_txtCodigoProceso', radicado);
+        console.log(`  [${etiqueta}] Radicado ingresado`);
+        await page.waitForTimeout(1000);
+
+        await Promise.all([
+            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+            page.click('#MainContent_btnConsultar'),
+        ]);
+        await page.waitForTimeout(2000);
+        console.log(`  [${etiqueta}] Búsqueda enviada (${Date.now()-t0}ms)`);
+
+        pageText = await page.evaluate(() => document.body.innerText.substring(0, 500));
+        rechazadoPorCaptcha = /¡\s*Error\s*!/i.test(pageText) && /cap(t)?cha/i.test(pageText);
+        if (rechazadoPorCaptcha) console.log(`  ⚠ [${etiqueta}] TYBA rechazó por captcha (intento ${intento}/${MAX_INTENTOS})`);
+    }
+    if (rechazadoPorCaptcha) {
+        throw new Error(`TYBA rechazó la consulta por captcha ("El valor de la Capcha no coincide") tras ${MAX_INTENTOS} intentos`);
+    }
+
+    const resultados = await page.evaluate(() => {
+        const posiblesTables = ['#MainContent_gvResultado', '#tblResultado', '.datatable', 'table'];
+        let filas = [];
+        for (const sel of posiblesTables) {
+            const tabla = document.querySelector(sel);
+            if (tabla) {
+                filas = Array.from(tabla.querySelectorAll('tr'));
+                if (filas.length > 1) break;
+            }
+        }
+        const datos = [];
+        filas.forEach((fila, i) => {
+            if (i === 0) return;
+            const celdas = fila.querySelectorAll('td');
+            if (celdas.length >= 3) {
+                const link = fila.querySelector('a, input[type=image]');
+                datos.push({
+                    onclick: link?.getAttribute('onclick') || link?.closest('tr')?.querySelector('[onclick]')?.getAttribute('onclick') || '',
+                });
+            }
+        });
+        return datos;
+    });
+    console.log(`  [${etiqueta}] Resultados encontrados: ${resultados.length}`);
+    if (resultados.length === 0) return { ok: false };
+
+    try {
+        const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
+        if (lupa) {
+            await Promise.all([
+                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                lupa.click(),
+            ]);
+            console.log(`  [${etiqueta}] Detalle cargado (${Date.now()-t0}ms)`);
+        } else if (resultados[0]?.onclick) {
+            await page.evaluate((oc) => { try { eval(oc); } catch(e) {} }, resultados[0].onclick);
+            await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
+            console.log(`  [${etiqueta}] Detalle cargado via onclick (${Date.now()-t0}ms)`);
+        } else {
+            console.log(`  [${etiqueta}] No se encontró link al detalle`);
+            return { ok: false };
+        }
+    } catch(e) {
+        console.log(`  [${etiqueta}] Error navegando al detalle: ${e.message.split('\n')[0]}`);
+        return { ok: false };
+    }
+
+    return { ok: true };
+}
+
 app.post("/tyba/actuaciones", async (req, res) => {
     const { radicado } = req.body;
     if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
@@ -546,118 +628,10 @@ app.post("/tyba/actuaciones", async (req, res) => {
         });
         page = await context.newPage();
 
-        // 1-4. Cargar la consulta, llenar el radicado y enviar.
-        // - Se restauran las esperas de 2s (tras cargar) y 1s (tras llenar): al quitarlas
-        //   TYBA respondía "¡Error! El valor de la Capcha no coincide".
-        // - Si TYBA aun así rechaza por captcha, se reintenta. Antes ese error se leía
-        //   como "0 resultados" y el frontend mostraba "todo sincronizado" sin haber
-        //   traído nada.
-        const MAX_INTENTOS = 3;
-        let pageText = '';
-        let rechazadoPorCaptcha = true;
-        for (let intento = 1; intento <= MAX_INTENTOS && rechazadoPorCaptcha; intento++) {
-            await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
-            console.log(`  [intento ${intento}/${MAX_INTENTOS}] Página cargada (${Date.now()-t0}ms)`);
-            await page.waitForTimeout(2000);
-
-            // Diagnóstico: campos del formulario relacionados con el captcha
-            const infoCaptcha = await page.evaluate(() =>
-                Array.from(document.querySelectorAll('input, img, canvas'))
-                    .filter(el => /cap(t)?cha/i.test((el.id || '') + (el.name || '') + (el.getAttribute('src') || '')))
-                    .map(el => ({ tag: el.tagName, id: el.id, type: el.type || '', valorLen: (el.value || '').length }))
-            );
-            console.log(`  Campos captcha: ${JSON.stringify(infoCaptcha)}`);
-
-            // 2. Llenar radicado
-            await page.fill('#MainContent_txtCodigoProceso', radicado);
-            console.log(`  Radicado ingresado`);
-            await page.waitForTimeout(1000);
-
-            // 3. Click en Consultar (es input[type=submit] no button)
-            await Promise.all([
-                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
-                page.click('#MainContent_btnConsultar'),
-            ]);
-            await page.waitForTimeout(2000);
-            console.log(`  Búsqueda enviada (${Date.now()-t0}ms)`);
-
-            // 4. Ver qué hay en la página después del submit
-            pageText = await page.evaluate(() => document.body.innerText.substring(0, 500));
-            console.log(`  Página post-submit: ${pageText.replace(/\n/g,' ').substring(0,200)}`);
-
-            rechazadoPorCaptcha = /¡\s*Error\s*!/i.test(pageText) && /cap(t)?cha/i.test(pageText);
-            if (rechazadoPorCaptcha) console.log(`  ⚠ TYBA rechazó por captcha (intento ${intento}/${MAX_INTENTOS})`);
-        }
-        if (rechazadoPorCaptcha) {
-            throw new Error(`TYBA rechazó la consulta por captcha ("El valor de la Capcha no coincide") tras ${MAX_INTENTOS} intentos`);
-        }
-
-        // 5. Extraer resultado de la tabla de resultados
-        const resultados = await page.evaluate(() => {
-            // Buscar tabla con resultados - puede ser gvResultado o DataTable
-            const posiblesTables = ['#MainContent_gvResultado', '#tblResultado', '.datatable', 'table'];
-            let filas = [];
-            for (const sel of posiblesTables) {
-                const tabla = document.querySelector(sel);
-                if (tabla) {
-                    filas = Array.from(tabla.querySelectorAll('tr'));
-                    if (filas.length > 1) break;
-                }
-            }
-            const datos = [];
-            filas.forEach((fila, i) => {
-                if (i === 0) return;
-                const celdas = fila.querySelectorAll('td');
-                if (celdas.length >= 3) {
-                    const link = fila.querySelector('a, input[type=image]');
-                    datos.push({
-                        codigo:   celdas[1]?.innerText?.trim() || celdas[0]?.innerText?.trim() || '',
-                        clase:    celdas[2]?.innerText?.trim() || '',
-                        depto:    celdas[3]?.innerText?.trim() || '',
-                        ciudad:   celdas[4]?.innerText?.trim() || '',
-                        despacho: celdas[5]?.innerText?.trim() || '',
-                        href:     link?.href || '',
-                        onclick:  link?.getAttribute('onclick') || link?.closest('tr')?.querySelector('[onclick]')?.getAttribute('onclick') || '',
-                    });
-                }
-            });
-            return datos;
-        });
-
-        console.log(`  Resultados encontrados: ${resultados.length}`);
-
-        if (resultados.length === 0) {
+        const detalle = await buscarYAbrirDetalleTyba(page, radicado, t0, 'ACTUACIONES');
+        if (!detalle.ok) {
             await context.close();
             return res.json({ actuaciones: [], mensaje: 'No encontrado en TYBA' });
-        }
-
-        // 6. Ir al detalle del primer resultado — click en la lupa
-        try {
-            // Debug: ver qué links hay en la tabla
-            const links = await page.evaluate(() => {
-                return Array.from(document.querySelectorAll('table td a, table td input[type=image]'))
-                    .slice(0,3)
-                    .map(el => ({ tag: el.tagName, href: el.href||'', onclick: el.getAttribute('onclick')||'', src: el.src||'' }));
-            });
-            console.log(`  Links en tabla: ${JSON.stringify(links)}`);
-
-            // Click en primer link/imagen de la tabla de resultados
-            const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
-            if (lupa) {
-                await Promise.all([
-                    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
-                    lupa.click(),
-                ]);
-                console.log(`  Detalle cargado (${Date.now()-t0}ms)`);
-            } else if (resultados[0]?.onclick) {
-                await page.evaluate((oc) => { try { eval(oc); } catch(e) {} }, resultados[0].onclick);
-                await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {});
-                console.log(`  Detalle cargado via onclick (${Date.now()-t0}ms)`);
-            } else {
-                console.log(`  No se encontró link al detalle`);
-            }
-        } catch(e) {
-            console.log(`  Error navegando al detalle: ${e.message.split('\n')[0]}`);
         }
 
         // Esperar la tabla de actuaciones. Antes: waitForSelector "visible" con 10s
@@ -767,87 +741,102 @@ app.post("/tyba/anexos", async (req, res) => {
         context = await br.newContext({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
             locale: 'es-CO',
+            acceptDownloads: true, // TYBA puede servir el PDF como descarga directa en vez de pestaña nueva
         });
         page = await context.newPage();
 
-        // 1. Ir a consulta
-        await page.goto(TYBA_CONSULTA, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await page.waitForTimeout(1500);
-        await page.fill('#MainContent_txtCodigoProceso', radicado);
-        
-        await Promise.all([
-            page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
-            page.click('#MainContent_btnConsultar'),
-        ]);
-        await page.waitForTimeout(1500);
-
-        // 2. Click en el primer resultado (lupa)
-        const lupa = await page.$('#MainContent_gvResultado td input[type=image], #MainContent_gvResultado td a, table td input[type=image], table td a');
-        if (lupa) {
-            await Promise.all([
-                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
-                lupa.click(),
-            ]);
-        } else {
+        const detalle = await buscarYAbrirDetalleTyba(page, radicado, t0, 'ANEXOS');
+        if (!detalle.ok) {
             await context.close();
             return res.json({ anexos: [], mensaje: 'No se encontró el proceso para extraer anexos' });
         }
-        await page.waitForTimeout(2000);
 
-        // 3. Buscar y hacer clic en la pestaña "Anexos"
-        // TYBA usa controles de pestañas que a veces son links o spans con texto específico
+        // FIX: los archivos adjuntos están en la pestaña "Archivos"
+        // (#MainContent_grdArchivos) — no existe una pestaña "Anexos" en TYBA,
+        // por eso antes esto siempre devolvía 0 sin importar qué tuviera el proceso.
         await page.evaluate(() => {
-            const elementos = Array.from(document.querySelectorAll('a, span, div, td'));
-            const tabAnexos = elementos.find(el => el.innerText.trim().toLowerCase().includes('anexos'));
-            if (tabAnexos) {
-                tabAnexos.click();
-            }
+            const tabs = Array.from(document.querySelectorAll('a[data-toggle="tab"]'));
+            const tab = tabs.find(a => a.innerText.trim().toLowerCase() === 'archivos');
+            if (tab) tab.click();
         });
-        await page.waitForTimeout(3000); // Dar tiempo a que cargue la grilla de anexos vía AJAX
+        await page.waitForTimeout(1000);
 
-        // 4. Extraer la tabla de anexos
-        const anexos = await page.evaluate(() => {
-            const tablas = Array.from(document.querySelectorAll('table'));
-            let tablaAnexos = null;
-            
-            // Buscar la tabla que contenga columnas típicas de anexos
-            for (const t of tablas) {
-                const texto = t.innerText.toLowerCase();
-                if (texto.includes('nombre del documento') || texto.includes('tipo de documento') || texto.includes('no se encontraron registros')) {
-                    tablaAnexos = t;
-                    break;
-                }
-            }
-
-            if (!tablaAnexos) return [];
-
-            const filas = tablaAnexos.querySelectorAll('tr');
-            const resultado = [];
-
-            for (let i = 1; i < filas.length; i++) { // Saltar encabezado
-                const celdas = filas[i].querySelectorAll('td');
-                if (celdas.length >= 3) {
-                    const fecha = celdas[0]?.innerText?.trim() || '';
-                    const tipo = celdas[1]?.innerText?.trim() || '';
-                    const nombre = celdas[2]?.innerText?.trim() || '';
-                    
-                    // Buscar el link o botón de descarga en la última celda
-                    const linkEl = celdas[3]?.querySelector('a') || celdas[3]?.querySelector('input[type="image"]');
-                    let url = '';
-                    if (linkEl) {
-                        url = linkEl.href || linkEl.getAttribute('onclick') || '';
-                    }
-
-                    // Filtrar filas vacías o de paginación
-                    if (nombre && nombre.length > 3 && !nombre.toLowerCase().includes('no se encontraron')) {
-                        resultado.push({ fecha, tipo, nombre, url });
-                    }
-                }
-            }
-            return resultado;
+        const filas = await page.evaluate(() => {
+            const tabla = document.querySelector('#MainContent_grdArchivos');
+            if (!tabla) return [];
+            return Array.from(tabla.querySelectorAll('tr')).slice(1).map((tr) => {
+                const celdas = tr.querySelectorAll('td');
+                const btn = celdas[0]?.querySelector('input[type="image"]');
+                return {
+                    inputName: btn?.getAttribute('name') || null,
+                    nombre:    (celdas[1]?.innerText || '').trim(),
+                    tamanioKb: (celdas[2]?.innerText || '').trim(),
+                };
+            }).filter(f => f.inputName && f.nombre);
         });
+        console.log(`  Archivos en tabla: ${filas.length} ${JSON.stringify(filas.map(f => f.nombre))}`);
 
-        console.log(`  ✓ ${anexos.length} anexos encontrados en TYBA (${Date.now()-t0}ms)`);
+        // Cada botón NO es un link — es un input[type=image] que hace un postback
+        // de ASP.NET con target=_blank (abre el PDF en pestaña nueva, o a veces
+        // dispara una descarga directa según cómo responda TYBA ese día). No hay
+        // URL fija que guardar: hay que clickear y capturar lo que pase.
+        const anexos = [];
+        for (const fila of filas) {
+            try {
+                const selector = `input[name="${fila.inputName}"]`;
+                await page.waitForSelector(selector, { state: 'visible', timeout: 10000 }).catch(() => {});
+
+                let popup = null, download = null;
+                const popupWait = context.waitForEvent('page', { timeout: 15000 })
+                    .then(p => { popup = p; }).catch(() => {});
+                const downloadWait = page.waitForEvent('download', { timeout: 15000 })
+                    .then(d => { download = d; }).catch(() => {});
+
+                // FIX: antes se disparaba con page.evaluate(() => el.click()), un clic
+                // sintético de JS. Chromium puede bloquear la apertura de target=_blank
+                // cuando el clic no viene de una interacción "real" — por eso el popup
+                // nunca llegaba. page.click() sí cuenta como interacción real.
+                await page.click(selector);
+
+                // Seguir en cuanto CUALQUIERA de los dos llegue (no esperar los 15s
+                // completos de ambos), con un pequeño margen por si llegan casi juntos.
+                await Promise.race([popupWait, downloadWait]);
+                await new Promise(r => setTimeout(r, 300));
+
+                let buffer;
+                if (download) {
+                    const rutaTemp = await download.path();
+                    buffer = fs.readFileSync(rutaTemp);
+                    console.log(`  [${fila.nombre}] descarga directa (${buffer.length} bytes)`);
+                } else if (popup) {
+                    await popup.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
+                    const pdfUrl = popup.url();
+                    console.log(`  [${fila.nombre}] popup: ${pdfUrl}`);
+                    const resp = await context.request.get(pdfUrl);
+                    buffer = await resp.body();
+                    await popup.close();
+                } else {
+                    throw new Error('ni pestaña nueva ni descarga tras el clic (15s)');
+                }
+
+                if (!buffer || buffer.length === 0) {
+                    console.log(`  ✗ "${fila.nombre}" descargó 0 bytes, se omite`);
+                    continue;
+                }
+
+                const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
+                anexos.push({
+                    nombre:            fila.nombre,
+                    tipo:              ext,
+                    contenido_base64:  buffer.toString('base64'),
+                });
+                console.log(`  ✓ Descargado: ${fila.nombre} (${buffer.length} bytes)`);
+            } catch (e) {
+                console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${e.message.split('\n')[0]}`);
+            }
+        }
+
+        console.log(`  ✓ ${anexos.length}/${filas.length} anexos descargados (${Date.now()-t0}ms)`);
         await context.close();
         res.json({ anexos });
 
@@ -858,7 +847,6 @@ app.post("/tyba/anexos", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 
 // ═══════════════════════════════════════════════════════════════
 //  HEALTH + START

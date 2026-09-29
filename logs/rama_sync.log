@@ -25,3 +25,18 @@
 [15:53:18] === FIN — total resultado: 6 actuaciones ===
 [15:53:18] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
 [15:53:34] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[23:55:43] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:56:09] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[00:01:06] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[00:01:14] list proceso_id=4 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:08:37] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:09:34] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:09:56] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:10:11] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[00:17:46] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[00:17:59] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:13:05] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:13:21] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:13:34] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:18:17] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[03:23:38] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0

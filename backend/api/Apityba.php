@@ -85,8 +85,10 @@ class ApiTyba {
             'Content-Length: ' . strlen(json_encode($data))
         ]);
         
-        // Aumentamos el timeout a 60 segundos porque TYBA a veces demora en cargar la pestaña de anexos
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60); 
+        // Aumentamos el timeout porque ahora el servicio Node descarga el
+        // binario de cada PDF (antes solo raspaba una tabla vacía) — puede
+        // tardar más si el proceso tiene varios archivos adjuntos.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120); 
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -108,7 +110,9 @@ class ApiTyba {
         // 3. Decodificar la respuesta
         $result = json_decode($response, true);
         
-        // El servicio Node devuelve: { "anexos": [...] } o { "error": "..." }
+        // El servicio Node devuelve: { "anexos": [{nombre, tipo, contenido_base64}, ...] }
+        // o { "error": "..." }. Anexo::insertarLoteTyba se encarga de decodificar
+        // y guardar cada archivo en uploads/.
         if (isset($result['anexos']) && is_array($result['anexos'])) {
             return $result['anexos'];
         }
