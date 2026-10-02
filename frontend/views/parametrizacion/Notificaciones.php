@@ -34,8 +34,9 @@
                 <label>Tipo de notificación: <span style="color:red">*</span></label>
                 <select id="notifTipo" name="tipo" required>
                     <option value="email">Solo Email</option>
+                    <option value="sms">Solo SMS</option>
                     <option value="whatsapp">Solo WhatsApp</option>
-                    <option value="ambos">Ambos</option>
+                    <option value="todos">Todos (Email + SMS + WhatsApp)</option>
                 </select>
             </div>
 
@@ -50,10 +51,17 @@
                         <input type="email" id="notifEmail" name="email" placeholder="correo@ejemplo.com">
                     </div>
                     <div class="form-group">
-                        <label>Teléfono WhatsApp:</label>
+                        <label>Teléfono (SMS y/o WhatsApp):</label>
                         <input type="text" id="notifTelefono" name="telefono" placeholder="573001234567">
                     </div>
                 </div>
+                <p style="margin:8px 0 0;font-size:12px;color:#888">
+                    <i class="fas fa-info-circle"></i>
+                    Mientras la cuenta de Twilio esté en modo de prueba: para <strong>SMS</strong>, este número debe
+                    estar verificado en el Console (Phone Numbers → Verified Caller IDs). Para <strong>WhatsApp</strong>,
+                    debe haberle mandado "join &lt;código&gt;" al número sandbox de Twilio por WhatsApp (Console →
+                    Messaging → Try it out → Send a WhatsApp message). Sin eso, el envío quedará "fallido" en el log.
+                </p>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -90,7 +98,7 @@ function cargarNotificaciones() {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px">No hay notificaciones configuradas</td></tr>';
                 return;
             }
-            const tipos = { email: 'Solo Email', whatsapp: 'Solo WhatsApp', ambos: 'Ambos' };
+            const tipos = { email: 'Solo Email', sms: 'Solo SMS', whatsapp: 'Solo WhatsApp', todos: 'Todos (Email + SMS + WhatsApp)' };
             data.forEach(n => {
                 tbody.innerHTML += `
                     <tr>
@@ -183,7 +191,7 @@ function verNotif(id) {
     fetchWithAuth(`/procesos_juridicos/backend/controllers/NotificacionConfigController.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(n => {
-            const tipos = { email: 'Solo Email', whatsapp: 'Solo WhatsApp', ambos: 'Ambos' };
+            const tipos = { email: 'Solo Email', sms: 'Solo SMS', whatsapp: 'Solo WhatsApp', todos: 'Todos (Email + SMS + WhatsApp)' };
             document.getElementById('detalleNotif').innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:10px">
                     <div style="background:#f8f9fa;padding:15px;border-radius:8px;grid-column:span 2">
@@ -199,7 +207,7 @@ function verNotif(id) {
                         <p style="margin:5px 0">${n.email || 'No configurado'}</p>
                     </div>
                     <div style="background:#f8f9fa;padding:15px;border-radius:8px;grid-column:span 2">
-                        <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Teléfono WhatsApp</strong>
+                        <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Teléfono (SMS/WhatsApp)</strong>
                         <p style="margin:5px 0">${n.telefono || 'No configurado'}</p>
                     </div>
                 </div>`;

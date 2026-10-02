@@ -12,7 +12,7 @@ class EmailService {
     // ─────────────────────────────────────────────
     private $smtpHost     = 'smtp.gmail.com';
     private $smtpUsuario  = 'ing.hernando.arenas@gmail.com';      // ← cambia esto
-    private $smtpPassword = 'sowutqvysqzduyru'; // ← cambia esto (16 chars sin espacios)
+    private $smtpPassword = 'yczwgpcpnixbwbpu'; // actualizada 2026-10-01
     private $smtpPuerto   = 587;
     private $remitente    = 'ing.hernando.arenas@gmail.com';       // ← cambia esto
     private $nombreRemit  = 'Sistema Procesos Jurídicos';

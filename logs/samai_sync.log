@@ -27,3 +27,10 @@
 [23:55:45]   Health OK (133ms) — iniciando consulta Playwright...
 [23:55:56]   ✓ Servicio devolvió 5 actuaciones (10727ms)
 [23:55:56] === SAMAI FIN — 5 actuaciones ===
+[22:18:19] === SAMAI INICIO radicado=08001333300320260007300 ===
+[22:18:19] === SAMAI buscarProceso: 08001333300320260007300 ===
+[22:18:20]   Registros: 2
+[22:18:20]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[22:18:20]   Health OK (95ms) — iniciando consulta Playwright...
+[22:18:34]   ✓ Servicio devolvió 5 actuaciones (14724ms)
+[22:18:34] === SAMAI FIN — 5 actuaciones ===

@@ -40,3 +40,226 @@
 [03:13:34] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [03:18:17] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [03:23:38] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[22:15:58] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:16:05] === INICIO radicado=08001311000320230038501 ===
+[22:16:05] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:16:06]   OK 870ms — 867 bytes
+[22:16:06]   Pag 1 — despachos en esta pagina: 1
+[22:16:06]   totalPaginas=1 (registros=1, porPagina=20)
+[22:16:06] Total despachos encontrados: 1
+[22:16:06] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[22:16:06] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[22:16:07]   OK 717ms — 2560 bytes
+[22:16:07]   Pag 1 — actuaciones recibidas: 6
+[22:16:07]   totalPaginas=1 (registros=6, porPagina=40)
+[22:16:07]   Pag 1 completada. totalPaginas=1
+[22:16:07]   Despacho 3283876501 — total actuaciones extraidas: 6
+[22:16:07] === FIN — total resultado: 6 actuaciones ===
+[22:16:07] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[22:16:28] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[03:08:38] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[03:08:42] === INICIO radicado=08001311000320230038501 ===
+[03:08:42] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[03:08:44]   OK 1509ms — 867 bytes
+[03:08:44]   Pag 1 — despachos en esta pagina: 1
+[03:08:44]   totalPaginas=1 (registros=1, porPagina=20)
+[03:08:44] Total despachos encontrados: 1
+[03:08:44] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[03:08:44] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[03:08:44]   OK 741ms — 2560 bytes
+[03:08:44]   Pag 1 — actuaciones recibidas: 6
+[03:08:44]   totalPaginas=1 (registros=6, porPagina=40)
+[03:08:44]   Pag 1 completada. totalPaginas=1
+[03:08:44]   Despacho 3283876501 — total actuaciones extraidas: 6
+[03:08:44] === FIN — total resultado: 6 actuaciones ===
+[03:08:44] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[03:09:18] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[03:10:41] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[03:10:42] === INICIO radicado=08001311000320230038501 ===
+[03:10:42] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[03:10:50]   OK 7432ms — 867 bytes
+[03:10:50]   Pag 1 — despachos en esta pagina: 1
+[03:10:50]   totalPaginas=1 (registros=1, porPagina=20)
+[03:10:50] Total despachos encontrados: 1
+[03:10:50] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[03:10:50] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[03:10:51]   OK 1382ms — 2560 bytes
+[03:10:51]   Pag 1 — actuaciones recibidas: 6
+[03:10:51]   totalPaginas=1 (registros=6, porPagina=40)
+[03:10:51]   Pag 1 completada. totalPaginas=1
+[03:10:51]   Despacho 3283876501 — total actuaciones extraidas: 6
+[03:10:51] === FIN — total resultado: 6 actuaciones ===
+[03:10:51] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[03:12:44] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[14:08:22] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[14:08:24] === INICIO radicado=08001311000320230038501 ===
+[14:08:24] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[14:08:24]   OK 769ms — 867 bytes
+[14:08:24]   Pag 1 — despachos en esta pagina: 1
+[14:08:24]   totalPaginas=1 (registros=1, porPagina=20)
+[14:08:24] Total despachos encontrados: 1
+[14:08:24] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[14:08:24] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[14:08:25]   OK 703ms — 2560 bytes
+[14:08:25]   Pag 1 — actuaciones recibidas: 6
+[14:08:25]   totalPaginas=1 (registros=6, porPagina=40)
+[14:08:25]   Pag 1 completada. totalPaginas=1
+[14:08:25]   Despacho 3283876501 — total actuaciones extraidas: 6
+[14:08:25] === FIN — total resultado: 6 actuaciones ===
+[14:08:25] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[14:08:55] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[14:15:23] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[14:15:25] === INICIO radicado=08001311000320230038501 ===
+[14:15:25] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[14:15:26]   OK 972ms — 867 bytes
+[14:15:26]   Pag 1 — despachos en esta pagina: 1
+[14:15:26]   totalPaginas=1 (registros=1, porPagina=20)
+[14:15:26] Total despachos encontrados: 1
+[14:15:26] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[14:15:26] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[14:15:28]   OK 1824ms — 2560 bytes
+[14:15:28]   Pag 1 — actuaciones recibidas: 6
+[14:15:28]   totalPaginas=1 (registros=6, porPagina=40)
+[14:15:28]   Pag 1 completada. totalPaginas=1
+[14:15:28]   Despacho 3283876501 — total actuaciones extraidas: 6
+[14:15:28] === FIN — total resultado: 6 actuaciones ===
+[14:15:28] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[14:15:59] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[14:18:20] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[14:18:22] === INICIO radicado=08001311000320230038501 ===
+[14:18:22] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[14:18:23]   OK 775ms — 867 bytes
+[14:18:23]   Pag 1 — despachos en esta pagina: 1
+[14:18:23]   totalPaginas=1 (registros=1, porPagina=20)
+[14:18:23] Total despachos encontrados: 1
+[14:18:23] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[14:18:23] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[14:18:23]   OK 715ms — 2560 bytes
+[14:18:23]   Pag 1 — actuaciones recibidas: 6
+[14:18:23]   totalPaginas=1 (registros=6, porPagina=40)
+[14:18:23]   Pag 1 completada. totalPaginas=1
+[14:18:23]   Despacho 3283876501 — total actuaciones extraidas: 6
+[14:18:23] === FIN — total resultado: 6 actuaciones ===
+[14:18:23] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[14:18:55] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[22:58:39] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:58:42] === INICIO radicado=08001311000320230038501 ===
+[22:58:42] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:58:43]   OK 741ms — 27 bytes
+[22:58:43] ERROR: JSON inválido en endpoint procesos
+[22:58:43] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:58:53] === INICIO radicado=08001311000320230038501 ===
+[22:58:53] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:58:54]   OK 762ms — 867 bytes
+[22:58:54]   Pag 1 — despachos en esta pagina: 1
+[22:58:54]   totalPaginas=1 (registros=1, porPagina=20)
+[22:58:54] Total despachos encontrados: 1
+[22:58:54] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[22:58:54] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[22:58:55]   OK 741ms — 2560 bytes
+[22:58:55]   Pag 1 — actuaciones recibidas: 6
+[22:58:55]   totalPaginas=1 (registros=6, porPagina=40)
+[22:58:55]   Pag 1 completada. totalPaginas=1
+[22:58:55]   Despacho 3283876501 — total actuaciones extraidas: 6
+[22:58:55] === FIN — total resultado: 6 actuaciones ===
+[22:58:55] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[22:59:27] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[22:08:38] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:08:40] === INICIO radicado=08001311000320230038501 ===
+[22:08:40] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:08:41]   OK 812ms — 27 bytes
+[22:08:41] ERROR: JSON inválido en endpoint procesos
+[22:08:41] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:08:43] === INICIO radicado=08001311000320230038501 ===
+[22:08:43] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:08:44]   OK 706ms — 27 bytes
+[22:08:44] ERROR: JSON inválido en endpoint procesos
+[22:08:44] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:08:52] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:08:53] === INICIO radicado=08001311000320230038501 ===
+[22:08:53] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:08:54]   OK 932ms — 867 bytes
+[22:08:54]   Pag 1 — despachos en esta pagina: 1
+[22:08:54]   totalPaginas=1 (registros=1, porPagina=20)
+[22:08:54] Total despachos encontrados: 1
+[22:08:54] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[22:08:54] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[22:08:55]   OK 773ms — 2560 bytes
+[22:08:55]   Pag 1 — actuaciones recibidas: 6
+[22:08:55]   totalPaginas=1 (registros=6, porPagina=40)
+[22:08:55]   Pag 1 completada. totalPaginas=1
+[22:08:55]   Despacho 3283876501 — total actuaciones extraidas: 6
+[22:08:55] === FIN — total resultado: 6 actuaciones ===
+[22:08:55] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[22:09:13] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[22:11:32] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:11:36] === INICIO radicado=08001311000320230038501 ===
+[22:11:36] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:11:37]   OK 703ms — 27 bytes
+[22:11:37] ERROR: JSON inválido en endpoint procesos
+[22:11:37] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:11:45] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:11:47] === INICIO radicado=08001311000320230038501 ===
+[22:11:47] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:11:48]   OK 723ms — 27 bytes
+[22:11:48] ERROR: JSON inválido en endpoint procesos
+[22:11:48] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:11:50] === INICIO radicado=08001311000320230038501 ===
+[22:11:50] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:11:51]   OK 1616ms — 867 bytes
+[22:11:51]   Pag 1 — despachos en esta pagina: 1
+[22:11:51]   totalPaginas=1 (registros=1, porPagina=20)
+[22:11:51] Total despachos encontrados: 1
+[22:11:51] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[22:11:51] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[22:11:52]   OK 772ms — 2560 bytes
+[22:11:52]   Pag 1 — actuaciones recibidas: 6
+[22:11:52]   totalPaginas=1 (registros=6, porPagina=40)
+[22:11:52]   Pag 1 completada. totalPaginas=1
+[22:11:52]   Despacho 3283876501 — total actuaciones extraidas: 6
+[22:11:52] === FIN — total resultado: 6 actuaciones ===
+[22:11:52] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[22:12:10] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[22:17:25] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:17:40] === INICIO radicado=08001311000320230038501 ===
+[22:17:40] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:17:40]   OK 724ms — 27 bytes
+[22:17:40] ERROR: JSON inválido en endpoint procesos
+[22:17:40] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:17:42] === INICIO radicado=08001311000320230038501 ===
+[22:17:42] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:17:43]   OK 713ms — 27 bytes
+[22:17:43] ERROR: JSON inválido en endpoint procesos
+[22:17:43] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:17:44] === INICIO radicado=08001311000320230038501 ===
+[22:17:44] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:17:45]   OK 701ms — 27 bytes
+[22:17:45] ERROR: JSON inválido en endpoint procesos
+[22:17:45] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:17:53] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:17:54] === INICIO radicado=08001311000320230038501 ===
+[22:17:54] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:17:55]   OK 712ms — 867 bytes
+[22:17:55]   Pag 1 — despachos en esta pagina: 1
+[22:17:55]   totalPaginas=1 (registros=1, porPagina=20)
+[22:17:55] Total despachos encontrados: 1
+[22:17:55] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[22:17:55] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[22:17:57]   OK 1723ms — 27 bytes
+[22:17:57]   JSON inválido en actuaciones despacho 3283876501
+[22:17:57]   Despacho 3283876501 — total actuaciones extraidas: 0
+[22:17:57] === FIN — total resultado: 0 actuaciones ===
+[22:17:57] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:18:02] === INICIO radicado=08001311000320230038501 ===
+[22:18:02] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:18:03]   OK 702ms — 27 bytes
+[22:18:03] ERROR: JSON inválido en endpoint procesos
+[22:18:03] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:18:09] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:18:11] === INICIO radicado=08001311000320230038501 ===
+[22:18:11] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[22:18:12]   OK 707ms — 27 bytes
+[22:18:12] ERROR: JSON inválido en endpoint procesos
+[22:18:12] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:18:18] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[22:18:48] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
