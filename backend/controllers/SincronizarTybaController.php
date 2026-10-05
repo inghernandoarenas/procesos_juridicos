@@ -1,5 +1,10 @@
 <?php
-set_time_limit(180); // antes 120 — margen porque anexos ahora corre después, en background
+// Antes 120, luego 180. Ahora 900 (15 min): el nuevo paso de anexos por
+// actuación entra al detalle de CADA actuación una por una, y con procesos
+// de muchas actuaciones eso puede tardar varios minutos. Como todo esto
+// corre en background (después de responder al usuario), este límite alto
+// no afecta la experiencia — solo evita que PHP mate el proceso a medias.
+set_time_limit(900);
 
 // Nunca imprimir warnings/notices/deprecated en la respuesta: contaminan el JSON
 // y el frontend lo muestra como "Error de conexión al sincronizar".
@@ -88,11 +93,22 @@ if (function_exists('fastcgi_finish_request')) {
 // no puede producir el mensaje "Error de conexión al sincronizar".
 // ═══════════════════════════════════════════════════════════════════════
 
-// 2. Traer y guardar anexos (puede tardar 15-60s adicionales, ya no importa)
+// 2a. Anexos generales del proceso — pestaña "Archivos" (ej: 01DEMANDA.pdf)
 $anexosTyba = $api->consultarAnexosPorRadicado($proceso['numero_radicado']);
 if ($anexosTyba !== null && is_array($anexosTyba)) {
     $anexoModel = new Anexo();
     $anexoModel->insertarLoteTyba($anexosTyba, $proceso_id, $usuario_id);
+}
+
+// 2b. Anexos propios de cada actuación (ej: el auto que se dictó en esa
+//     actuación puntual) — entra al detalle de cada una, puede tardar varios
+//     minutos en procesos con muchas actuaciones. Corre después de que las
+//     actuaciones ya quedaron guardadas en el paso 1, porque necesita su
+//     id_api para asociar correctamente cada anexo.
+$anexosPorActuacion = $api->consultarAnexosPorActuacion($proceso['numero_radicado']);
+if ($anexosPorActuacion !== null && is_array($anexosPorActuacion)) {
+    $anexoModel = $anexoModel ?? new Anexo();
+    $anexoModel->insertarLoteTybaPorActuacion($anexosPorActuacion, $proceso_id, $usuario_id);
 }
 
 // 3. Notificaciones por actuaciones nuevas

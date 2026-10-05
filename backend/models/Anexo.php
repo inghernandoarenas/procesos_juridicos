@@ -91,52 +91,146 @@ class Anexo {
                 continue; // ya lo tenemos, no se vuelve a descargar/guardar
             }
 
-            $b64 = $anexo['contenido_base64'] ?? null;
-            if (!$b64) {
+            $guardado = $this->guardarArchivoBase64($nombre, $anexo['contenido_base64'] ?? null, $anexo['tipo'] ?? null, $upload_dir);
+            if ($guardado === null) {
                 $omitidos++;
                 continue;
-            }
-            $contenido = base64_decode($b64, true);
-            if ($contenido === false || strlen($contenido) === 0) {
-                error_log("Anexo::insertarLoteTyba: no se pudo decodificar '{$nombre}'");
-                $omitidos++;
-                continue;
-            }
-
-            $extension    = pathinfo($nombre, PATHINFO_EXTENSION) ?: strtolower($anexo['tipo'] ?? 'pdf');
-            $nombre_unico = uniqid('tyba_') . '.' . $extension;
-            $ruta_destino = $upload_dir . $nombre_unico;
-            if (file_put_contents($ruta_destino, $contenido) === false) {
-                error_log("Anexo::insertarLoteTyba: no se pudo guardar '{$nombre}'");
-                $omitidos++;
-                continue;
-            }
-            $ruta = 'uploads/' . $nombre_unico;
-
-            // Determinar categoria_id según el tipo o nombre del documento
-            $textoBusqueda = strtolower($nombre . ' ' . ($anexo['tipo'] ?? ''));
-            if (strpos($textoBusqueda, 'auto') !== false || strpos($textoBusqueda, 'sentencia') !== false || strpos($textoBusqueda, 'proveído') !== false || strpos($textoBusqueda, 'interlocutorio') !== false) {
-                $categoria_id = 4; // Respuestas del juez
-            } elseif (strpos($textoBusqueda, 'demanda') !== false || strpos($textoBusqueda, 'tutela') !== false || strpos($textoBusqueda, 'escrito') !== false) {
-                $categoria_id = 7; // Expediente
-            } elseif (strpos($textoBusqueda, 'prueba') !== false || strpos($textoBusqueda, 'certificado') !== false || strpos($textoBusqueda, 'anexo') !== false) {
-                $categoria_id = 3; // Evidencias
-            } else {
-                $categoria_id = 8; // Otros
             }
 
             $stmt->execute([
                 ':proceso_id'   => $proceso_id,
-                ':categoria_id' => $categoria_id,
+                ':categoria_id' => $this->determinarCategoria($nombre, $anexo['tipo'] ?? ''),
                 ':nombre'       => $nombre,
-                ':ruta'         => $ruta,
-                ':tipo'         => strtoupper($extension),
+                ':ruta'         => $guardado['ruta'],
+                ':tipo'         => $guardado['tipo'],
                 ':usuario'      => $usuario_id,
             ]);
             $insertados++;
         }
 
         return ['insertados' => $insertados, 'omitidos' => $omitidos];
+    }
+
+    /**
+     * Inserta los anexos propios de CADA actuación (distinto de los anexos
+     * generales del proceso que maneja insertarLoteTyba). $anexosPorActuacion
+     * viene de ApiTyba::consultarAnexosPorActuacion():
+     *   [ { id_api: 'TYBA_xxxx', archivos: [{nombre,tipo,contenido_base64}, ...] }, ... ]
+     *
+     * El id_api se usa para encontrar la fila real en `actuaciones` (misma
+     * tabla/columna que ya usa Actuacion::insertarLote para deduplicar) y
+     * así guardar el anexo con su actuacion_id correcto.
+     */
+    public function insertarLoteTybaPorActuacion(array $anexosPorActuacion, int $proceso_id, ?int $usuario_id = null): array {
+        if (empty($anexosPorActuacion)) return ['insertados' => 0, 'omitidos' => 0, 'sin_actuacion' => 0];
+
+        $insertados    = 0;
+        $omitidos      = 0;
+        $sinActuacion  = 0;
+
+        $buscarActuacion = $this->conn->prepare(
+            "SELECT id FROM actuaciones WHERE proceso_id = :proceso_id AND id_api = :id_api LIMIT 1"
+        );
+
+        $checkQuery = "SELECT id FROM " . $this->table . "
+                       WHERE proceso_id = :proceso_id AND actuacion_id = :actuacion_id AND nombre_archivo = :nombre LIMIT 1";
+        $checkStmt = $this->conn->prepare($checkQuery);
+
+        $insertQuery = "INSERT INTO " . $this->table . "
+                        (proceso_id, actuacion_id, categoria_id, nombre_archivo, ruta_archivo, tipo_archivo, usuario_creacion)
+                        VALUES (:proceso_id, :actuacion_id, :categoria_id, :nombre, :ruta, :tipo, :usuario)";
+        $stmt = $this->conn->prepare($insertQuery);
+
+        $upload_dir = __DIR__ . '/../../uploads/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        foreach ($anexosPorActuacion as $grupo) {
+            $idApi    = $grupo['id_api'] ?? null;
+            $archivos = $grupo['archivos'] ?? [];
+            if (!$idApi || empty($archivos)) continue;
+
+            $buscarActuacion->execute([':proceso_id' => $proceso_id, ':id_api' => $idApi]);
+            $actuacionRow = $buscarActuacion->fetch(PDO::FETCH_ASSOC);
+            if (!$actuacionRow) {
+                // No debería pasar (las actuaciones se guardan antes que sus anexos),
+                // pero si pasa, no hay a qué actuacion_id asociarlo — se omite.
+                error_log("Anexo::insertarLoteTybaPorActuacion: no se encontró actuación con id_api={$idApi} para proceso_id={$proceso_id}");
+                $sinActuacion += count($archivos);
+                continue;
+            }
+            $actuacionId = $actuacionRow['id'];
+
+            foreach ($archivos as $anexo) {
+                $nombre = trim($anexo['nombre'] ?? '');
+                if ($nombre === '') {
+                    $omitidos++;
+                    continue;
+                }
+
+                $checkStmt->execute([':proceso_id' => $proceso_id, ':actuacion_id' => $actuacionId, ':nombre' => $nombre]);
+                if ($checkStmt->fetch()) {
+                    $omitidos++;
+                    continue;
+                }
+
+                $guardado = $this->guardarArchivoBase64($nombre, $anexo['contenido_base64'] ?? null, $anexo['tipo'] ?? null, $upload_dir);
+                if ($guardado === null) {
+                    $omitidos++;
+                    continue;
+                }
+
+                $stmt->execute([
+                    ':proceso_id'   => $proceso_id,
+                    ':actuacion_id' => $actuacionId,
+                    ':categoria_id' => $this->determinarCategoria($nombre, $anexo['tipo'] ?? ''),
+                    ':nombre'       => $nombre,
+                    ':ruta'         => $guardado['ruta'],
+                    ':tipo'         => $guardado['tipo'],
+                    ':usuario'      => $usuario_id,
+                ]);
+                $insertados++;
+            }
+        }
+
+        return ['insertados' => $insertados, 'omitidos' => $omitidos, 'sin_actuacion' => $sinActuacion];
+    }
+
+    /** Decodifica un anexo en base64 y lo guarda en uploads/. Null si falla. */
+    private function guardarArchivoBase64(string $nombre, ?string $b64, ?string $tipoSugerido, string $upload_dir): ?array {
+        if (!$b64) return null;
+
+        $contenido = base64_decode($b64, true);
+        if ($contenido === false || strlen($contenido) === 0) {
+            error_log("Anexo: no se pudo decodificar '{$nombre}'");
+            return null;
+        }
+
+        $extension    = pathinfo($nombre, PATHINFO_EXTENSION) ?: strtolower($tipoSugerido ?: 'pdf');
+        $nombre_unico = uniqid('tyba_') . '.' . $extension;
+        $ruta_destino = $upload_dir . $nombre_unico;
+        if (file_put_contents($ruta_destino, $contenido) === false) {
+            error_log("Anexo: no se pudo guardar '{$nombre}'");
+            return null;
+        }
+
+        return ['ruta' => 'uploads/' . $nombre_unico, 'tipo' => strtoupper($extension)];
+    }
+
+    /** Determina categoria_id a partir del nombre/tipo del documento. */
+    private function determinarCategoria(string $nombre, string $tipo): int {
+        $textoBusqueda = strtolower($nombre . ' ' . $tipo);
+        if (strpos($textoBusqueda, 'auto') !== false || strpos($textoBusqueda, 'sentencia') !== false || strpos($textoBusqueda, 'proveído') !== false || strpos($textoBusqueda, 'interlocutorio') !== false) {
+            return 4; // Respuestas del juez
+        }
+        if (strpos($textoBusqueda, 'demanda') !== false || strpos($textoBusqueda, 'tutela') !== false || strpos($textoBusqueda, 'escrito') !== false) {
+            return 7; // Expediente
+        }
+        if (strpos($textoBusqueda, 'prueba') !== false || strpos($textoBusqueda, 'certificado') !== false || strpos($textoBusqueda, 'anexo') !== false) {
+            return 3; // Evidencias
+        }
+        return 8; // Otros
     }
 }
 ?>

@@ -728,6 +728,79 @@ app.post("/tyba/actuaciones", async (req, res) => {
 //  TYBA — ANEXOS
 // ═══════════════════════════════════════════════════════════════
 
+// Clic real de Playwright sobre $selector y captura lo que pase: pestaña
+// nueva, descarga directa, o navegación de la MISMA pestaña a un visor tipo
+// "Descargando.aspx" (los tres se han visto en distintos botones de TYBA).
+// Devuelve { buffer, error } — si falla, buffer es null y error trae el motivo.
+async function clicYDescargar(page, context, selector, etiqueta) {
+    await page.waitForSelector(selector, { state: 'visible', timeout: 10000 }).catch(() => {});
+
+    const urlAntes = page.url();
+
+    // Diagnóstico: ¿hay algo tapando el botón? (si force:true no alcanza,
+    // esto nos dice exactamente qué elemento está encima)
+    const tapado = await page.evaluate((sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const top = document.elementFromPoint(cx, cy);
+        if (top === el || el.contains(top)) return null;
+        return top ? `${top.tagName}.${top.className || '(sin clase)'}` : '(fuera de pantalla)';
+    }, selector).catch(() => null);
+    if (tapado) console.log(`  [${etiqueta}] ⚠ algo tapa el botón: ${tapado}`);
+
+    let popup = null, download = null;
+    const popupWait = context.waitForEvent('page', { timeout: 15000 })
+        .then(p => { popup = p; }).catch(() => {});
+    const downloadWait = page.waitForEvent('download', { timeout: 15000 })
+        .then(d => { download = d; }).catch(() => {});
+
+    // FIX histórico: un clic sintético de JS (page.evaluate(() => el.click()))
+    // puede ser bloqueado por Chromium al abrir target=_blank. page.click()
+    // sí cuenta como interacción real.
+    // FIX: { force: true } — tras la primera descarga, algo (barra de
+    // descargas de Chromium, overlay residual) puede quedar tapando el botón
+    // de las siguientes filas; el clic "normal" de Playwright se niega a
+    // clickear un elemento que detecta como obstruido. force:true salta esa
+    // verificación (seguimos apuntando al elemento exacto por su atributo
+    // "name", así que no hay riesgo de clickear algo distinto por error).
+    await page.click(selector, { force: true });
+
+    await Promise.race([popupWait, downloadWait, page.waitForNavigation({ timeout: 15000 }).catch(() => {})]);
+    await new Promise(r => setTimeout(r, 300));
+
+    try {
+        if (download) {
+            const rutaTemp = await download.path();
+            const buffer = fs.readFileSync(rutaTemp);
+            console.log(`  [${etiqueta}] descarga directa (${buffer.length} bytes)`);
+            return { buffer, error: null };
+        }
+        if (popup) {
+            await popup.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
+            const pdfUrl = popup.url();
+            console.log(`  [${etiqueta}] popup: ${pdfUrl}`);
+            const resp = await context.request.get(pdfUrl);
+            const buffer = await resp.body();
+            await popup.close();
+            return { buffer, error: null };
+        }
+        // Tercer caso: la MISMA pestaña navegó a otra URL (ej: Descargando.aspx)
+        // en vez de abrir una nueva — hay que leer eso y luego volver atrás.
+        if (page.url() !== urlAntes) {
+            console.log(`  [${etiqueta}] navegación misma pestaña: ${page.url()}`);
+            const resp = await context.request.get(page.url());
+            const buffer = await resp.body();
+            await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+            return { buffer, error: null };
+        }
+        return { buffer: null, error: 'ni pestaña nueva, ni descarga, ni navegación tras el clic (15s)' };
+    } catch (e) {
+        return { buffer: null, error: e.message.split('\n')[0] };
+    }
+}
+
 app.post("/tyba/anexos", async (req, res) => {
     const { radicado } = req.body;
     if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
@@ -777,63 +850,25 @@ app.post("/tyba/anexos", async (req, res) => {
         console.log(`  Archivos en tabla: ${filas.length} ${JSON.stringify(filas.map(f => f.nombre))}`);
 
         // Cada botón NO es un link — es un input[type=image] que hace un postback
-        // de ASP.NET con target=_blank (abre el PDF en pestaña nueva, o a veces
-        // dispara una descarga directa según cómo responda TYBA ese día). No hay
-        // URL fija que guardar: hay que clickear y capturar lo que pase.
+        // de ASP.NET (abre el PDF en pestaña nueva, dispara una descarga directa,
+        // o navega la misma pestaña, según cómo responda TYBA ese día).
         const anexos = [];
         for (const fila of filas) {
-            try {
-                const selector = `input[name="${fila.inputName}"]`;
-                await page.waitForSelector(selector, { state: 'visible', timeout: 10000 }).catch(() => {});
+            const selector = `input[name="${fila.inputName}"]`;
+            const { buffer, error } = await clicYDescargar(page, context, selector, fila.nombre);
 
-                let popup = null, download = null;
-                const popupWait = context.waitForEvent('page', { timeout: 15000 })
-                    .then(p => { popup = p; }).catch(() => {});
-                const downloadWait = page.waitForEvent('download', { timeout: 15000 })
-                    .then(d => { download = d; }).catch(() => {});
-
-                // FIX: antes se disparaba con page.evaluate(() => el.click()), un clic
-                // sintético de JS. Chromium puede bloquear la apertura de target=_blank
-                // cuando el clic no viene de una interacción "real" — por eso el popup
-                // nunca llegaba. page.click() sí cuenta como interacción real.
-                await page.click(selector);
-
-                // Seguir en cuanto CUALQUIERA de los dos llegue (no esperar los 15s
-                // completos de ambos), con un pequeño margen por si llegan casi juntos.
-                await Promise.race([popupWait, downloadWait]);
-                await new Promise(r => setTimeout(r, 300));
-
-                let buffer;
-                if (download) {
-                    const rutaTemp = await download.path();
-                    buffer = fs.readFileSync(rutaTemp);
-                    console.log(`  [${fila.nombre}] descarga directa (${buffer.length} bytes)`);
-                } else if (popup) {
-                    await popup.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
-                    const pdfUrl = popup.url();
-                    console.log(`  [${fila.nombre}] popup: ${pdfUrl}`);
-                    const resp = await context.request.get(pdfUrl);
-                    buffer = await resp.body();
-                    await popup.close();
-                } else {
-                    throw new Error('ni pestaña nueva ni descarga tras el clic (15s)');
-                }
-
-                if (!buffer || buffer.length === 0) {
-                    console.log(`  ✗ "${fila.nombre}" descargó 0 bytes, se omite`);
-                    continue;
-                }
-
-                const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
-                anexos.push({
-                    nombre:            fila.nombre,
-                    tipo:              ext,
-                    contenido_base64:  buffer.toString('base64'),
-                });
-                console.log(`  ✓ Descargado: ${fila.nombre} (${buffer.length} bytes)`);
-            } catch (e) {
-                console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${e.message.split('\n')[0]}`);
+            if (error || !buffer || buffer.length === 0) {
+                console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${error || 'descargó 0 bytes'}`);
+                continue;
             }
+
+            const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
+            anexos.push({
+                nombre:           fila.nombre,
+                tipo:             ext,
+                contenido_base64: buffer.toString('base64'),
+            });
+            console.log(`  ✓ Descargado: ${fila.nombre} (${buffer.length} bytes)`);
         }
 
         console.log(`  ✓ ${anexos.length}/${filas.length} anexos descargados (${Date.now()-t0}ms)`);
@@ -849,15 +884,195 @@ app.post("/tyba/anexos", async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
+//  TYBA — ANEXOS POR ACTUACIÓN
+// ═══════════════════════════════════════════════════════════════
+//
+// Cada actuación tiene su propia lupa (👁) que abre un panel de detalle con
+// SU propio archivo adjunto (ej: el PDF del auto que se dictó en esa
+// actuación), distinto de los archivos generales del proceso (pestaña
+// "Archivos" / 01DEMANDA.pdf, que ya cubre /tyba/anexos).
+//
+// El id_api de cada actuación se recalcula aquí con EXACTAMENTE el mismo
+// algoritmo (mismo orden de lectura de filas, mismo hash djb2, mismo
+// contador de duplicados) que usa /tyba/actuaciones al guardarlas — así el
+// backend en PHP puede encontrar la actuación correcta en la BD y asociarle
+// el anexo, sin tener que adivinar ni volver a pedir el radicado.
+
+// Activa la pestaña "Actuaciones" y lee la lista con el id_api de cada fila
+// (mismo cálculo que usa /tyba/actuaciones al guardarlas) y el "name" del
+// botón de su lupa. Se usa tanto para el listado inicial como para
+// re-ubicar una fila específica tras recargar la página desde cero.
+async function leerListaActuacionesConLupa(page) {
+    await page.evaluate(() => {
+        const tabs = Array.from(document.querySelectorAll('a[data-toggle="tab"]'));
+        const tab = tabs.find(a => a.innerText.trim().toLowerCase() === 'actuaciones');
+        if (tab) tab.click();
+    });
+    await page.waitForSelector('#MainContent_grdActuaciones', { state: 'visible', timeout: 10000 }).catch(() => {});
+
+    return page.evaluate(() => {
+        const tabla = document.querySelector('#MainContent_grdActuaciones');
+        if (!tabla) return [];
+
+        const limpiar = v => (v || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        const filas = tabla.querySelectorAll('tr');
+        const resultado = [];
+        const vistos = {};
+
+        filas.forEach((fila, i) => {
+            if (i === 0) return;
+            const celdas = Array.from(fila.querySelectorAll('td'));
+            if (celdas.length < 5) return;
+
+            const btn      = celdas[0]?.querySelector('input[type="image"]');
+            const ciclo    = limpiar(celdas[1].innerText);
+            const tipo     = limpiar(celdas[2].innerText);
+            const fechaAct = limpiar(celdas[3].innerText);
+            const fechaReg = limpiar(celdas[4].innerText);
+
+            if (!fechaAct || !tipo || !btn) return;
+
+            const raw = `${ciclo}|${tipo}|${fechaAct}|${fechaReg}`;
+            vistos[raw] = (vistos[raw] || 0) + 1;
+            const clave = vistos[raw] > 1 ? `${raw}#${vistos[raw]}` : raw;
+            let hash = 5381;
+            for (let j = 0; j < clave.length; j++) {
+                hash = ((hash << 5) + hash) + clave.charCodeAt(j);
+            }
+            const idApi = 'TYBA_' + (hash >>> 0).toString(16).padStart(8, '0');
+
+            resultado.push({
+                idApi,
+                inputName: btn.getAttribute('name'),
+                etiqueta:  `${tipo} (${fechaAct})`,
+            });
+        });
+        return resultado;
+    });
+}
+
+app.post("/tyba/anexos-actuaciones", async (req, res) => {
+    const { radicado } = req.body;
+    if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
+
+    const t0 = Date.now();
+    console.log(`[${new Date().toLocaleTimeString()}] TYBA ANEXOS-ACTUACIONES ${radicado}`);
+
+    // 1. Una primera carga solo para saber CUÁNTAS actuaciones hay y sus
+    //    id_api — no se descarga nada todavía desde aquí.
+    let context, page, filasInfo;
+    try {
+        const br = await getBrowser();
+        context = await br.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            locale: 'es-CO',
+            acceptDownloads: true,
+        });
+        page = await context.newPage();
+
+        const detalle = await buscarYAbrirDetalleTyba(page, radicado, t0, 'ANEXOS-ACT:lista');
+        if (!detalle.ok) {
+            await context.close();
+            return res.json({ anexosPorActuacion: [], mensaje: 'No se encontró el proceso' });
+        }
+
+        filasInfo = await leerListaActuacionesConLupa(page);
+        await context.close();
+        console.log(`  ${filasInfo.length} actuaciones a revisar`);
+    } catch (error) {
+        if (context) await context.close().catch(() => {});
+        if (browser && !browser.isConnected()) browser = null;
+        console.error(`  ✗ TYBA ANEXOS-ACTUACIONES error (listando): ${error.message}`);
+        return res.status(500).json({ error: error.message });
+    }
+
+    // 2. Por cada actuación: FIX — en vez de navegar "lupa → detalle →
+    //    Regresar → siguiente lupa" dentro de la MISMA página cargada, se
+    //    recarga la búsqueda desde cero cada vez (igual que ya hacen con
+    //    éxito /tyba/actuaciones y /tyba/anexos). Varios postbacks AJAX
+    //    seguidos sobre la misma carga de TYBA dejaban el ViewState/
+    //    EventValidation de la página en un estado donde el clic ya no
+    //    disparaba nada (ni error, ni efecto) — por eso solo la primera
+    //    actuación de cada corrida funcionaba y el resto fallaba igual.
+    //    Es más lento (cada una vuelve a buscar desde cero, ~10s extra) pero
+    //    nunca acumula ese estado roto. Corre en background, así que el
+    //    tiempo extra no afecta al usuario.
+    const anexosPorActuacion = [];
+    for (const fi of filasInfo) {
+        let ctxFila;
+        try {
+            const br = await getBrowser();
+            ctxFila = await br.newContext({
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                locale: 'es-CO',
+                acceptDownloads: true,
+            });
+            const pageFila = await ctxFila.newPage();
+
+            const det = await buscarYAbrirDetalleTyba(pageFila, radicado, t0, `ANEXOS-ACT:${fi.etiqueta}`);
+            if (!det.ok) { await ctxFila.close(); continue; }
+
+            await leerListaActuacionesConLupa(pageFila); // solo para activar la pestaña y que el DOM esté listo
+
+            const selectorLupa = `input[name="${fi.inputName}"]`;
+            await pageFila.waitForSelector(selectorLupa, { state: 'visible', timeout: 10000 }).catch(() => {});
+            await pageFila.click(selectorLupa, { force: true });
+            await pageFila.waitForSelector('#MainContent_pnlRegistroActuaciones', { state: 'visible', timeout: 15000 });
+
+            const archivosInfo = await pageFila.evaluate(() => {
+                const tabla = document.querySelector('#MainContent_grdArchivosActuaciones');
+                if (!tabla) return [];
+                return Array.from(tabla.querySelectorAll('tr')).slice(1).map(tr => {
+                    const celdas = tr.querySelectorAll('td');
+                    const btn = celdas[0]?.querySelector('input[type="image"]');
+                    return {
+                        inputName: btn?.getAttribute('name') || null,
+                        nombre:    (celdas[1]?.innerText || '').trim(),
+                    };
+                }).filter(f => f.inputName && f.nombre);
+            });
+
+            const archivos = [];
+            for (const af of archivosInfo) {
+                const selectorDescarga = `input[name="${af.inputName}"]`;
+                const { buffer, error } = await clicYDescargar(pageFila, ctxFila, selectorDescarga, `${fi.etiqueta} → ${af.nombre}`);
+                if (error || !buffer || buffer.length === 0) {
+                    console.log(`  ✗ [${fi.etiqueta}] "${af.nombre}": ${error || 'descargó 0 bytes'}`);
+                    continue;
+                }
+                const ext = (af.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
+                archivos.push({ nombre: af.nombre, tipo: ext, contenido_base64: buffer.toString('base64') });
+                console.log(`  ✓ [${fi.etiqueta}] "${af.nombre}" (${buffer.length} bytes)`);
+            }
+
+            if (archivos.length > 0) {
+                anexosPorActuacion.push({ id_api: fi.idApi, archivos });
+            } else if (archivosInfo.length === 0) {
+                console.log(`  (sin archivos) [${fi.etiqueta}]`);
+            }
+
+            await ctxFila.close();
+        } catch (e) {
+            console.log(`  ✗ [${fi.etiqueta}] error procesando: ${e.message.split('\n')[0]}`);
+            if (ctxFila) await ctxFila.close().catch(() => {});
+        }
+    }
+
+    const totalArchivos = anexosPorActuacion.reduce((n, a) => n + a.archivos.length, 0);
+    console.log(`  ✓ ${totalArchivos} archivo(s) en ${anexosPorActuacion.length} actuación(es) (${Date.now()-t0}ms)`);
+    res.json({ anexosPorActuacion });
+});
+
+// ═══════════════════════════════════════════════════════════════
 //  HEALTH + START
 // ═══════════════════════════════════════════════════════════════
 
 app.get("/health", (req, res) => res.json({
     status: "ok",
     browser: browser?.isConnected() ?? false,
-    endpoints: ['/samai/actuaciones', '/publicaciones/consultar', '/tyba/actuaciones']
+    endpoints: ['/samai/actuaciones', '/publicaciones/consultar', '/tyba/actuaciones', '/tyba/anexos', '/tyba/anexos-actuaciones']
 }));
 
 getBrowser().catch(e => console.error("Error pre-lanzando browser:", e));
 
-app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - Publicaciones: POST /publicaciones/consultar\n   - TYBA:          POST /tyba/actuaciones\n`));
+app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - Publicaciones: POST /publicaciones/consultar\n   - TYBA:          POST /tyba/actuaciones\n   - TYBA anexos:   POST /tyba/anexos\n   - TYBA anexos x actuación: POST /tyba/anexos-actuaciones\n`));

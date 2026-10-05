@@ -120,5 +120,55 @@ class ApiTyba {
         // Si no hay anexos o vino un mensaje de "No encontrado", retornamos array vacío
         return [];
     }
+
+    /**
+     * Consulta los anexos propios de CADA actuación (distinto de los anexos
+     * generales del proceso que trae consultarAnexosPorRadicado). Puede
+     * tardar más: el servicio Node entra al detalle de cada actuación una
+     * por una.
+     *
+     * @param string $radicado
+     * @return array|null [{id_api, archivos:[{nombre,tipo,contenido_base64}]}, ...] o null si hubo error de conexión
+     */
+    public function consultarAnexosPorActuacion($radicado) {
+        $url = 'http://localhost:3001/tyba/anexos-actuaciones';
+
+        $data = ['radicado' => trim($radicado)];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen(json_encode($data))
+        ]);
+        // Entra al detalle de CADA actuación una por una — con procesos de
+        // muchas actuaciones esto puede tardar varios minutos. Corre en
+        // background (ver SincronizarTybaController.php), así que no bloquea
+        // al usuario.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 600);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            error_log("Error cURL en ApiTyba (AnexosPorActuacion): " . $error);
+            return null;
+        }
+        if ($httpCode !== 200) {
+            error_log("Error HTTP en ApiTyba (AnexosPorActuacion): Código " . $httpCode . " - Respuesta: " . $response);
+            return null;
+        }
+
+        $result = json_decode($response, true);
+        if (isset($result['anexosPorActuacion']) && is_array($result['anexosPorActuacion'])) {
+            return $result['anexosPorActuacion'];
+        }
+
+        return [];
+    }
 }
 ?>
