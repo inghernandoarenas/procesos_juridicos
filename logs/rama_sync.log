@@ -341,3 +341,7 @@
 [02:34:15] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
 [02:34:46] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
 [02:40:00] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[15:50:49] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[15:51:28] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[15:51:44] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[15:51:57] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
