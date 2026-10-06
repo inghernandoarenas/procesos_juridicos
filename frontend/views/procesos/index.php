@@ -975,7 +975,15 @@ function cargarTimeline(procesoId) {
                     <tr style="background:${colores[desp]};border-bottom:1px solid rgba(0,0,0,.05)">
                         <td style="padding:9px 14px;white-space:nowrap;font-size:12px;color:#6c757d;vertical-align:top">${fmtF(a.fecha)}</td>
                         <td style="padding:9px 14px;vertical-align:top">
-                            <div style="font-size:13px;font-weight:700;color:#2c3e50">${a.actuacion}</div>
+                            <div style="font-size:13px;font-weight:700;color:#2c3e50">
+                                ${a.actuacion}
+                                ${a.ruta_archivo ? `
+                                    <a href="/procesos_juridicos/${a.ruta_archivo}" target="_blank" rel="noopener"
+                                       title="Ver documento: ${a.nombre_archivo || 'adjunto'}"
+                                       style="margin-left:6px;color:#3498db;text-decoration:none">
+                                        <i class="fas fa-paperclip"></i>
+                                    </a>` : ''}
+                            </div>
                         </td>
                         <td style="padding:9px 14px;vertical-align:top;font-size:12px;color:#7f8c8d">${a.observaciones || '—'}</td>
                     </tr>`);

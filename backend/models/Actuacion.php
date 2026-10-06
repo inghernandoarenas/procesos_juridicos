@@ -11,9 +11,26 @@ class Actuacion {
     }
 
     public function getByProceso($proceso_id) {
-        $query = "SELECT * FROM " . $this->table . "
-                  WHERE proceso_id = :proceso_id
-                  ORDER BY despacho ASC, fecha DESC, created_at DESC";
+        // LEFT JOIN con el anexo propio de la actuación (si existe), para que
+        // el frontend pueda mostrar un link directo al documento — igual que
+        // se ve en TYBA. La subconsulta interna se queda con UN solo anexo
+        // por actuación (el de id más bajo) para que un JOIN directo no
+        // duplique la fila de la actuación si llegara a tener más de un
+        // archivo adjunto.
+        $query = "SELECT a.*, anx.ruta_archivo, anx.nombre_archivo
+                  FROM " . $this->table . " a
+                  LEFT JOIN (
+                      SELECT x.actuacion_id, x.ruta_archivo, x.nombre_archivo
+                      FROM anexos x
+                      INNER JOIN (
+                          SELECT actuacion_id, MIN(id) AS min_id
+                          FROM anexos
+                          WHERE actuacion_id IS NOT NULL
+                          GROUP BY actuacion_id
+                      ) primero ON primero.min_id = x.id
+                  ) anx ON anx.actuacion_id = a.id
+                  WHERE a.proceso_id = :proceso_id
+                  ORDER BY a.despacho ASC, a.fecha DESC, a.created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':proceso_id', $proceso_id);
         $stmt->execute();

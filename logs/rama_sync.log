@@ -283,3 +283,61 @@
 [04:34:21] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [04:36:38] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [04:37:35] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[15:17:51] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[15:18:05] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[15:18:19] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[02:32:50] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[02:33:09] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:11] === INICIO radicado=08001311000320230038501 ===
+[02:33:11] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:33:11]   OK 815ms — 867 bytes
+[02:33:11]   Pag 1 — despachos en esta pagina: 1
+[02:33:11]   totalPaginas=1 (registros=1, porPagina=20)
+[02:33:11] Total despachos encontrados: 1
+[02:33:11] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[02:33:11] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[02:33:12]   OK 704ms — 27 bytes
+[02:33:12]   JSON inválido en actuaciones despacho 3283876501
+[02:33:12]   Despacho 3283876501 — total actuaciones extraidas: 0
+[02:33:12] === FIN — total resultado: 0 actuaciones ===
+[02:33:12] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:17] === INICIO radicado=08001311000320230038501 ===
+[02:33:17] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:33:18]   OK 714ms — 27 bytes
+[02:33:18] ERROR: JSON inválido en endpoint procesos
+[02:33:18] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:19] === INICIO radicado=08001311000320230038501 ===
+[02:33:19] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:33:20]   OK 715ms — 27 bytes
+[02:33:20] ERROR: JSON inválido en endpoint procesos
+[02:33:20] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:31] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:33] === INICIO radicado=08001311000320230038501 ===
+[02:33:33] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:33:33]   OK 706ms — 27 bytes
+[02:33:33] ERROR: JSON inválido en endpoint procesos
+[02:33:33] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:33:36] === INICIO radicado=08001311000320230038501 ===
+[02:33:36] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:33:37]   OK 732ms — 867 bytes
+[02:33:37]   Pag 1 — despachos en esta pagina: 1
+[02:33:37]   totalPaginas=1 (registros=1, porPagina=20)
+[02:33:37] Total despachos encontrados: 1
+[02:33:37] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[02:33:37] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[02:33:37]   OK 738ms — 2560 bytes
+[02:33:37]   Pag 1 — actuaciones recibidas: 6
+[02:33:37]   totalPaginas=1 (registros=6, porPagina=40)
+[02:33:37]   Pag 1 completada. totalPaginas=1
+[02:33:37]   Despacho 3283876501 — total actuaciones extraidas: 6
+[02:33:37] === FIN — total resultado: 6 actuaciones ===
+[02:33:37] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[02:33:58] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[02:34:07] === INICIO radicado=08001311000320230038501 ===
+[02:34:07] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[02:34:08]   OK 713ms — 27 bytes
+[02:34:08] ERROR: JSON inválido en endpoint procesos
+[02:34:08] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[02:34:15] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[02:34:46] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[02:40:00] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0

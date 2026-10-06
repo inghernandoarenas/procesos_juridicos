@@ -181,7 +181,7 @@ class Anexo {
                     continue;
                 }
 
-                $stmt->execute([
+                $ok = $stmt->execute([
                     ':proceso_id'   => $proceso_id,
                     ':actuacion_id' => $actuacionId,
                     ':categoria_id' => $this->determinarCategoria($nombre, $anexo['tipo'] ?? ''),
@@ -190,7 +190,15 @@ class Anexo {
                     ':tipo'         => $guardado['tipo'],
                     ':usuario'      => $usuario_id,
                 ]);
-                $insertados++;
+                // FIX: antes no se revisaba si el INSERT realmente funcionó —
+                // si fallaba por cualquier motivo (FK inválida, dato muy largo,
+                // etc.) igual se contaba como "insertado" sin dejar rastro.
+                if ($ok) {
+                    $insertados++;
+                } else {
+                    error_log("Anexo::insertarLoteTybaPorActuacion: INSERT falló para '{$nombre}' (actuacion_id={$actuacionId}): " . json_encode($stmt->errorInfo()));
+                    $omitidos++;
+                }
             }
         }
 

@@ -898,18 +898,28 @@ app.post("/tyba/anexos", async (req, res) => {
 // backend en PHP puede encontrar la actuación correcta en la BD y asociarle
 // el anexo, sin tener que adivinar ni volver a pedir el radicado.
 
-// Activa la pestaña "Actuaciones" y lee la lista con el id_api de cada fila
-// (mismo cálculo que usa /tyba/actuaciones al guardarlas) y el "name" del
-// botón de su lupa. Se usa tanto para el listado inicial como para
-// re-ubicar una fila específica tras recargar la página desde cero.
-async function leerListaActuacionesConLupa(page) {
+// Clickea la pestaña "Actuaciones" para que sea visible — SOLO necesario
+// antes de hacerle clic de verdad a una lupa (page.click exige visibilidad).
+// NO se usa para leer datos: ver leerIdApiActuaciones más abajo.
+async function activarPestanaActuaciones(page) {
     await page.evaluate(() => {
         const tabs = Array.from(document.querySelectorAll('a[data-toggle="tab"]'));
         const tab = tabs.find(a => a.innerText.trim().toLowerCase() === 'actuaciones');
         if (tab) tab.click();
     });
     await page.waitForSelector('#MainContent_grdActuaciones', { state: 'visible', timeout: 10000 }).catch(() => {});
+}
 
+// Lee la lista con el id_api de cada fila (mismo cálculo exacto que usa
+// /tyba/actuaciones al guardarlas) y el "name" del botón de su lupa.
+//
+// FIX: esta función hacía clic en la pestaña "Actuaciones" antes de leer, lo
+// que generaba id_api que NO coincidían con los guardados en la BD (TYBA
+// parece re-renderizar el grid de forma distinta tras ese clic — la tabla
+// ya viene en el HTML inicial, como hace /tyba/actuaciones sin tocar
+// pestaña alguna). Ahora esta función es un espejo EXACTO de esa lectura:
+// sin clics, sin efectos secundarios, solo DOM.
+async function leerIdApiActuaciones(page) {
     return page.evaluate(() => {
         const tabla = document.querySelector('#MainContent_grdActuaciones');
         if (!tabla) return [];
@@ -976,7 +986,7 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
             return res.json({ anexosPorActuacion: [], mensaje: 'No se encontró el proceso' });
         }
 
-        filasInfo = await leerListaActuacionesConLupa(page);
+        filasInfo = await leerIdApiActuaciones(page);
         await context.close();
         console.log(`  ${filasInfo.length} actuaciones a revisar`);
     } catch (error) {
@@ -1012,7 +1022,7 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
             const det = await buscarYAbrirDetalleTyba(pageFila, radicado, t0, `ANEXOS-ACT:${fi.etiqueta}`);
             if (!det.ok) { await ctxFila.close(); continue; }
 
-            await leerListaActuacionesConLupa(pageFila); // solo para activar la pestaña y que el DOM esté listo
+            await activarPestanaActuaciones(pageFila); // solo para que el DOM permita clickear la lupa
 
             const selectorLupa = `input[name="${fi.inputName}"]`;
             await pageFila.waitForSelector(selectorLupa, { state: 'visible', timeout: 10000 }).catch(() => {});
