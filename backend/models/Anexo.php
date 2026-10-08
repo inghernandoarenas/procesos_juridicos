@@ -205,8 +205,75 @@ class Anexo {
         return ['insertados' => $insertados, 'omitidos' => $omitidos, 'sin_actuacion' => $sinActuacion];
     }
 
+    /**
+     * Inserta los documentos del "expediente" general de SAMAI (link
+     * "Visualizar expediente"). Estructuralmente idéntico a insertarLoteTyba
+     * (anexos generales del proceso, NO por actuación — SAMAI no tiene eso),
+     * solo cambia el prefijo del archivo guardado (samai_ en vez de tyba_)
+     * para distinguir el origen en uploads/.
+     */
+    public function insertarLoteSamai(array $anexosSamai, int $proceso_id, ?int $usuario_id = null): array {
+        if (empty($anexosSamai)) return ['insertados' => 0, 'omitidos' => 0];
+
+        $insertados = 0;
+        $omitidos   = 0;
+
+        $query = "INSERT INTO " . $this->table . "
+                  (proceso_id, categoria_id, nombre_archivo, ruta_archivo, tipo_archivo, usuario_creacion)
+                  VALUES (:proceso_id, :categoria_id, :nombre, :ruta, :tipo, :usuario)";
+        $stmt = $this->conn->prepare($query);
+
+        // Mismo criterio de deduplicación que insertarLoteTyba: solo por
+        // nombre_archivo (ruta_archivo siempre es única por uniqid()).
+        $checkQuery = "SELECT id FROM " . $this->table . "
+                       WHERE proceso_id = :proceso_id AND nombre_archivo = :nombre LIMIT 1";
+        $checkStmt = $this->conn->prepare($checkQuery);
+
+        $upload_dir = __DIR__ . '/../../uploads/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        foreach ($anexosSamai as $anexo) {
+            $nombre = trim($anexo['nombre'] ?? '');
+            if ($nombre === '') {
+                $omitidos++;
+                continue;
+            }
+
+            $checkStmt->execute([':proceso_id' => $proceso_id, ':nombre' => $nombre]);
+            if ($checkStmt->fetch()) {
+                $omitidos++;
+                continue;
+            }
+
+            $guardado = $this->guardarArchivoBase64($nombre, $anexo['contenido_base64'] ?? null, $anexo['tipo'] ?? null, $upload_dir, 'samai_');
+            if ($guardado === null) {
+                $omitidos++;
+                continue;
+            }
+
+            $ok = $stmt->execute([
+                ':proceso_id'   => $proceso_id,
+                ':categoria_id' => $this->determinarCategoria($nombre, $anexo['tipo'] ?? ''),
+                ':nombre'       => $nombre,
+                ':ruta'         => $guardado['ruta'],
+                ':tipo'         => $guardado['tipo'],
+                ':usuario'      => $usuario_id,
+            ]);
+            if ($ok) {
+                $insertados++;
+            } else {
+                error_log("Anexo::insertarLoteSamai: INSERT falló para '{$nombre}' (proceso_id={$proceso_id}): " . json_encode($stmt->errorInfo()));
+                $omitidos++;
+            }
+        }
+
+        return ['insertados' => $insertados, 'omitidos' => $omitidos];
+    }
+
     /** Decodifica un anexo en base64 y lo guarda en uploads/. Null si falla. */
-    private function guardarArchivoBase64(string $nombre, ?string $b64, ?string $tipoSugerido, string $upload_dir): ?array {
+    private function guardarArchivoBase64(string $nombre, ?string $b64, ?string $tipoSugerido, string $upload_dir, string $prefijo = 'tyba_'): ?array {
         if (!$b64) return null;
 
         $contenido = base64_decode($b64, true);
@@ -216,7 +283,7 @@ class Anexo {
         }
 
         $extension    = pathinfo($nombre, PATHINFO_EXTENSION) ?: strtolower($tipoSugerido ?: 'pdf');
-        $nombre_unico = uniqid('tyba_') . '.' . $extension;
+        $nombre_unico = uniqid($prefijo) . '.' . $extension;
         $ruta_destino = $upload_dir . $nombre_unico;
         if (file_put_contents($ruta_destino, $contenido) === false) {
             error_log("Anexo: no se pudo guardar '{$nombre}'");

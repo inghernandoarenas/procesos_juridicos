@@ -240,5 +240,60 @@ class ApiSamai {
         $this->log("=== SAMAI FIN — " . count($resultado) . " actuaciones ===");
         return $resultado;
     }
+
+    /**
+     * Consulta los documentos del "expediente" general de SAMAI (link
+     * "Visualizar expediente", al mismo nivel que la pestaña "Actuaciones").
+     * A diferencia de TYBA, SAMAI no tiene anexos por actuación individual —
+     * solo este listado único por proceso.
+     *
+     * @param string $radicado
+     * @return array|null [{nombre, tipo, contenido_base64}, ...] o null si hubo error de conexión
+     */
+    public function consultarAnexosPorRadicado($radicado) {
+        $url = $this->serviceUrl . '/samai/anexos';
+
+        $data = ['radicado' => trim($radicado)];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen(json_encode($data))
+        ]);
+        // El servicio Node descarga el binario de cada documento del
+        // expediente uno por uno (puede haber 20+), y cada uno puede tardar
+        // hasta 45s en cargar en el visor antes de descargar — con varios
+        // documentos grandes esto puede sumar varios minutos. 180s se
+        // quedaba corto y PHP cortaba la conexión antes de que Node
+        // terminara, perdiendo TODOS los anexos aunque sí se hubieran
+        // descargado bien del lado de Node (se veían en su log pero nunca
+        // llegaban a guardarse en la BD).
+        curl_setopt($ch, CURLOPT_TIMEOUT, 900);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error    = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            $this->log("✗ Error cURL anexos: " . $error);
+            return null;
+        }
+        if ($httpCode !== 200) {
+            $this->log("✗ Error HTTP anexos: {$httpCode} - " . substr((string)$response, 0, 200));
+            return null;
+        }
+
+        $result = json_decode($response, true);
+        if (isset($result['anexos']) && is_array($result['anexos'])) {
+            $this->log("✓ " . count($result['anexos']) . " anexos del expediente");
+            return $result['anexos'];
+        }
+
+        return [];
+    }
 }
 ?>

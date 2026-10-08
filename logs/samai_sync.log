@@ -41,3 +41,49 @@
 [02:34:17]   Health OK (165ms) — iniciando consulta Playwright...
 [02:34:29]   ✓ Servicio devolvió 5 actuaciones (12077ms)
 [02:34:29] === SAMAI FIN — 5 actuaciones ===
+[13:34:46] === SAMAI INICIO radicado=08001333300320260007300 ===
+[13:34:46] === SAMAI buscarProceso: 08001333300320260007300 ===
+[13:34:46]   Registros: 2
+[13:34:46]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[13:34:46]   Health OK (38ms) — iniciando consulta Playwright...
+[13:34:56]   ✓ Servicio devolvió 5 actuaciones (10383ms)
+[13:34:56] === SAMAI FIN — 5 actuaciones ===
+[02:55:51] === SAMAI INICIO radicado=08001333300320260007300 ===
+[02:55:51] === SAMAI buscarProceso: 08001333300320260007300 ===
+[02:55:52]   Registros: 2
+[02:55:52]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[02:55:52]   Health OK (34ms) — iniciando consulta Playwright...
+[02:56:17]   ✓ Servicio devolvió 5 actuaciones (25150ms)
+[02:56:17] === SAMAI FIN — 5 actuaciones ===
+[03:10:28] === SAMAI INICIO radicado=08001333300320260007300 ===
+[03:10:28] === SAMAI buscarProceso: 08001333300320260007300 ===
+[03:10:28]   Registros: 2
+[03:10:28]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[03:10:28]   Health OK (21ms) — iniciando consulta Playwright...
+[03:10:39]   ✓ Servicio devolvió 5 actuaciones (10788ms)
+[03:10:39] === SAMAI FIN — 5 actuaciones ===
+[03:13:39] ✓ 19 anexos del expediente
+[04:08:31] === SAMAI INICIO radicado=08001333300320260007300 ===
+[04:08:31] === SAMAI buscarProceso: 08001333300320260007300 ===
+[04:08:31]   Registros: 2
+[04:08:31]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[04:08:31]   Health OK (20ms) — iniciando consulta Playwright...
+[04:08:46]   ✓ Servicio devolvió 5 actuaciones (14679ms)
+[04:08:46] === SAMAI FIN — 5 actuaciones ===
+[04:10:50] ✓ 22 anexos del expediente
+[04:16:48] === SAMAI INICIO radicado=08001333300320260007300 ===
+[04:16:48] === SAMAI buscarProceso: 08001333300320260007300 ===
+[04:16:48]   Registros: 2
+[04:16:48]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[04:16:48]   Health OK (16ms) — iniciando consulta Playwright...
+[04:17:09]   ✓ Servicio devolvió 5 actuaciones (21183ms)
+[04:17:09] === SAMAI FIN — 5 actuaciones ===
+[04:21:43] ✓ 21 anexos del expediente
+[04:29:30] === SAMAI INICIO radicado=08001333300320260007300 ===
+[04:29:30] === SAMAI buscarProceso: 08001333300320260007300 ===
+[04:29:30]   Registros: 2
+[04:29:30]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[04:29:30]   Health OK (21ms) — iniciando consulta Playwright...
+[04:29:45]   ✓ Servicio devolvió 5 actuaciones (14463ms)
+[04:29:45] === SAMAI FIN — 5 actuaciones ===
+[04:35:49] ✓ 22 anexos del expediente

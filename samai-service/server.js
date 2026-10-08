@@ -254,6 +254,256 @@ app.post("/samai/actuaciones", async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════
+//  SAMAI — ANEXOS (expediente general)
+// ═══════════════════════════════════════════════════════════════
+//
+// A diferencia de TYBA, SAMAI NO tiene anexos por actuación individual —
+// solo existe UN listado general de documentos del expediente, al que se
+// llega desde el link "Visualizar expediente" (#MainContent_LinkVerDocumentos)
+// que está al mismo nivel que la pestaña "Actuaciones". Ese link lleva a
+// PaginasTransversales/DocumentosExpediente.aspx?numproceso=...&corporacion=...
+//
+// Confirmado por HTML real aportado por el usuario:
+//   <a id="MainContent_LinkVerDocumentos" ... href="../../PaginasTransversales/DocumentosExpediente.aspx?numproceso=...&corporacion=...">Visualizar expediente</a>
+//   <ul id="FiltrarDocumentosProcesoUl">
+//     <li>... <a id="ContentPlaceHolder1_DocumentoProcesoRepeater_DocumentoLinkButton_0">NombreArchivo.pdf</a> ...</li>
+//   </ul>
+//
+// FIX (confirmado con screenshot real del usuario): a diferencia de TYBA,
+// clickear el <a id="...DocumentoLinkButton_N"> NO descarga nada — abre un
+// visor interno (SPA) que carga el PDF en un <embed>/iframe y genera un
+// botón aparte: <a data-vp="dl" href="blob:https://.../<uuid>" download="...">.
+// Es ESE botón el que hay que clickear para que el navegador dispare la
+// descarga real del blob. Por eso antes clicYDescargar nunca detectaba nada
+// (ni popup, ni download, ni navegación): el primer clic no hace ninguna de
+// esas tres cosas, solo actualiza el visor en la misma página.
+//
+// El botón "Descargar" es un solo elemento persistente que se reutiliza para
+// cada documento seleccionado (su href cambia a un blob: nuevo cada vez), así
+// que para saber que el visor ya cargó EL documento que acabamos de pedir (y
+// no el anterior) esperamos a que su href cambie respecto al que tenía antes.
+
+async function extraerLinksDocumentosSamai(page) {
+    return page.evaluate(() => {
+        const links = Array.from(
+            document.querySelectorAll('a[id*="DocumentoLinkButton"], a[id*="DocumentoProcesoRepeater"]')
+        );
+        return links
+            .map(a => ({ id: a.id, nombre: (a.innerText || a.textContent || '').trim() }))
+            .filter(f => f.id && f.nombre);
+    });
+}
+
+const SELECTOR_BOTON_DESCARGAR_SAMAI = 'a[data-vp="dl"]';
+
+// FIX: esta función NUNCA debe lanzar (throw) — si algo revienta a mitad de
+// camino (ej: "Execution context was destroyed, most likely because of a
+// navigation", que pasó en producción tras varios timeouts seguidos), antes
+// se propagaba sin capturar y tumbaba TODO el endpoint, perdiendo los anexos
+// que ya se habían descargado bien. Todo el cuerpo queda envuelto en
+// try/catch y siempre devuelve { buffer, error, hrefNuevo }.
+//
+// FIX: 20s era muy poco para los documentos grandes (varios PDFs de 10-18 MB
+// tardan en generarse como blob dentro del visor) — luego a 45s, y un doc de
+// 14 MB todavía lo superaba dos veces seguidas — ahora 90s.
+async function descargarDocumentoSamai(page, selectorTitulo, etiqueta, hrefAnterior) {
+    try {
+        // 1. Clic en el título del documento — carga el visor interno (async).
+        await page.click(selectorTitulo, { force: true, timeout: 10000 }).catch(() => {});
+
+        // 2. Esperar a que el botón "Descargar" exista y su href sea un blob:
+        //    NUEVO (distinto al de la descarga anterior) — así sabemos que el
+        //    visor ya terminó de cargar ESTE documento específico.
+        try {
+            await page.waitForFunction(
+                (hrefPrev) => {
+                    const a = document.querySelector('a[data-vp="dl"]');
+                    if (!a) return false;
+                    const href = a.getAttribute('href') || '';
+                    return href.startsWith('blob:') && href !== hrefPrev;
+                },
+                hrefAnterior,
+                { timeout: 90000 }
+            );
+        } catch (e) {
+            console.log(`  [${etiqueta}] ⚠ el visor no actualizó el botón Descargar a tiempo (90s)`);
+            return { buffer: null, error: 'el visor no cargó el documento a tiempo', hrefNuevo: hrefAnterior };
+        }
+
+        // Pequeño respiro: el <a data-vp="dl"> puede quedar con el href del
+        // blob ya puesto pero el blob en sí (su contenido interno en memoria
+        // del navegador) todavía terminando de escribirse un instante más
+        // tarde — visto en el documento de 1kb, que daba "0 bytes" incluso
+        // tras recargar y reintentar desde cero.
+        await page.waitForTimeout(400);
+
+        const hrefNuevo = await page.evaluate(() =>
+            document.querySelector('a[data-vp="dl"]')?.getAttribute('href') || null
+        ).catch(() => hrefAnterior);
+
+        // 3. Clic en "Descargar" — un <a href="blob:..." download="..."> dispara
+        //    la descarga nativa del navegador, que Playwright captura como
+        //    evento 'download' (requiere acceptDownloads:true en el contexto).
+        const downloadWait = page.waitForEvent('download', { timeout: 15000 }).catch(() => null);
+        await page.click(SELECTOR_BOTON_DESCARGAR_SAMAI, { force: true, timeout: 10000 }).catch(() => {});
+        const download = await downloadWait;
+
+        if (!download) {
+            return { buffer: null, error: 'no se disparó la descarga del blob (15s)', hrefNuevo };
+        }
+
+        // Diagnóstico: si Chromium considera que la descarga falló (ej:
+        // "net::ERR_..." o blob inválido), download.failure() lo dice.
+        const motivoFallo = await download.failure().catch(() => null);
+        if (motivoFallo) {
+            console.log(`  [${etiqueta}] ⚠ Chromium reportó fallo de descarga: ${motivoFallo}`);
+        }
+
+        const rutaTemp = await download.path().catch(() => null);
+        if (!rutaTemp) {
+            return { buffer: null, error: `descarga sin archivo temporal${motivoFallo ? ' (' + motivoFallo + ')' : ' (posible fallo silencioso)'}`, hrefNuevo };
+        }
+        const buffer = fs.readFileSync(rutaTemp);
+        if (buffer.length === 0) {
+            console.log(`  [${etiqueta}] ⚠ el archivo temporal existe pero pesa 0 bytes${motivoFallo ? ' — motivo: ' + motivoFallo : ''}`);
+        }
+        return { buffer, error: null, hrefNuevo };
+    } catch (e) {
+        console.log(`  [${etiqueta}] ✗ error inesperado: ${e.message.split('\n')[0]}`);
+        return { buffer: null, error: e.message.split('\n')[0], hrefNuevo: hrefAnterior, critico: true };
+    }
+}
+
+app.post("/samai/anexos", async (req, res) => {
+    const { radicado } = req.body;
+    if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
+
+    const t0 = Date.now();
+    console.log(`[${new Date().toLocaleTimeString()}] SAMAI ANEXOS ${radicado}`);
+
+    let context, page;
+    try {
+        const br = await getBrowser();
+        context  = await br.newContext({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            locale: 'es-CO',
+            acceptDownloads: true,
+        });
+        page = await context.newPage();
+
+        // 1-3: mismo flujo que /samai/actuaciones — cargar búsqueda, obtener
+        // guid, ir al detalle, resolver captcha si aparece.
+        await page.goto('https://samai.consejodeestado.gov.co/Vistas/Casos/procesos.aspx',
+            { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+        const guid = await obtenerGuidEnPagina(page, radicado);
+        if (!guid) {
+            await context.close();
+            console.log(`  GUID no encontrado (${Date.now()-t0}ms)`);
+            return res.json({ anexos: [], mensaje: 'No encontrado en SAMAI' });
+        }
+        console.log(`  GUID: ${guid} (${Date.now()-t0}ms)`);
+
+        const url = `https://samai.consejodeestado.gov.co/Vistas/Casos/list_procesos.aspx?guid=${guid}`;
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+        const tieneCaptcha = await page.evaluate(() =>
+            document.body.innerText.toLowerCase().includes('ingrese sin espacios')
+        );
+        if (tieneCaptcha) {
+            await Promise.all([
+                page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(() => {}),
+                resolverCaptcha(page),
+            ]);
+            console.log(`  Captcha resuelto (${Date.now()-t0}ms)`);
+        }
+        await page.waitForTimeout(500);
+
+        // 4. Resolver el href absoluto del link "Visualizar expediente"
+        //    (el navegador ya resuelve la ruta relativa ../../PaginasTransversales/...
+        //    a una URL completa vía el getter .href, no hace falta construirla a mano).
+        const docUrl = await page.evaluate(() => {
+            const el = document.querySelector('#MainContent_LinkVerDocumentos');
+            return el ? el.href : null;
+        });
+        if (!docUrl) {
+            await context.close();
+            console.log(`  Sin link "Visualizar expediente" (${Date.now()-t0}ms)`);
+            return res.json({ anexos: [], mensaje: 'El proceso no tiene expediente de documentos visible' });
+        }
+        console.log(`  Expediente: ${docUrl}`);
+
+        // 5. Ir a la página del expediente y listar los documentos
+        await page.goto(docUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForTimeout(500);
+
+        const filas = await extraerLinksDocumentosSamai(page);
+        console.log(`  Documentos en expediente: ${filas.length} ${JSON.stringify(filas.map(f => f.nombre))}`);
+
+        // 6. Descargar cada documento — clic en el título (carga el visor),
+        //    luego clic en el botón "Descargar" que aparece con el blob listo.
+        //
+        // FIX: tras varios timeouts seguidos el visor puede quedar en un
+        // estado roto (contexto de la página destruido). Antes eso tumbaba
+        // TODO el endpoint y se perdían los anexos ya descargados. Ahora,
+        // si un documento falla (error, 0 bytes, o crítico), se recarga la
+        // página del expediente (barata — no repite captcha, la sesión ya
+        // quedó autenticada) y se reintenta ESE documento hasta 2 veces más
+        // antes de darlo por perdido y seguir con el siguiente.
+        const anexos = [];
+        let hrefPrevio = '';
+        for (const fila of filas) {
+            try {
+                const selector = `#${fila.id}`;
+                let resultado = await descargarDocumentoSamai(page, selector, fila.nombre, hrefPrevio);
+
+                // Solo se reintenta por error real (timeout, descarga que no
+                // disparó, etc.) — si el archivo vino genuinamente en 0
+                // bytes, se descarta directo sin insistir (puede ser un
+                // documento vacío/corrupto del lado de SAMAI).
+                let intentos = 0;
+                while (resultado.error && intentos < 2) {
+                    intentos++;
+                    console.log(`  ↻ Reintento ${intentos}/2 de "${fila.nombre}" tras recargar el expediente...`);
+                    await page.goto(docUrl, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+                    await page.waitForTimeout(800);
+                    resultado = await descargarDocumentoSamai(page, selector, fila.nombre, '');
+                }
+
+                hrefPrevio = resultado.hrefNuevo || hrefPrevio;
+
+                if (resultado.error || !resultado.buffer || resultado.buffer.length === 0) {
+                    console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${resultado.error || 'descargó 0 bytes'}`);
+                    continue;
+                }
+
+                const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
+                anexos.push({
+                    nombre:           fila.nombre,
+                    tipo:             ext,
+                    contenido_base64: resultado.buffer.toString('base64'),
+                });
+                console.log(`  ✓ Descargado: ${fila.nombre} (${resultado.buffer.length} bytes)`);
+            } catch (eItem) {
+                // FIX: pase lo que pase con ESTE documento, nunca debe tumbar
+                // los anexos que ya se lograron descargar en la misma corrida.
+                console.log(`  ✗ Error inesperado con "${fila.nombre}": ${eItem.message.split('\n')[0]} — se continúa con el siguiente`);
+            }
+        }
+
+        console.log(`  ✓ ${anexos.length}/${filas.length} anexos descargados (${Date.now()-t0}ms)`);
+        await context.close();
+        res.json({ anexos });
+
+    } catch (error) {
+        if (context) await context.close().catch(() => {});
+        if (browser && !browser.isConnected()) browser = null;
+        console.error(`  ✗ SAMAI ANEXOS error: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
 //  PUBLICACIONES PROCESALES
 // ══════════════════════════════════════════════════════════════
 
@@ -1080,9 +1330,9 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
 app.get("/health", (req, res) => res.json({
     status: "ok",
     browser: browser?.isConnected() ?? false,
-    endpoints: ['/samai/actuaciones', '/publicaciones/consultar', '/tyba/actuaciones', '/tyba/anexos', '/tyba/anexos-actuaciones']
+    endpoints: ['/samai/actuaciones', '/samai/anexos', '/publicaciones/consultar', '/tyba/actuaciones', '/tyba/anexos', '/tyba/anexos-actuaciones']
 }));
 
 getBrowser().catch(e => console.error("Error pre-lanzando browser:", e));
 
-app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - Publicaciones: POST /publicaciones/consultar\n   - TYBA:          POST /tyba/actuaciones\n   - TYBA anexos:   POST /tyba/anexos\n   - TYBA anexos x actuación: POST /tyba/anexos-actuaciones\n`));
+app.listen(PORT, () => console.log(`\n🏛  Servicio Node.js en http://localhost:${PORT}\n   - SAMAI:         POST /samai/actuaciones\n   - SAMAI anexos:  POST /samai/anexos\n   - Publicaciones: POST /publicaciones/consultar\n   - TYBA:          POST /tyba/actuaciones\n   - TYBA anexos:   POST /tyba/anexos\n   - TYBA anexos x actuación: POST /tyba/anexos-actuaciones\n`));
