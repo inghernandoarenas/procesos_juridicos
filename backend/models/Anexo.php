@@ -11,7 +11,17 @@ class Anexo {
     }
 
     public function getByProceso($proceso_id) {
-        $query = "SELECT a.*, ac.nombre AS categoria_nombre
+        // "origen_automatico" marca los anexos que la app trajo sola desde
+        // TYBA/SAMAI (por actuación, o del expediente general del proceso)
+        // — nunca subidos a mano por el usuario. Se detectan por
+        // actuacion_id (anexos por actuación) o por el prefijo del archivo
+        // guardado (tyba_/samai_, ver Anexo::guardarArchivoBase64) que los
+        // anexos subidos manualmente (uniqid() sin prefijo) no tienen.
+        $query = "SELECT a.*, ac.nombre AS categoria_nombre,
+                  CASE WHEN a.actuacion_id IS NOT NULL
+                       OR a.ruta_archivo LIKE 'uploads/tyba\\_%'
+                       OR a.ruta_archivo LIKE 'uploads/samai\\_%'
+                  THEN 1 ELSE 0 END AS origen_automatico
                   FROM " . $this->table . " a
                   LEFT JOIN anexo_categorias ac ON a.categoria_id = ac.id
                   WHERE a.proceso_id = :proceso_id
@@ -20,6 +30,21 @@ class Anexo {
         $stmt->bindParam(':proceso_id', $proceso_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Un solo anexo por id — usado para validar su origen antes de borrar. */
+    public function getById($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM " . $this->table . " WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /** true si el anexo vino solo (TYBA/SAMAI), no se puede borrar desde la app. */
+    public function esOrigenAutomatico(array $anexo): bool {
+        if (!empty($anexo['actuacion_id'])) return true;
+        $ruta = $anexo['ruta_archivo'] ?? '';
+        return (bool) preg_match('#^uploads/(tyba|samai)_#', $ruta);
     }
 
     public function getCategorias() {

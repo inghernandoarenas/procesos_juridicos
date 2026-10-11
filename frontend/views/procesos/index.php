@@ -1519,9 +1519,15 @@ function renderAnexos(data) {
                        class="anexo-btn descargar" download="${a.nombre_archivo}">
                         <i class="fas fa-download"></i> Ver
                     </a>
-                    <button class="anexo-btn eliminar" onclick="eliminarAnexo(${a.id}, ${anexosProceso})">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${Number(a.origen_automatico) === 1
+                        ? `<button class="anexo-btn eliminar" disabled
+                                   title="Documento traído automáticamente desde TYBA/SAMAI — no se puede eliminar"
+                                   style="opacity:.4;cursor:not-allowed">
+                               <i class="fas fa-lock"></i>
+                           </button>`
+                        : `<button class="anexo-btn eliminar" onclick="eliminarAnexo(${a.id}, ${anexosProceso})">
+                               <i class="fas fa-trash"></i>
+                           </button>`}
                 </div>
             </div>`;
         }).join('');
@@ -1549,6 +1555,7 @@ function eliminarAnexo(id, procesoId) {
             .then(r => r.json())
             .then(data => {
                 if (data.success) { cargarAnexos(procesoId); toast('Archivo eliminado', 'info'); }
+                else { toast(data.error || 'No se pudo eliminar el archivo', 'error'); }
             });
     }
 }
@@ -1622,7 +1629,8 @@ document.getElementById('buscarProcesos').addEventListener('keyup', e => {
 
 // ── Reporte PDF ──────────────────────────────────────────────
 function abrirReporte(id) {
-    window.open(`/procesos_juridicos/backend/reportes/reporte_proceso.php?id=${id}`, '_blank');
+    const token = localStorage.getItem('token') || '';
+    window.open(`/procesos_juridicos/backend/reportes/reporte_proceso.php?id=${id}&token=${encodeURIComponent(token)}`, '_blank');
 }
 
 // ── Honorarios ───────────────────────────────────────────────

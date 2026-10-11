@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/Anexo.php';
 require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $action     = $_POST['action'] ?? $_GET['action'] ?? '';
 $anexo      = new Anexo();
@@ -57,18 +58,27 @@ if ($action === 'upload') {
 
 // Eliminar archivo
 if ($action === 'delete') {
-    $id         = $_POST['id']         ?? 0;
-    $proceso_id = $_POST['proceso_id'] ?? 0;
+    $id = $_POST['id'] ?? 0;
 
-    // Obtener ruta para borrar el físico
-    $lista = $anexo->getByProceso($proceso_id);
-    foreach ($lista as $a) {
-        if ($a['id'] == $id) {
-            $archivo = __DIR__ . '/../../' . $a['ruta_archivo'];
-            if (file_exists($archivo)) unlink($archivo);
-            break;
-        }
+    $fila = $anexo->getById($id);
+    if (!$fila) {
+        echo json_encode(['success' => false, 'error' => 'Anexo no encontrado']);
+        exit;
     }
+
+    // No se permite borrar un anexo que la app trajo sola desde TYBA/SAMAI
+    // (por actuación, o del expediente general del proceso) — es copia de
+    // un documento oficial externo, no algo que el usuario deba poder
+    // perder desde aquí. El frontend ya deshabilita el botón para estos,
+    // esta es la validación real del lado del servidor.
+    if ($anexo->esOrigenAutomatico($fila)) {
+        echo json_encode(['success' => false, 'error' => 'Este documento fue traído automáticamente desde TYBA/SAMAI y no se puede eliminar']);
+        exit;
+    }
+
+    $archivo = __DIR__ . '/../../' . $fila['ruta_archivo'];
+    if (file_exists($archivo)) unlink($archivo);
+
     echo json_encode(['success' => $anexo->delete($id)]);
     exit;
 }
