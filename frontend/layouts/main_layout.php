@@ -15,22 +15,22 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     <link rel="stylesheet" href="/procesos_juridicos/frontend/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-    /* ── Sidebar colapsable ─────────────────────────────────── */
+    /* ── Sidebar colapsable (AJUSTADO) ─────────────────────────────────── */
     .sidebar {
-        width: 280px;
-        min-width: 280px;
+        width: 220px !important;
+        min-width: 220px !important;
         background: #2c3e50;
         color: white;
-        padding: 20px;
+        padding: 15px 10px !important;
         transition: width .25s ease, min-width .25s ease, padding .25s ease;
         overflow: hidden;
         position: relative;
         flex-shrink: 0;
     }
     .sidebar.collapsed {
-        width: 56px;
-        min-width: 56px;
-        padding: 20px 10px;
+        width: 50px !important;
+        min-width: 50px !important;
+        padding: 15px 5px !important;
     }
     .sidebar.collapsed .sidebar-label,
     .sidebar.collapsed h2 .sidebar-title,
@@ -46,16 +46,14 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     .sidebar.collapsed ul li a i {
         margin-right: 0 !important;
         width: auto !important;
-        font-size: 17px;
+        font-size: 16px;
     }
     /* Tooltip cuando está colapsado */
-    .sidebar.collapsed ul li {
-        position: relative;
-    }
+    .sidebar.collapsed ul li { position: relative; }
     .sidebar.collapsed ul li a::after {
         content: attr(data-label);
         position: absolute;
-        left: 62px;
+        left: 56px;
         top: 50%;
         transform: translateY(-50%);
         background: #1a252f;
@@ -74,41 +72,37 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     /* Botón toggle */
     .sidebar-toggle {
         position: absolute;
-        top: 18px;
-        right: -14px;
+        top: 14px;
+        right: -12px;
         z-index: 200;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         background: #3498db;
         border: none;
         border-radius: 50%;
         color: white;
-        font-size: 11px;
+        font-size: 10px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 100;
         box-shadow: 0 2px 8px rgba(0,0,0,.3);
         transition: background .15s, transform .25s;
     }
     .sidebar-toggle:hover { background: #2980b9; }
-    .sidebar.collapsed .sidebar-toggle { transform: rotate(180deg); right: -14px; }
+    .sidebar.collapsed .sidebar-toggle { transform: rotate(180deg); right: -12px; }
 
     /* Header del sidebar */
     .sidebar h2 {
-        margin-bottom: 20px;
-        font-size: 18px;
+        margin-bottom: 15px;
+        font-size: 15px;
         display: flex;
         align-items: center;
         gap: 8px;
         white-space: nowrap;
         overflow: hidden;
     }
-    .sidebar-icon-main { font-size: 20px; flex-shrink: 0; }
-
-    /* Links con label span para ocultar al colapsar */
-    .sidebar ul li a { white-space: nowrap; overflow: hidden; }
+    .sidebar-icon-main { font-size: 18px; flex-shrink: 0; }
     .sidebar-label { transition: opacity .2s; }
     .sidebar.collapsed .sidebar-label { opacity: 0; }
     </style>
@@ -151,34 +145,16 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                         <span class="sidebar-label">Parametrización</span>
                         <i class="fas fa-chevron-down" style="float:right;margin-left:auto"></i>
                     </a>
-                    <ul class="submenu" style="display:none;padding-left:15px">
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=clientes">
-                            <i class="fas fa-users" style="margin-right:10px;width:20px"></i> Clientes
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=tipos_proceso">
-                            <i class="fas fa-tags" style="margin-right:10px;width:20px"></i> Especialidades
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=estados_proceso">
-                            <i class="fas fa-chart-pie" style="margin-right:10px;width:20px"></i> Estados de Proceso
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=usuarios">
-                            <i class="fas fa-user-cog" style="margin-right:10px;width:20px"></i> Usuarios
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=notificaciones">
-                            <i class="fas fa-bell" style="margin-right:10px;width:20px"></i> Notificaciones
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=departamentos">
-                            <i class="fas fa-map" style="margin-right:10px;width:20px"></i> Departamentos
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=municipios">
-                            <i class="fas fa-city" style="margin-right:10px;width:20px"></i> Municipios
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=entidades">
-                            <i class="fas fa-landmark" style="margin-right:10px;width:20px"></i> Entidades
-                        </a></li>
-                        <li><a href="/procesos_juridicos/frontend/index.php?view=despachos">
-                            <i class="fas fa-balance-scale" style="margin-right:10px;width:20px"></i> Despachos
-                        </a></li>
+                    <ul class="submenu" style="display:none;">
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=clientes"><i class="fas fa-users" style="margin-right:10px;width:20px"></i> Clientes</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=tipos_proceso"><i class="fas fa-tags" style="margin-right:10px;width:20px"></i> Especialidades</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=estados_proceso"><i class="fas fa-chart-pie" style="margin-right:10px;width:20px"></i> Estados Proceso</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=usuarios"><i class="fas fa-user-cog" style="margin-right:10px;width:20px"></i> Usuarios</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=notificaciones"><i class="fas fa-bell" style="margin-right:10px;width:20px"></i> Notificaciones</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=departamentos"><i class="fas fa-map" style="margin-right:10px;width:20px"></i> Departamentos</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=municipios"><i class="fas fa-city" style="margin-right:10px;width:20px"></i> Municipios</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=entidades"><i class="fas fa-landmark" style="margin-right:10px;width:20px"></i> Entidades</a></li>
+                        <li><a href="/procesos_juridicos/frontend/index.php?view=despachos"><i class="fas fa-balance-scale" style="margin-right:10px;width:20px"></i> Despachos</a></li>
                     </ul>
                 </li>
 
@@ -194,9 +170,8 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
 
         <div class="main-content">
             <div class="header">
-                <h1><?= htmlspecialchars($_nombreEmp) ?></h1>
+                <h1 style="font-size: 18px; margin: 0;"><?= htmlspecialchars($_nombreEmp) ?></h1>
                 <div class="user-info" style="display:flex;align-items:center;gap:16px">
-                    <!-- Mi Empresa -->
                     <a href="/procesos_juridicos/frontend/index.php?view=configuracion"
                        style="display:flex;align-items:center;gap:8px;text-decoration:none;
                               background:#f0f4f8;border-radius:8px;padding:6px 12px;
@@ -212,9 +187,8 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                             <?= htmlspecialchars($_nombreEmp) ?>
                         </span>
                     </a>
-                    <!-- Usuario -->
                     <span style="display:flex;align-items:center;gap:8px">
-                        <i class="fas fa-user-circle" style="font-size:24px;color:#3498db"></i>
+                        <i class="fas fa-user-circle" style="font-size:22px;color:#3498db"></i>
                         <span id="userName" style="font-size:13px;color:#2c3e50;font-weight:500">Cargando...</span>
                     </span>
                     <button onclick="logout()" class="btn-icon" data-tooltip="Cerrar sesión" style="background:#f8f9fa">
@@ -227,19 +201,15 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
             document.addEventListener('DOMContentLoaded', function() {
                 const user = JSON.parse(localStorage.getItem('user') || '{}');
                 document.getElementById('userName').textContent = user.nombre || 'Usuario';
-
-                // Restaurar estado del sidebar
                 if (localStorage.getItem('sidebarCollapsed') === '1') {
                     document.getElementById('mainSidebar').classList.add('collapsed');
                 }
             });
-
             function logout() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 window.location.href = '/procesos_juridicos/frontend/login.php';
             }
-
             function toggleSidebar() {
                 const sb = document.getElementById('mainSidebar');
                 sb.classList.toggle('collapsed');
@@ -252,7 +222,7 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
             </div>
 
             <div class="footer">
-                <p>&copy; <?= $_anioEmp ?> - <?= htmlspecialchars($_nombreEmp) ?></p>
+                <p style="font-size: 12px; color: #7f8c8d;">&copy; <?= $_anioEmp ?> - <?= htmlspecialchars($_nombreEmp) ?></p>
             </div>
         </div>
     </div>
@@ -272,42 +242,32 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
             setTimeout(() => el.remove(), 300);
         }, duracion);
     }
+    function toggleSubmenu(event) {
+        event.preventDefault();
+        const sidebar = document.getElementById('mainSidebar');
+        if (sidebar.classList.contains('collapsed')) {
+            sidebar.classList.remove('collapsed');
+            localStorage.setItem('sidebarCollapsed', '0');
+        }
+        const submenu = event.currentTarget.nextElementSibling;
+        const icon    = event.currentTarget.querySelector('i:last-child');
+        const abierto = submenu.style.display !== 'none';
+        submenu.style.display = abierto ? 'none' : 'block';
+        icon.classList.toggle('fa-chevron-down', abierto);
+        icon.classList.toggle('fa-chevron-up', !abierto);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const view = new URLSearchParams(window.location.search).get('view');
+        const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','departamentos','municipios','entidades','despachos'];
+        if (vistasParametrizacion.includes(view)) {
+            const submenu = document.querySelector('.submenu');
+            const icon    = document.querySelector('.has-submenu a i:last-child');
+            if (submenu) {
+                submenu.style.display = 'block';
+                if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+    });
     </script>
 </body>
 </html>
-
-<script>
-function toggleSubmenu(event) {
-    event.preventDefault();
-    const sidebar = document.getElementById('mainSidebar');
-    if (sidebar.classList.contains('collapsed')) {
-        sidebar.classList.remove('collapsed');
-        localStorage.setItem('sidebarCollapsed', '0');
-    }
-    const submenu = event.currentTarget.nextElementSibling;
-    const icon    = event.currentTarget.querySelector('i:last-child');
-    const abierto = submenu.style.display !== 'none';
-    submenu.style.display = abierto ? 'none' : 'block';
-    icon.classList.toggle('fa-chevron-down', abierto);
-    icon.classList.toggle('fa-chevron-up', !abierto);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const view = new URLSearchParams(window.location.search).get('view');
-    const vistasParametrizacion = ['clientes','tipos_proceso','estados_proceso','usuarios','notificaciones','departamentos','municipios','entidades','despachos'];
-    if (vistasParametrizacion.includes(view)) {
-        const submenu = document.querySelector('.submenu');
-        const icon    = document.querySelector('.has-submenu a i:last-child');
-        if (submenu) {
-            submenu.style.display = 'block';
-            if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        }
-    }
-});
-</script>
-
-<style>
-.sidebar .submenu { padding-left: 25px !important; list-style: none; }
-.sidebar .submenu li a { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
-.sidebar .submenu li a i { width: 20px; text-align: center; }
-</style>

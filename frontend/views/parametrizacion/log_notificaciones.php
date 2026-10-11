@@ -1,56 +1,60 @@
 <style>
 .log-filtros {
-    display: flex; gap: 12px; align-items: center;
-    margin-bottom: 18px; flex-wrap: wrap;
+    display: flex; gap: 10px; align-items: center;
+    margin-bottom: 14px; flex-wrap: wrap;
 }
 .log-filtros select, .log-filtros input {
-    padding: 8px 12px; border: 2px solid #e0e0e0;
-    border-radius: 6px; font-size: 13px; color: #2c3e50;
+    padding: 7px 10px; border: 2px solid #e0e0e0;
+    border-radius: 6px; font-size: 12px; color: #2c3e50;
 }
 .log-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
 }
-.log-badge.enviado  { background: #eafaf1; color: #27ae60; }
-.log-badge.fallido  { background: #fdecea; color: #e74c3c; }
-.log-badge.pendiente{ background: #fef9ec; color: #f39c12; }
-.log-badge.email    { background: #eaf4fd; color: #2980b9; }
-.log-badge.whatsapp { background: #f0fff4; color: #25d366; }
-.log-badge.sms      { background: #f5f0fe; color: #8e44ad; }
+.log-badge.enviado   { background: #eafaf1; color: #27ae60; }
+.log-badge.fallido   { background: #fdecea; color: #e74c3c; }
+.log-badge.pendiente { background: #fef9ec; color: #f39c12; }
+.log-badge.email     { background: #eaf4fd; color: #2980b9; }
+.log-badge.whatsapp  { background: #f0fff4; color: #25d366; }
+.log-badge.sms       { background: #f5f0fe; color: #8e44ad; }
 
+/* AJUSTE PRINCIPAL: 5 columnas en una sola línea, más compacto */
 .log-stats {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 12px; margin-bottom: 20px;
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 10px; 
+    margin-bottom: 14px; 
 }
 .log-stat-card {
     background: #f8f9fa; border-radius: 8px;
-    padding: 12px 16px;
+    padding: 10px 6px;
     text-align: center;
     border-top: 3px solid #e0e0e0;
+    white-space: nowrap; /* Fuerza a que el texto no baje de línea */
 }
 .log-stat-card.verde  { border-top-color: #27ae60; }
 .log-stat-card.rojo   { border-top-color: #e74c3c; }
 .log-stat-card.azul   { border-top-color: #3498db; }
 .log-stat-card.verde2 { border-top-color: #25d366; }
 .log-stat-card.morado { border-top-color: #8e44ad; }
-.log-stat-num  { font-size: 20px; font-weight: 600; color: #2c3e50; }
+.log-stat-num  { font-size: 18px; font-weight: 600; color: #2c3e50; }
 .log-stat-label{ font-size: 10px; color: #95a5a6; text-transform: uppercase; letter-spacing: .5px; }
 
 .log-paginacion {
     display: flex; align-items: center; justify-content: center;
-    gap: 6px; margin-top: 16px; flex-wrap: wrap;
+    gap: 6px; margin-top: 14px; flex-wrap: wrap;
 }
 .log-paginacion button {
-    min-width: 32px; padding: 6px 10px;
+    min-width: 30px; padding: 5px 8px;
     border: 1px solid #e0e0e0; background: #fff; color: #2c3e50;
-    border-radius: 6px; font-size: 13px; cursor: pointer;
+    border-radius: 6px; font-size: 12px; cursor: pointer;
 }
 .log-paginacion button:hover:not(:disabled) { background: #f5f6fa; }
 .log-paginacion button:disabled { opacity: .4; cursor: default; }
 .log-paginacion button.activo { background: #3498db; color: #fff; border-color: #3498db; }
 .log-paginacion .log-pagina-info {
-    font-size: 12px; color: #7f8c8d; margin: 0 8px;
+    font-size: 11px; color: #7f8c8d; margin: 0 6px;
 }
 </style>
 
@@ -75,7 +79,7 @@
         <option value="sms">SMS</option>
     </select>
     <input type="text" id="filtroBuscar" placeholder="Buscar por radicado o destinatario..."
-           oninput="filtrarLog()" style="min-width:260px">
+           oninput="filtrarLog()" style="min-width:240px">
 </div>
 
 <table id="tablaLog">
@@ -91,8 +95,8 @@
     <tbody id="tbodyLog"></tbody>
 </table>
 
-<p id="logVacio" style="display:none;text-align:center;padding:40px;color:#bdc3c7;font-style:italic">
-    <i class="fas fa-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>
+<p id="logVacio" style="display:none;text-align:center;padding:30px;color:#bdc3c7;font-style:italic">
+    <i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:8px"></i>
     No hay notificaciones registradas
 </p>
 
@@ -141,15 +145,15 @@ function renderStats(data) {
         </div>
         <div class="log-stat-card azul">
             <div class="log-stat-num">${emails}</div>
-            <div class="log-stat-label">Por Email</div>
+            <div class="log-stat-label">Email</div>
         </div>
         <div class="log-stat-card verde2">
             <div class="log-stat-num">${whatsapps}</div>
-            <div class="log-stat-label">Por WhatsApp</div>
+            <div class="log-stat-label">WhatsApp</div>
         </div>
         <div class="log-stat-card morado">
             <div class="log-stat-num">${smss}</div>
-            <div class="log-stat-label">Por SMS</div>
+            <div class="log-stat-label">SMS</div>
         </div>`;
 }
 
@@ -168,7 +172,7 @@ function obtenerDatosFiltrados() {
 }
 
 function filtrarLog() {
-    logPaginaActual = 1; // cada vez que cambia el filtro, volvemos a la primera página
+    logPaginaActual = 1;
     renderTabla(obtenerDatosFiltrados());
 }
 
@@ -187,7 +191,6 @@ function renderTabla(data) {
     tabla.style.display = '';
     vacio.style.display = 'none';
 
-    // Paginación: 8 registros por página sobre el resultado ya filtrado
     const totalPaginas = Math.max(1, Math.ceil(data.length / LOG_POR_PAGINA));
     if (logPaginaActual > totalPaginas) logPaginaActual = totalPaginas;
     if (logPaginaActual < 1) logPaginaActual = 1;
@@ -205,11 +208,11 @@ function renderTabla(data) {
         const badgeTipo   = `<span class="log-badge ${d.tipo_envio}">${d.tipo_envio}</span>`;
 
         return `<tr>
-            <td style="padding:8px 12px;font-size:12px;color:#7f8c8d;white-space:nowrap">${fecha}</td>
-            <td style="padding:8px 12px;font-size:12px;color:#3498db">${d.numero_radicado || '—'}</td>
-            <td style="padding:8px 12px">${badgeTipo}</td>
-            <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${d.destinatario}</td>
-            <td style="padding:8px 12px">${badgeEstado}</td>
+            <td style="padding:6px 10px;font-size:12px;color:#7f8c8d;white-space:nowrap">${fecha}</td>
+            <td style="padding:6px 10px;font-size:12px;color:#3498db">${d.numero_radicado || '—'}</td>
+            <td style="padding:6px 10px">${badgeTipo}</td>
+            <td style="padding:6px 10px;font-size:12px;color:#2c3e50">${d.destinatario}</td>
+            <td style="padding:6px 10px">${badgeEstado}</td>
         </tr>`;
     }).join('');
 
@@ -234,7 +237,6 @@ function renderPaginacion(totalRegistros, totalPaginas) {
     let botones = '';
     botones += `<button ${logPaginaActual === 1 ? 'disabled' : ''} onclick="irAPagina(${logPaginaActual - 1})">&laquo;</button>`;
 
-    // Ventana de páginas visible alrededor de la actual, para no llenar de botones si hay muchas
     const ventana = 2;
     for (let p = 1; p <= totalPaginas; p++) {
         const esBorde = p === 1 || p === totalPaginas;
@@ -247,7 +249,7 @@ function renderPaginacion(totalRegistros, totalPaginas) {
     }
 
     botones += `<button ${logPaginaActual === totalPaginas ? 'disabled' : ''} onclick="irAPagina(${logPaginaActual + 1})">&raquo;</button>`;
-    botones += `<span class="log-pagina-info">${totalRegistros} registros — página ${logPaginaActual} de ${totalPaginas}</span>`;
+    botones += `<span class="log-pagina-info">${totalRegistros} registros — pág ${logPaginaActual} de ${totalPaginas}</span>`;
 
     cont.innerHTML = botones;
 }
