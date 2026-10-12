@@ -17,6 +17,7 @@ require_once __DIR__ . '/../models/Actuacion.php';
 require_once __DIR__ . '/../models/Proceso.php'; // FIX: se había perdido al agregar Anexo.php -> "Class Proceso not found"
 require_once __DIR__ . '/../models/Anexo.php';
 require_once __DIR__ . '/../libs/auth.php';
+require_once __DIR__ . '/../libs/SyncStatus.php';
 
 header('Content-Type: application/json');
 verificarToken();
@@ -37,6 +38,8 @@ if (empty($proceso['numero_radicado'])) {
     exit;
 }
 
+SyncStatus::set($proceso_id, 'tyba', 'trayendo_actuaciones', 'Consultando actuaciones en TYBA...');
+
 $api = new ApiTyba();
 
 // 1. Traer y guardar actuaciones — esto es lo único que el usuario espera ver rápido.
@@ -47,6 +50,7 @@ $api = new ApiTyba();
 //    conexión al sincronizar" aunque no era un problema real de red.
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 if ($actuaciones === null) {
+    SyncStatus::set($proceso_id, 'tyba', 'error', 'No se pudo consultar TYBA en este momento');
     echo json_encode(['success' => false, 'message' => 'No se pudo consultar TYBA en este momento. Intenta de nuevo; si persiste, revisa logs/tyba_sync.log y que el servicio Node esté corriendo']);
     exit;
 }
@@ -93,11 +97,15 @@ if (function_exists('fastcgi_finish_request')) {
 // no puede producir el mensaje "Error de conexión al sincronizar".
 // ═══════════════════════════════════════════════════════════════════════
 
+SyncStatus::set($proceso_id, 'tyba', 'trayendo_anexos', 'Trayendo documentos desde TYBA...');
+$totalAnexos = 0;
+
 // 2a. Anexos generales del proceso — pestaña "Archivos" (ej: 01DEMANDA.pdf)
-$anexosTyba = $api->consultarAnexosPorRadicado($proceso['numero_radicado']);
+$anexosTyba = $api->consultarAnexosPorRadicado($proceso['numero_radicado'], $proceso_id);
 if ($anexosTyba !== null && is_array($anexosTyba)) {
     $anexoModel = new Anexo();
     $anexoModel->insertarLoteTyba($anexosTyba, $proceso_id, $usuario_id);
+    $totalAnexos += count($anexosTyba);
 }
 
 // 2b. Anexos propios de cada actuación (ej: el auto que se dictó en esa
@@ -105,11 +113,16 @@ if ($anexosTyba !== null && is_array($anexosTyba)) {
 //     minutos en procesos con muchas actuaciones. Corre después de que las
 //     actuaciones ya quedaron guardadas en el paso 1, porque necesita su
 //     id_api para asociar correctamente cada anexo.
-$anexosPorActuacion = $api->consultarAnexosPorActuacion($proceso['numero_radicado']);
+$anexosPorActuacion = $api->consultarAnexosPorActuacion($proceso['numero_radicado'], $proceso_id);
 if ($anexosPorActuacion !== null && is_array($anexosPorActuacion)) {
     $anexoModel = $anexoModel ?? new Anexo();
     $anexoModel->insertarLoteTybaPorActuacion($anexosPorActuacion, $proceso_id, $usuario_id);
+    $totalAnexos += count($anexosPorActuacion);
 }
+
+SyncStatus::set($proceso_id, 'tyba', 'completado', 'Expediente disponible en Anexos', [
+    'total_anexos' => $totalAnexos,
+]);
 
 // 3. Notificaciones por actuaciones nuevas
 if ($contadorAct > 0) {

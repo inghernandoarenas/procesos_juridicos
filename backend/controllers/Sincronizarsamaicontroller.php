@@ -18,8 +18,10 @@ require_once __DIR__ . '/../models/Actuacion.php';
 require_once __DIR__ . '/../models/Proceso.php';
 require_once __DIR__ . '/../models/Anexo.php';
 require_once __DIR__ . '/../libs/auth.php';
+require_once __DIR__ . '/../libs/SyncStatus.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $proceso_id   = (int)($_POST['proceso_id'] ?? 0);
 $usuario_id   = $_SESSION['usuario_id'] ?? null;
@@ -35,12 +37,15 @@ if (empty($proceso['numero_radicado'])) {
     exit;
 }
 
+SyncStatus::set($proceso_id, 'samai', 'trayendo_actuaciones', 'Consultando actuaciones en SAMAI...');
+
 $api = new ApiSamai();
 
 // 1. Traer y guardar actuaciones — esto es lo único que el usuario espera ver rápido.
 $actuaciones = $api->consultarActuacionesPorRadicado($proceso['numero_radicado']);
 
 if ($actuaciones === null) {
+    SyncStatus::set($proceso_id, 'samai', 'error', 'No se pudo conectar con SAMAI — verifica que el servicio Node esté corriendo');
     echo json_encode(['success' => false, 'message' => 'No se pudo conectar con SAMAI — verifica que el servicio Node esté corriendo']);
     exit;
 }
@@ -88,11 +93,19 @@ if (function_exists('fastcgi_finish_request')) {
 
 // 2. Documentos del expediente general (link "Visualizar expediente").
 //    SAMAI no tiene anexos por actuación individual — solo este listado único.
-$anexosSamai = $api->consultarAnexosPorRadicado($proceso['numero_radicado']);
+SyncStatus::set($proceso_id, 'samai', 'trayendo_anexos', 'Trayendo documentos desde SAMAI...');
+
+$anexosSamai = $api->consultarAnexosPorRadicado($proceso['numero_radicado'], $proceso_id);
+$totalAnexos = 0;
 if ($anexosSamai !== null && is_array($anexosSamai)) {
-    $anexoModel = new Anexo();
+    $anexoModel  = new Anexo();
     $anexoModel->insertarLoteSamai($anexosSamai, $proceso_id, $usuario_id);
+    $totalAnexos = count($anexosSamai);
 }
+
+SyncStatus::set($proceso_id, 'samai', 'completado', 'Expediente disponible en Anexos', [
+    'total_anexos' => $totalAnexos,
+]);
 
 // 3. Notificaciones por actuaciones nuevas
 if ($contador > 0) {

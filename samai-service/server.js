@@ -1,10 +1,41 @@
 import express from "express";
 import { chromium } from "playwright";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app  = express();
 const PORT = 3001;
 app.use(express.json());
+
+// ── Progreso de descarga compartido con PHP ────────────────────────────
+// El backend PHP (SincronizarTybaController / Sincronizarsamaicontroller)
+// ya escribe en logs/sync_status/{proceso_id}.json el estado "trayendo_anexos"
+// antes de llamar a este servicio. Aquí lo vamos actualizando documento por
+// documento (mismo archivo, mismo formato) para que el frontend pueda
+// mostrar un contador en vivo tipo "7/20" en vez de un mensaje fijo — ver
+// SyncStatus.php / SincronizarEstadoController.php del lado de PHP.
+const __dirname       = path.dirname(fileURLToPath(import.meta.url));
+const SYNC_STATUS_DIR = path.join(__dirname, "..", "logs", "sync_status");
+
+function escribirProgreso(procesoId, fuente, mensaje, actual, total) {
+    if (!procesoId) return; // sin proceso_id no hay a quién reportarle — no rompe nada, solo no hay contador
+    try {
+        if (!fs.existsSync(SYNC_STATUS_DIR)) fs.mkdirSync(SYNC_STATUS_DIR, { recursive: true });
+        const archivo = path.join(SYNC_STATUS_DIR, `${procesoId}.json`);
+        fs.writeFileSync(archivo, JSON.stringify({
+            proceso_id:  Number(procesoId),
+            fuente,
+            estado:      'trayendo_anexos',
+            mensaje,
+            actual,
+            total,
+            actualizado: new Date().toISOString(),
+        }));
+    } catch (e) {
+        console.log(`  (no se pudo escribir progreso de sincronización: ${e.message})`);
+    }
+}
 
 // ── Browser persistente ────────────────────────────────────────
 let browser   = null;
@@ -375,7 +406,7 @@ async function descargarDocumentoSamai(page, selectorTitulo, etiqueta, hrefAnter
 }
 
 app.post("/samai/anexos", async (req, res) => {
-    const { radicado } = req.body;
+    const { radicado, proceso_id } = req.body;
     if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
 
     const t0 = Date.now();
@@ -439,6 +470,7 @@ app.post("/samai/anexos", async (req, res) => {
 
         const filas = await extraerLinksDocumentosSamai(page);
         console.log(`  Documentos en expediente: ${filas.length} ${JSON.stringify(filas.map(f => f.nombre))}`);
+        escribirProgreso(proceso_id, 'samai', 'Trayendo documentos desde SAMAI...', 0, filas.length);
 
         // 6. Descargar cada documento — clic en el título (carga el visor),
         //    luego clic en el botón "Descargar" que aparece con el blob listo.
@@ -452,6 +484,7 @@ app.post("/samai/anexos", async (req, res) => {
         // antes de darlo por perdido y seguir con el siguiente.
         const anexos = [];
         let hrefPrevio = '';
+        let procesados = 0;
         for (const fila of filas) {
             try {
                 const selector = `#${fila.id}`;
@@ -488,6 +521,9 @@ app.post("/samai/anexos", async (req, res) => {
                 // FIX: pase lo que pase con ESTE documento, nunca debe tumbar
                 // los anexos que ya se lograron descargar en la misma corrida.
                 console.log(`  ✗ Error inesperado con "${fila.nombre}": ${eItem.message.split('\n')[0]} — se continúa con el siguiente`);
+            } finally {
+                procesados++;
+                escribirProgreso(proceso_id, 'samai', 'Trayendo documentos desde SAMAI...', procesados, filas.length);
             }
         }
 
@@ -1052,7 +1088,7 @@ async function clicYDescargar(page, context, selector, etiqueta) {
 }
 
 app.post("/tyba/anexos", async (req, res) => {
-    const { radicado } = req.body;
+    const { radicado, proceso_id } = req.body;
     if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
 
     const t0 = Date.now();
@@ -1098,27 +1134,34 @@ app.post("/tyba/anexos", async (req, res) => {
             }).filter(f => f.inputName && f.nombre);
         });
         console.log(`  Archivos en tabla: ${filas.length} ${JSON.stringify(filas.map(f => f.nombre))}`);
+        escribirProgreso(proceso_id, 'tyba', 'Trayendo documentos desde TYBA (archivos del expediente)...', 0, filas.length);
 
         // Cada botón NO es un link — es un input[type=image] que hace un postback
         // de ASP.NET (abre el PDF en pestaña nueva, dispara una descarga directa,
         // o navega la misma pestaña, según cómo responda TYBA ese día).
         const anexos = [];
+        let procesados = 0;
         for (const fila of filas) {
-            const selector = `input[name="${fila.inputName}"]`;
-            const { buffer, error } = await clicYDescargar(page, context, selector, fila.nombre);
+            try {
+                const selector = `input[name="${fila.inputName}"]`;
+                const { buffer, error } = await clicYDescargar(page, context, selector, fila.nombre);
 
-            if (error || !buffer || buffer.length === 0) {
-                console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${error || 'descargó 0 bytes'}`);
-                continue;
+                if (error || !buffer || buffer.length === 0) {
+                    console.log(`  ✗ No se pudo descargar "${fila.nombre}": ${error || 'descargó 0 bytes'}`);
+                    continue;
+                }
+
+                const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
+                anexos.push({
+                    nombre:           fila.nombre,
+                    tipo:             ext,
+                    contenido_base64: buffer.toString('base64'),
+                });
+                console.log(`  ✓ Descargado: ${fila.nombre} (${buffer.length} bytes)`);
+            } finally {
+                procesados++;
+                escribirProgreso(proceso_id, 'tyba', 'Trayendo documentos desde TYBA (archivos del expediente)...', procesados, filas.length);
             }
-
-            const ext = (fila.nombre.match(/\.([a-zA-Z0-9]+)$/) || [null, 'pdf'])[1].toUpperCase();
-            anexos.push({
-                nombre:           fila.nombre,
-                tipo:             ext,
-                contenido_base64: buffer.toString('base64'),
-            });
-            console.log(`  ✓ Descargado: ${fila.nombre} (${buffer.length} bytes)`);
         }
 
         console.log(`  ✓ ${anexos.length}/${filas.length} anexos descargados (${Date.now()-t0}ms)`);
@@ -1212,7 +1255,7 @@ async function leerIdApiActuaciones(page) {
 }
 
 app.post("/tyba/anexos-actuaciones", async (req, res) => {
-    const { radicado } = req.body;
+    const { radicado, proceso_id } = req.body;
     if (!radicado) return res.status(400).json({ error: "Radicado requerido" });
 
     const t0 = Date.now();
@@ -1239,6 +1282,7 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
         filasInfo = await leerIdApiActuaciones(page);
         await context.close();
         console.log(`  ${filasInfo.length} actuaciones a revisar`);
+        escribirProgreso(proceso_id, 'tyba', 'Trayendo documentos desde TYBA (anexos por actuación)...', 0, filasInfo.length);
     } catch (error) {
         if (context) await context.close().catch(() => {});
         if (browser && !browser.isConnected()) browser = null;
@@ -1258,6 +1302,7 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
     //    nunca acumula ese estado roto. Corre en background, así que el
     //    tiempo extra no afecta al usuario.
     const anexosPorActuacion = [];
+    let procesadasAct = 0;
     for (const fi of filasInfo) {
         let ctxFila;
         try {
@@ -1315,6 +1360,9 @@ app.post("/tyba/anexos-actuaciones", async (req, res) => {
         } catch (e) {
             console.log(`  ✗ [${fi.etiqueta}] error procesando: ${e.message.split('\n')[0]}`);
             if (ctxFila) await ctxFila.close().catch(() => {});
+        } finally {
+            procesadasAct++;
+            escribirProgreso(proceso_id, 'tyba', 'Trayendo documentos desde TYBA (anexos por actuación)...', procesadasAct, filasInfo.length);
         }
     }
 

@@ -229,7 +229,31 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
 
     <div id="toast-container"></div>
 
+    <!-- Aviso persistente de sincronización en background (TYBA/SAMAI trayendo
+         anexos). A diferencia de un toast, no desaparece solo: se queda
+         visible mientras el proceso sigue corriendo en el servidor, y lleva
+         el contador de documentos traídos. Ver mostrarSyncBanner() más abajo
+         y iniciarPollingAnexos() en procesos/index.php. -->
+    <div id="syncBanner" class="sync-banner" style="display:none">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span id="syncBannerTexto">Trayendo documentos...</span>
+    </div>
+
     <script>
+    function mostrarSyncBanner(texto) {
+        const b = document.getElementById('syncBanner');
+        if (!b) return;
+        document.getElementById('syncBannerTexto').textContent = texto;
+        b.style.display = 'flex';
+    }
+    function actualizarSyncBanner(texto) {
+        const el = document.getElementById('syncBannerTexto');
+        if (el) el.textContent = texto;
+    }
+    function ocultarSyncBanner() {
+        const b = document.getElementById('syncBanner');
+        if (b) b.style.display = 'none';
+    }
     function toast(mensaje, tipo = 'success', duracion = 3500) {
         const iconos = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
         const contenedor = document.getElementById('toast-container');

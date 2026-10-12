@@ -996,6 +996,81 @@ function cargarTimeline(procesoId) {
         });
 }
 
+// ── Aviso de descarga de anexos en background (TYBA/SAMAI) ─────
+// La sincronización responde rápido con las actuaciones, pero los anexos
+// (documentos del expediente) siguen bajando en el servidor en segundo
+// plano y pueden tardar varios minutos. Sin este aviso, el usuario entra a
+// Anexos, no ve nada todavía, y piensa que falló.
+//
+// El aviso es un banner FIJO (mostrarSyncBanner/actualizarSyncBanner/
+// ocultarSyncBanner, definidos en main_layout.php) que se queda visible
+// todo el tiempo que dure la descarga — no es un toast que desaparece solo
+// — y muestra un contador en vivo "7/20" que el servicio Node va
+// reportando documento por documento (ver escribirProgreso() en
+// samai-service/server.js) a través de SincronizarEstadoController.php.
+let _syncPollers = {}; // procesoId -> intervalId
+
+function iniciarPollingAnexos(procesoId, fuenteLabel) {
+    if (_syncPollers[procesoId]) clearInterval(_syncPollers[procesoId]);
+
+    let intentos = 0;
+    const MAX_INTENTOS = 150; // ~10 min a 4s por intento
+
+    mostrarSyncBanner(`Sincronizando con ${fuenteLabel}...`);
+
+    _syncPollers[procesoId] = setInterval(() => {
+        intentos++;
+
+        fetchWithAuth(`/procesos_juridicos/backend/controllers/SincronizarEstadoController.php?proceso_id=${procesoId}`)
+            .then(r => r.json())
+            .then(data => {
+                const estado = data.estado;
+                if (!estado) return;
+
+                if (estado.estado === 'trayendo_actuaciones') {
+                    actualizarSyncBanner(estado.mensaje || `Consultando ${fuenteLabel}...`);
+                }
+
+                if (estado.estado === 'trayendo_anexos') {
+                    const base = estado.mensaje || `Trayendo documentos desde ${fuenteLabel}...`;
+                    const conteo = (estado.total !== undefined && estado.total !== null && estado.total > 0)
+                        ? ` ${estado.actual ?? 0}/${estado.total}`
+                        : '';
+                    actualizarSyncBanner(base + conteo);
+                }
+
+                if (estado.estado === 'completado') {
+                    clearInterval(_syncPollers[procesoId]);
+                    delete _syncPollers[procesoId];
+                    ocultarSyncBanner();
+                    const cant = (estado.total_anexos !== undefined && estado.total_anexos !== null)
+                        ? ` (${estado.total_anexos})` : '';
+                    toast(`Expediente disponible en Anexos${cant}`, 'success', 5000);
+
+                    // Si el panel de Anexos de este mismo proceso está abierto, refrescarlo
+                    if (anexosProceso === procesoId
+                        && document.getElementById('modalAnexos').style.display === 'block') {
+                        cargarAnexos(procesoId);
+                    }
+                }
+
+                if (estado.estado === 'error') {
+                    clearInterval(_syncPollers[procesoId]);
+                    delete _syncPollers[procesoId];
+                    ocultarSyncBanner();
+                    toast(estado.mensaje || `Error sincronizando con ${fuenteLabel}`, 'error', 5000);
+                }
+            })
+            .catch(() => {});
+
+        if (intentos >= MAX_INTENTOS) {
+            clearInterval(_syncPollers[procesoId]);
+            delete _syncPollers[procesoId];
+            ocultarSyncBanner();
+        }
+    }, 4000);
+}
+
 function sincronizarRama() {
     const cfg = FUENTES[fuenteActual];
     if (!cfg || !cfg.controller) return;
@@ -1022,6 +1097,12 @@ function sincronizarRama() {
         .then(data => {
             toast(data.message, data.success ? 'success' : 'warning', 5000);
             cargarTimeline(procesoActual);
+            // Las actuaciones ya llegaron; los anexos siguen bajando en el
+            // servidor en background (ver SincronizarTybaController /
+            // Sincronizarsamaicontroller). Avisar cuando terminen.
+            if (data.success) {
+                iniciarPollingAnexos(procesoActual, cfg.label);
+            }
         })
         .catch(err => {
             if (err.name === 'AbortError') {

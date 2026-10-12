@@ -69,11 +69,15 @@ class ApiTyba {
      * @param string $radicado El número de radicado del proceso
      * @return array|null Retorna un array con los anexos o null si hay error de conexión
      */
-    public function consultarAnexosPorRadicado($radicado) {
+    public function consultarAnexosPorRadicado($radicado, $proceso_id = null) {
         $url = 'http://localhost:3001/tyba/anexos';
-        
+
+        // proceso_id es opcional: si llega, el servicio Node va reportando
+        // el avance documento por documento en logs/sync_status/{id}.json
+        // para que el frontend muestre un contador en vivo.
         $data = [
-            'radicado' => trim($radicado)
+            'radicado'   => trim($radicado),
+            'proceso_id' => $proceso_id,
         ];
 
         $ch = curl_init($url);
@@ -130,10 +134,10 @@ class ApiTyba {
      * @param string $radicado
      * @return array|null [{id_api, archivos:[{nombre,tipo,contenido_base64}]}, ...] o null si hubo error de conexión
      */
-    public function consultarAnexosPorActuacion($radicado) {
+    public function consultarAnexosPorActuacion($radicado, $proceso_id = null) {
         $url = 'http://localhost:3001/tyba/anexos-actuaciones';
 
-        $data = ['radicado' => trim($radicado)];
+        $data = ['radicado' => trim($radicado), 'proceso_id' => $proceso_id];
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -250,10 +250,14 @@ class ApiSamai {
      * @param string $radicado
      * @return array|null [{nombre, tipo, contenido_base64}, ...] o null si hubo error de conexión
      */
-    public function consultarAnexosPorRadicado($radicado) {
+    public function consultarAnexosPorRadicado($radicado, $proceso_id = null) {
         $url = $this->serviceUrl . '/samai/anexos';
 
-        $data = ['radicado' => trim($radicado)];
+        // proceso_id es opcional: si llega, el servicio Node va reportando
+        // el avance documento por documento en logs/sync_status/{id}.json
+        // para que el frontend muestre un contador en vivo (ver
+        // escribirProgreso() en samai-service/server.js).
+        $data = ['radicado' => trim($radicado), 'proceso_id' => $proceso_id];
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
