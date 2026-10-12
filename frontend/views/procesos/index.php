@@ -1902,5 +1902,15 @@ function eliminarHonorario(id) {
 }
 
 // ── Init ──────────────────────────────────────────────────────
-cargarProcesos(1, '');
+// Si se llegó desde el buscador del sidebar (?q=...), precargar el filtro
+(function initBusquedaDesdeURL() {
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q) {
+        document.getElementById('buscarProcesos').value = q;
+        terminoBusqueda = q;
+        cargarProcesos(1, q);
+    } else {
+        cargarProcesos(1, '');
+    }
+})();
 </script>

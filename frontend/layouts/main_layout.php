@@ -102,9 +102,33 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
         white-space: nowrap;
         overflow: hidden;
     }
+    .sidebar h2 .sidebar-title { overflow: hidden; text-overflow: ellipsis; }
     .sidebar-icon-main { font-size: 18px; flex-shrink: 0; }
     .sidebar-label { transition: opacity .2s; }
     .sidebar.collapsed .sidebar-label { opacity: 0; }
+
+    /* Buscador rápido del sidebar (busca procesos por radicado o cliente) */
+    .sidebar-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 6px;
+        padding: 7px 10px;
+        margin: 0 18px 14px 0; /* margin-right libra el botón de colapsar, que se monta sobre el borde */
+    }
+    .sidebar-search i { color: rgba(255,255,255,.5); font-size: 12px; flex-shrink: 0; }
+    .sidebar-search input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        font-size: 12px;
+        width: 100%;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,.45); }
+    .sidebar.collapsed .sidebar-search { display: none; }
     </style>
 </head>
 <body>
@@ -114,10 +138,12 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                 <i class="fas fa-chevron-left" id="toggleIcon"></i>
             </button>
 
-            <h2>
-                <i class="fas fa-gavel sidebar-icon-main"></i>
-                <span class="sidebar-title">Menú</span>
-            </h2>
+            <div class="sidebar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="sidebarBuscarProceso" placeholder="Buscar proceso..."
+                       onkeyup="if(event.key==='Enter') buscarDesdeSidebar()">
+            </div>
+
             <ul>
                 <li>
                     <a href="/procesos_juridicos/frontend/index.php?view=dashboard" data-label="Dashboard">
@@ -184,7 +210,7 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                             <i class="fas fa-building" style="color:white;font-size:14px"></i>
                         </div>
                         <span style="font-size:13px;font-weight:600;color:#2c3e50">
-                            <?= htmlspecialchars($_nombreEmp) ?>
+                            Configurar empresa
                         </span>
                     </a>
                     <span style="display:flex;align-items:center;gap:8px">
@@ -265,6 +291,14 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
             el.style.animation = 'toastOut .3s ease forwards';
             setTimeout(() => el.remove(), 300);
         }, duracion);
+    }
+    function buscarDesdeSidebar() {
+        const termino = document.getElementById('sidebarBuscarProceso').value.trim();
+        if (!termino) return;
+        // Lleva a Procesos con el término en la URL (?q=...); esa vista lo
+        // lee al cargar y aplica el filtro (ver initBusquedaDesdeURL en
+        // procesos/index.php). Así funciona desde cualquier pantalla.
+        window.location.href = '/procesos_juridicos/frontend/index.php?view=procesos&q=' + encodeURIComponent(termino);
     }
     function toggleSubmenu(event) {
         event.preventDefault();

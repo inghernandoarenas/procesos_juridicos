@@ -129,6 +129,39 @@
 .fin-kpi-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
 .fin-kpi-val   { font-size: 17px; font-weight: 700; }
 
+/* ── Modal Personalizar Dashboard ───────────────────────── */
+.dash-pref-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 4px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.dash-pref-row:last-child { border-bottom: none; }
+.dash-pref-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+}
+.dash-pref-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.dash-pref-titulo { font-size: 13px; font-weight: 600; color: #2c3e50; }
+.dash-pref-info i.fa-info-circle { color: #bdc3c7; font-size: 12px; cursor: help; }
+.dash-pref-info i.fa-info-circle:hover { color: #3498db; }
+
+/* Switch tipo iOS, reutilizable */
+.dash-switch { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
+.dash-switch input { opacity: 0; width: 0; height: 0; }
+.dash-switch-slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: #ccc; border-radius: 21px; transition: .2s;
+}
+.dash-switch-slider::before {
+    content: ""; position: absolute; width: 17px; height: 17px;
+    left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: .2s;
+}
+.dash-switch input:checked + .dash-switch-slider { background: #3498db; }
+.dash-switch input:checked + .dash-switch-slider::before { transform: translateX(17px); }
+
 /* ── Tooltip ─────────────────────────────────────────── */
 #dashTooltip {
     position: fixed; background: rgba(30,40,50,.92); color: white;
@@ -142,12 +175,18 @@
 <div id="dashTooltip"></div>
 
 <div class="dashboard" style="padding-top:4px">
-    <h2 style="margin-bottom:14px;font-size:17px">Dashboard</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h2 style="margin-bottom:0;font-size:17px">Dashboard</h2>
+        <button type="button" onclick="abrirPersonalizarDashboard()"
+                style="background:#fff;border:1px solid #e0e0e0;color:#2c3e50;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <i class="fas fa-sliders-h" style="color:#3498db"></i> Personalizar
+        </button>
+    </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" id="dashGrid">
 
         <!-- ══ FINANZAS (span 3, no colapsable por defecto) ═══ -->
-        <div class="dash-card" style="grid-column:span 3">
+        <div class="dash-card" id="cardFinanzas" style="grid-column:span 3">
             <div class="dash-card-header" onclick="toggleCard('finBody','finToggle')">
                 <div class="dash-card-title">
                     <i class="fas fa-chart-line" style="color:#27ae60"></i>
@@ -181,7 +220,7 @@
         </div>
 
         <!-- ══ PUBLICACIONES PROCESALES ════════════════════════════ -->
-        <div class="dash-card" id="cardPublicaciones" style="display:none" style="grid-column:span 3;border-left:4px solid #16a085">
+        <div class="dash-card" id="cardPublicaciones" style="grid-column:span 3;border-left:4px solid #16a085">
             <div class="dash-card-header" onclick="toggleCard('pubBody','pubToggle')">
                 <div class="dash-card-title" style="display:flex;align-items:center;gap:10px">
                     <i class="fas fa-newspaper" style="color:#16a085;font-size:16px"></i>
@@ -206,7 +245,7 @@
         </div>
 
         <!-- ══ PRÓXIMOS A VENCER ═══════════════════════════════ -->
-        <div class="dash-card">
+        <div class="dash-card" id="cardVencer">
             <div class="dash-card-header" onclick="toggleCard('vencerBody','vencerToggle')">
                 <div class="dash-card-title">
                     <i class="fas fa-exclamation-triangle" style="color:#f39c12"></i>
@@ -223,7 +262,7 @@
         </div>
 
         <!-- ══ EN ESPERA ════════════════════════════════════════ -->
-        <div class="dash-card">
+        <div class="dash-card" id="cardEspera">
             <div class="dash-card-header" onclick="toggleCard('esperaBody','esperaToggle')">
                 <div class="dash-card-title">
                     <i class="fas fa-hourglass-half" style="color:#3498db"></i>
@@ -240,7 +279,7 @@
         </div>
 
         <!-- ══ SILENCIO JUDICIAL ════════════════════════════════ -->
-        <div class="dash-card">
+        <div class="dash-card" id="cardSemaforo">
             <div class="dash-card-header" onclick="toggleCard('semaforoBody','semaforoToggle')">
                 <div class="dash-card-title">
                     <i class="fas fa-traffic-light" style="color:#e74c3c"></i>
@@ -257,7 +296,7 @@
         </div>
 
         <!-- ══ DESISTIMIENTO TÁCITO (span 3) ════════════════════ -->
-        <div class="dash-card" style="grid-column:span 3">
+        <div class="dash-card" id="cardTacito" style="grid-column:span 3">
             <div class="dash-card-header" onclick="toggleCard('tacitoBody','tacitoToggle')">
                 <div class="dash-card-title">
                     <i class="fas fa-exclamation-circle" style="color:#7c3aed"></i>
@@ -274,6 +313,21 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<!-- ══ MODAL: Personalizar dashboard ═══════════════════════════ -->
+<div id="modalPersonalizarDash" class="modal">
+    <div class="modal-content" style="width:480px;max-width:92%">
+        <h3><i class="fas fa-sliders-h" style="color:#3498db"></i> Personalizar Dashboard</h3>
+        <p style="font-size:12px;color:#7f8c8d;margin:-10px 0 14px">
+            Elige qué tarjetas quieres ver. Pasa el cursor sobre <i class="fas fa-info-circle"></i> para saber qué muestra cada una.
+        </p>
+        <div id="listaPersonalizarCards"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px">
+            <button type="button" class="btn btn-secondary" onclick="cerrarPersonalizarDashboard()">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="guardarPersonalizarDashboard()">Guardar</button>
+        </div>
     </div>
 </div>
 
@@ -299,6 +353,76 @@ document.addEventListener('mousemove', e => {
     tip.style.left = x + 'px';
     tip.style.top  = y + 'px';
 });
+
+// ── Personalización de cards (mostrar/ocultar) ─────────────────
+// Cada card se puede apagar si al usuario no le sirve. La preferencia se
+// guarda por navegador (localStorage) — no por usuario en la BD, así no
+// toca el login ni la base de datos para algo puramente visual.
+const DASH_CARDS = [
+    { id: 'cardFinanzas',      titulo: 'Resumen Financiero',             icono: 'fa-chart-line',           color: '#27ae60', defecto: true,
+      desc: 'Cuánto se ha cobrado este mes, cuánto está pendiente por cobrar y cuánto está vencido sin cobrar, sumando todos los procesos.' },
+    { id: 'cardPublicaciones', titulo: 'Publicaciones Procesales',       icono: 'fa-newspaper',            color: '#16a085', defecto: false,
+      desc: 'Publicaciones recientes (últimos 7 días) de los despachos donde tienes procesos activos. Hay que darle "Actualizar" para consultarlas — por eso viene apagada por defecto.' },
+    { id: 'cardVencer',        titulo: 'Próximos a Vencer',              icono: 'fa-exclamation-triangle', color: '#f39c12', defecto: true,
+      desc: 'Procesos con una fecha de vencimiento próxima (términos, audiencias, etc.), ordenados por urgencia.' },
+    { id: 'cardEspera',        titulo: 'En Espera de Respuesta',         icono: 'fa-hourglass-half',       color: '#3498db', defecto: true,
+      desc: 'Procesos que están a la espera de una respuesta o decisión de la otra parte o del despacho.' },
+    { id: 'cardSemaforo',      titulo: 'Silencio Judicial',              icono: 'fa-traffic-light',        color: '#e74c3c', defecto: true,
+      desc: 'Procesos sin ninguna actuación reciente: en rojo si llevan más de 60 días sin movimiento, en amarillo entre 30 y 60 días.' },
+    { id: 'cardTacito',        titulo: 'Riesgo de Desistimiento Tácito', icono: 'fa-exclamation-circle',   color: '#7c3aed', defecto: true,
+      desc: 'Procesos sin ninguna actuación durante 365 días o más — riesgo de que se dé por desistido. El más crítico de revisar.' },
+];
+const DASH_PREFS_KEY = 'dashboard_cards_visibles';
+
+function cargarPrefsCards() {
+    try {
+        const guardado = JSON.parse(localStorage.getItem(DASH_PREFS_KEY));
+        if (Array.isArray(guardado)) return guardado;
+    } catch (e) {}
+    // Sin preferencia guardada todavía (primera vez): usar los valores por defecto
+    return DASH_CARDS.filter(c => c.defecto).map(c => c.id);
+}
+
+function aplicarPrefsCards() {
+    const visibles = cargarPrefsCards();
+    DASH_CARDS.forEach(c => {
+        const el = document.getElementById(c.id);
+        if (el) el.style.display = visibles.includes(c.id) ? '' : 'none';
+    });
+}
+
+function abrirPersonalizarDashboard() {
+    const visibles = cargarPrefsCards();
+    const cont = document.getElementById('listaPersonalizarCards');
+    cont.innerHTML = DASH_CARDS.map(c => `
+        <div class="dash-pref-row">
+            <div class="dash-pref-icon" style="background:${c.color}1a;color:${c.color}">
+                <i class="fas ${c.icono}"></i>
+            </div>
+            <div class="dash-pref-info">
+                <span class="dash-pref-titulo">${c.titulo}</span>
+                <i class="fas fa-info-circle" data-dash-tooltip="${c.desc}"></i>
+            </div>
+            <label class="dash-switch">
+                <input type="checkbox" data-card-id="${c.id}" ${visibles.includes(c.id) ? 'checked' : ''}>
+                <span class="dash-switch-slider"></span>
+            </label>
+        </div>`).join('');
+    document.getElementById('modalPersonalizarDash').style.display = 'block';
+}
+
+function cerrarPersonalizarDashboard() {
+    document.getElementById('modalPersonalizarDash').style.display = 'none';
+}
+
+function guardarPersonalizarDashboard() {
+    const checks   = document.querySelectorAll('#listaPersonalizarCards input[type=checkbox]');
+    const visibles = Array.from(checks).filter(ch => ch.checked).map(ch => ch.dataset.cardId);
+    localStorage.setItem(DASH_PREFS_KEY, JSON.stringify(visibles));
+    aplicarPrefsCards();
+    cerrarPersonalizarDashboard();
+    toast('Preferencias del dashboard guardadas', 'success');
+}
 
 // ── Finanzas ──────────────────────────────────────────────────
 function cargarFinanzas() {
@@ -524,6 +648,7 @@ function sincronizarPublicaciones() {
 }
 
 // ── Init ──────────────────────────────────────────────────────
+aplicarPrefsCards();
 cargarFinanzas();
 cargarPublicaciones();
 cargarProximosVencer();
