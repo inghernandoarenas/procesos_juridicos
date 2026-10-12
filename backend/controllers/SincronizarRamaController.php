@@ -7,6 +7,7 @@ require_once __DIR__ . '/../models/Proceso.php';
 require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $proceso_id   = (int)($_POST['proceso_id'] ?? 0);
 $procesoModel = new Proceso();

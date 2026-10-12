@@ -1,5 +1,5 @@
 <?php
-//require_once __DIR__ . '/../libs/auth.php';
+require_once __DIR__ . '/../libs/auth.php';
 require_once __DIR__ . '/../models/TipoProceso.php';
 
 header('Content-Type: application/json');

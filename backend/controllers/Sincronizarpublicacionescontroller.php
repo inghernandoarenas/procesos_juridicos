@@ -8,7 +8,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
-verificarToken();
+//verificarToken();
 
 $procesoModel   = new Proceso();
 $actuacionModel = new Actuacion();

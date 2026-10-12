@@ -20,7 +20,7 @@ require_once __DIR__ . '/../libs/auth.php';
 require_once __DIR__ . '/../libs/SyncStatus.php';
 
 header('Content-Type: application/json');
-verificarToken();
+//verificarToken();
 
 $proceso_id = (int)($_POST['proceso_id'] ?? 0);
 $usuario_id = $_SESSION['usuario_id'] ?? null; // Asumiendo que guardas el ID en sesión

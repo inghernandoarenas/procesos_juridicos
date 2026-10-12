@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Entidad.php';
+require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
 verificarToken();

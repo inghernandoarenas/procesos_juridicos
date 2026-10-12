@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/NotificacionConfig.php';
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
 verificarToken();
