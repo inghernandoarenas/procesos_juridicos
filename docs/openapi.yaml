@@ -1,0 +1,922 @@
+openapi: 3.0.3
+info:
+  title: Procesos Jurídicos — API
+  description: >
+    API del sistema de gestión de procesos judiciales. Es una API de acción
+    (cada controlador es un único endpoint que recibe un parámetro `action`
+    y despacha internamente), no estrictamente RESTful por recurso — este
+    documento describe cada acción como si fuera su propia operación para
+    que sea legible en Swagger UI.
+
+
+    **Autenticación**: todos los endpoints requieren el header
+    `Authorization: Bearer <token>` (JWT obtenido en `POST
+    AuthController.php?action=login`), EXCEPTO:
+    - `AuthController.php` (login/verify) — es el que entrega el token.
+    - `reporte_proceso.php` — se abre en pestaña nueva con `window.open()`,
+      así que no puede llevar headers; el token viaja como parámetro de URL
+      `?token=...`.
+
+    Si el token falta o es inválido, cualquier endpoint protegido responde
+    `401` con `{"success": false, "message": "..."}` (o similar) y detiene
+    la ejecución.
+
+
+    **Convención de acciones**: las acciones de solo lectura (`list`, `get`,
+    `resumen`, etc.) se consultan con `GET` y el parámetro `action` en la
+    query string. Las acciones que modifican datos (`create`, `update`,
+    `delete`, `upload`, `pagar`) se envían con `POST`
+    (`application/x-www-form-urlencoded` o `multipart/form-data` para
+    `upload`), también con `action` en la query string o en el cuerpo.
+  version: "1.0.0"
+servers:
+  - url: /procesos_juridicos
+    description: Instalación XAMPP (ajustar al dominio real en producción)
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Autenticación y emisión/verificación de tokens
+  - name: Procesos
+    description: CRUD de procesos judiciales e indicadores del Dashboard
+  - name: Clientes
+    description: CRUD de clientes
+  - name: Actuaciones
+    description: Historial de movimientos de un proceso (timeline)
+  - name: Anexos
+    description: Documentos adjuntos a un proceso
+  - name: Honorarios
+    description: Cobros y pagos asociados a un proceso
+  - name: Sincronización
+    description: >
+      Consulta a los portales judiciales externos (Rama Judicial, SAMAI,
+      TYBA, Publicaciones Procesales) y su estado de avance
+  - name: Notificaciones
+    description: Configuración de avisos automáticos y su log de envíos
+  - name: Parametrización
+    description: Catálogos base del sistema (tipos, estados, geografía, entidades, despachos, usuarios, configuración)
+  - name: Reportes
+    description: Generación de documentos PDF/HTML para imprimir o compartir
+
+paths:
+  # ══════════════════════════════════════════════════════════════
+  # AUTH
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/AuthController.php:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión o verificar un token
+      security: []
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [login, verify] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                usuario: { type: string, description: "Requerido para action=login" }
+                password: { type: string, format: password, description: "Requerido para action=login" }
+      responses:
+        "200":
+          description: >
+            `login`: `{success, token, user:{id,nombre,email}}` o
+            `{success:false, message}`. `verify`: lee el token del header
+            `Authorization` (no de `action`'s params) y responde
+            `{success, user}` o `{success:false, message}`.
+          content:
+            application/json:
+              schema: { type: object }
+
+  # ══════════════════════════════════════════════════════════════
+  # PROCESOS
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/ProcesoController.php:
+    get:
+      tags: [Procesos]
+      summary: Consultar procesos e indicadores del Dashboard
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [list, get, getClientes, getByCliente, proximosVencer, enEspera, sinMovimiento, desistimientoTacito, stats, getTipos, getEstados]
+        - name: pagina
+          in: query
+          schema: { type: integer, default: 1 }
+          description: Solo action=list
+        - name: buscar
+          in: query
+          schema: { type: string }
+          description: Solo action=list — filtra por radicado o cliente
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: Requerido para action=get
+        - name: cliente_id
+          in: query
+          schema: { type: integer }
+          description: Requerido para action=getByCliente
+      responses:
+        "200":
+          description: >
+            Varía según `action`: `list` → `{data, total, pagina, por_pagina, total_paginas}`;
+            `get` → objeto del proceso; `proximosVencer`/`enEspera`/`sinMovimiento`/`desistimientoTacito`
+            → arreglo de procesos (son las fuentes de las tarjetas del Dashboard);
+            `stats` → contadores agregados; `getTipos`/`getEstados`/`getClientes` → catálogos.
+          content:
+            application/json:
+              schema: { type: object }
+    post:
+      tags: [Procesos]
+      summary: Crear, editar o eliminar un proceso
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para update/delete" }
+                cliente_id: { type: integer }
+                tipo_proceso_id: { type: integer, nullable: true }
+                estado_proceso_id: { type: integer, nullable: true }
+                numero_radicado: { type: string }
+                descripcion: { type: string }
+                fecha_inicio: { type: string, format: date }
+                fecha_vencimiento: { type: string, format: date, nullable: true }
+                es_privado: { type: boolean, description: "Si se excluye de la sincronización automática con portales" }
+                fuente_consulta: { type: string, enum: [rama, samai, tyba, penal, ninguna] }
+                departamento_id: { type: integer, nullable: true }
+                municipio_id: { type: integer, nullable: true }
+                despacho_id: { type: integer, nullable: true }
+                entidad_id: { type: integer, nullable: true }
+      responses:
+        "200":
+          description: "`{success: boolean}`"
+          content:
+            application/json:
+              schema: { type: object, properties: { success: { type: boolean } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # CLIENTES
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/ClienteController.php:
+    get:
+      tags: [Clientes]
+      summary: Consultar clientes
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get, resumen] }
+        - name: pagina
+          in: query
+          schema: { type: integer, default: 1 }
+          description: Solo action=list
+        - name: buscar
+          in: query
+          schema: { type: string }
+          description: Solo action=list
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: Requerido para get/resumen
+      responses:
+        "200":
+          description: >
+            `list` → `{data, total, pagina, por_pagina, total_paginas}` (6 por página);
+            `get` → objeto del cliente; `resumen` → indicadores del cliente (procesos, honorarios).
+          content:
+            application/json:
+              schema: { type: object }
+    post:
+      tags: [Clientes]
+      summary: Crear, editar o eliminar un cliente
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para update/delete" }
+                nombre: { type: string }
+                apellido: { type: string }
+                tipo_identificacion: { type: string, nullable: true }
+                numero_identificacion: { type: string, nullable: true }
+                email: { type: string, nullable: true }
+                telefono: { type: string, nullable: true }
+                direccion: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "`{success: boolean}`"
+          content:
+            application/json:
+              schema: { type: object, properties: { success: { type: boolean } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # ACTUACIONES
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/ActuacionController.php:
+    get:
+      tags: [Actuaciones]
+      summary: Consultar actuaciones de un proceso o recientes
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, recientes, nuevas_por_proceso] }
+        - name: proceso_id
+          in: query
+          schema: { type: integer }
+          description: Requerido para action=list
+        - name: fuente
+          in: query
+          schema: { type: string, enum: [rama, samai, tyba, publicaciones, manual] }
+          description: "Solo action=recientes (default: publicaciones)"
+        - name: limite
+          in: query
+          schema: { type: integer, default: 15 }
+          description: Solo action=recientes
+      responses:
+        "200":
+          description: >
+            `list` → arreglo de actuaciones del proceso; `recientes` → últimas
+            actuaciones de esa fuente con datos del proceso y cliente (lo usa
+            la tarjeta Publicaciones Procesales del Dashboard); `nuevas_por_proceso`
+            → mapa `{proceso_id: cantidad}` de publicaciones de los últimos 7 días.
+          content:
+            application/json:
+              schema: { type: object }
+    post:
+      tags: [Actuaciones]
+      summary: Crear o eliminar una actuación manual
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para delete" }
+                proceso_id: { type: integer }
+                id_api: { type: string, nullable: true, description: "Id de la actuación en el portal externo, si aplica" }
+                fuente: { type: string, default: manual }
+                despacho: { type: string, nullable: true }
+                fecha: { type: string, format: date }
+                actuacion: { type: string }
+                observaciones: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "`{success: boolean}`"
+          content:
+            application/json:
+              schema: { type: object, properties: { success: { type: boolean } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # ANEXOS
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/AnexoController.php:
+    get:
+      tags: [Anexos]
+      summary: Listar anexos de un proceso o categorías disponibles
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, categorias] }
+        - name: proceso_id
+          in: query
+          schema: { type: integer }
+          description: Requerido para action=list
+      responses:
+        "200":
+          description: >
+            `list` → arreglo de anexos, cada uno con `origen_automatico` (1 si
+            TYBA/SAMAI lo trajo solo y no se puede eliminar, 0 si fue subido a
+            mano); `categorias` → catálogo de categorías de anexo.
+          content:
+            application/json:
+              schema: { type: object }
+    post:
+      tags: [Anexos]
+      summary: Subir o eliminar un anexo
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [upload, delete] }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                proceso_id: { type: integer, description: "Requerido para upload" }
+                categoria_id: { type: integer, nullable: true, description: "Solo upload" }
+                archivo: { type: string, format: binary, description: "Solo upload — límite 10MB" }
+                id: { type: integer, description: "Requerido para delete" }
+      responses:
+        "200":
+          description: >
+            `{success: boolean}`. `delete` puede responder
+            `{success:false, error:"Este documento fue traído automáticamente
+            desde TYBA/SAMAI y no se puede eliminar"}` si el anexo es de
+            origen automático (bloqueo del lado del servidor).
+          content:
+            application/json:
+              schema: { type: object }
+
+  # ══════════════════════════════════════════════════════════════
+  # HONORARIOS
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/HonorarioController.php:
+    get:
+      tags: [Honorarios]
+      summary: Consultar honorarios y resúmenes financieros
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, resumen, resumen_global, list_global, get] }
+        - name: proceso_id
+          in: query
+          schema: { type: integer }
+          description: Requerido para list/resumen
+        - name: pagina
+          in: query
+          schema: { type: integer, default: 1 }
+          description: Solo list_global
+        - name: buscar
+          in: query
+          schema: { type: string }
+          description: Solo list_global — por concepto o radicado
+        - name: estado
+          in: query
+          schema: { type: string, enum: [pendiente, pagado, vencido] }
+          description: Solo list_global
+        - name: tipo
+          in: query
+          schema: { type: string, enum: [pago_puntual, cuota_periodica, honorario_exito, anticipo, gasto_reembolsable] }
+          description: Solo list_global
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: Requerido para action=get
+      responses:
+        "200":
+          description: >
+            `resumen_global` → `{cobrado_mes, pendiente_total, vencido_total,
+            procesos_con_pendiente}` (alimenta la tarjeta Resumen Financiero del
+            Dashboard). Las demás acciones devuelven listas u objetos de honorarios.
+          content:
+            application/json:
+              schema: { type: object }
+    post:
+      tags: [Honorarios]
+      summary: Crear, editar, marcar como pagado o eliminar un honorario
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, pagar, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para update/pagar/delete" }
+                proceso_id: { type: integer }
+                concepto: { type: string }
+                tipo: { type: string, enum: [pago_puntual, cuota_periodica, honorario_exito, anticipo, gasto_reembolsable] }
+                valor: { type: number }
+                fecha_causacion: { type: string, format: date }
+                fecha_pago: { type: string, format: date, nullable: true, description: "create/update opcional; pagar usa hoy si se omite" }
+                estado: { type: string, enum: [pendiente, pagado, vencido] }
+                observaciones: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "`{success: boolean}`"
+          content:
+            application/json:
+              schema: { type: object, properties: { success: { type: boolean } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # SINCRONIZACIÓN
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/SincronizarRamaController.php:
+    post:
+      tags: [Sincronización]
+      summary: Sincronizar actuaciones con la Rama Judicial
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { proceso_id: { type: integer } }
+      responses:
+        "200":
+          description: "`{success, message}` — responde rápido; dispara notificaciones en background si hubo actuaciones nuevas."
+          content: { application/json: { schema: { type: object } } }
+
+  /backend/controllers/Sincronizarsamaicontroller.php:
+    post:
+      tags: [Sincronización]
+      summary: Sincronizar actuaciones y anexos con SAMAI
+      description: >
+        Responde de inmediato con el resultado de actuaciones; los anexos
+        (documentos del expediente) se siguen descargando en el servidor
+        después de responder. Consultar su avance con
+        `SincronizarEstadoController.php`.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { proceso_id: { type: integer } }
+      responses:
+        "200":
+          description: "`{success, message}`"
+          content: { application/json: { schema: { type: object } } }
+
+  /backend/controllers/SincronizarTybaController.php:
+    post:
+      tags: [Sincronización]
+      summary: Sincronizar actuaciones y anexos con TYBA
+      description: >
+        Igual que SAMAI: responde rápido con las actuaciones y sigue
+        descargando anexos (generales + por actuación) en background.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { proceso_id: { type: integer } }
+      responses:
+        "200":
+          description: "`{success, message}`"
+          content: { application/json: { schema: { type: object } } }
+
+  /backend/controllers/SincronizarEstadoController.php:
+    get:
+      tags: [Sincronización]
+      summary: Consultar el avance de una sincronización en curso (polling)
+      description: >
+        El frontend lo consulta cada ~4s mientras hay una sincronización
+        TYBA/SAMAI activa, para mostrar el banner con el contador de
+        documentos traídos.
+      parameters:
+        - name: proceso_id
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: >
+            `{success, estado: {proceso_id, fuente, estado, mensaje, actual,
+            total, total_anexos, actualizado} | null}`. `estado.estado` es uno
+            de: `trayendo_actuaciones`, `trayendo_anexos`, `completado`, `error`.
+          content: { application/json: { schema: { type: object } } }
+
+  /backend/controllers/Sincronizarpublicacionescontroller.php:
+    get:
+      tags: [Sincronización]
+      summary: Sincronizar publicaciones procesales recientes (todos los procesos)
+      description: >
+        Sin parámetro `action` ni filtros: revisa todos los procesos activos
+        con despacho oficial asignado, consulta publicaciones de los últimos
+        7 días por cada despacho, y descarga los PDFs encontrados. Responde
+        rápido con el número de despachos a procesar y continúa en background.
+      responses:
+        "200":
+          description: "`{success, message, despachos}`"
+          content: { application/json: { schema: { type: object } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # NOTIFICACIONES
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/Notificacionconfigcontroller.php:
+    get:
+      tags: [Notificaciones]
+      summary: Consultar configuración de notificaciones
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get, get_usuario] }
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: Requerido para get/get_usuario (en get_usuario es el id de usuario)
+      responses:
+        "200":
+          description: "Según `action`: lista, un registro, o `{email, telefono}` del usuario."
+          content: { application/json: { schema: { type: object } } }
+    post:
+      tags: [Notificaciones]
+      summary: Crear, editar o eliminar una configuración de notificación
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para update/delete" }
+                usuario_id: { type: integer }
+                tipo: { type: string, enum: [email, whatsapp, sms] }
+                email: { type: string, nullable: true }
+                telefono: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "`{success: boolean}`"
+          content: { application/json: { schema: { type: object, properties: { success: { type: boolean } } } } }
+
+  /backend/controllers/Notificacionlogcontroller.php:
+    get:
+      tags: [Notificaciones]
+      summary: Consultar el historial de notificaciones enviadas
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list] }
+        - name: limite
+          in: query
+          schema: { type: integer, default: 100 }
+      responses:
+        "200":
+          description: "Arreglo de registros: fecha, radicado, tipo_envio, destinatario, estado (enviado/fallido/pendiente)."
+          content: { application/json: { schema: { type: array, items: { type: object } } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # PARAMETRIZACIÓN
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/TipoProcesoController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar especialidades / tipos de proceso
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get] }
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: Requerido para get
+      responses:
+        "200": { description: "Lista u objeto de tipo de proceso", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un tipo de proceso
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer }
+                nombre: { type: string }
+                descripcion: { type: string, nullable: true }
+      responses:
+        "200": { description: "`{success: boolean}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/EstadoProcesoController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar estados de proceso
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get] }
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de estado de proceso", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un estado de proceso
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer }
+                nombre: { type: string }
+                color: { type: string, default: "#3498db", description: "Color hexadecimal del badge de estado" }
+      responses:
+        "200": { description: "`{success: boolean}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/DepartamentoController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar departamentos
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get] }
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de departamento", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un departamento
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { id: { type: integer }, nombre: { type: string } }
+      responses:
+        "200": { description: "`{success, id}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/MunicipioController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar municipios
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, byDepartamento, get] }
+        - name: departamento_id
+          in: query
+          schema: { type: integer }
+          description: Requerido para byDepartamento
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de municipio", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un municipio
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { id: { type: integer }, departamento_id: { type: integer }, nombre: { type: string } }
+      responses:
+        "200": { description: "`{success, id}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/EntidadController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar entidades judiciales
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get] }
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de entidad", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar una entidad
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: { id: { type: integer }, nombre: { type: string }, descripcion: { type: string, nullable: true } }
+      responses:
+        "200": { description: "`{success, id}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/DespachoController.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar despachos judiciales
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, search, get] }
+        - name: q
+          in: query
+          schema: { type: string }
+          description: Requerido para search
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de despacho", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un despacho
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer }
+                nombre: { type: string }
+                codigo_oficial: { type: string, nullable: true, description: "Usado para cruzar con Publicaciones Procesales" }
+                descripcion: { type: string, nullable: true }
+                entidad_id: { type: integer, nullable: true }
+                departamento_id: { type: integer, nullable: true }
+                municipio_id: { type: integer, nullable: true }
+      responses:
+        "200": { description: "`{success, id}`", content: { application/json: { schema: { type: object } } } }
+
+  /backend/controllers/Usuariocontroller.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar usuarios del sistema
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, get] }
+        - name: id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200": { description: "Lista u objeto de usuario", content: { application/json: { schema: { type: object } } } }
+    post:
+      tags: [Parametrización]
+      summary: Crear, editar o eliminar un usuario
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [create, update, delete] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id: { type: integer, description: "Requerido para update/delete" }
+                nombre: { type: string }
+                email: { type: string }
+                usuario: { type: string }
+                password: { type: string, format: password, description: "Requerido en create; opcional en update (se deja igual si se omite)" }
+                telefono: { type: string, nullable: true }
+      responses:
+        "200":
+          description: >
+            `{success: boolean}` o `{success:false, message:"El email ya está
+            registrado"}` / `"El nombre de usuario ya existe"` si hay duplicados.
+          content: { application/json: { schema: { type: object } } }
+
+  /backend/controllers/Configuracioncontroller.php:
+    get:
+      tags: [Parametrización]
+      summary: Consultar la configuración general del sistema
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [get] }
+      responses:
+        "200":
+          description: "Mapa clave-valor: nombre_empresa, subtitulo, nit, telefono, email, direccion, ciudad, website, pie_reporte, anio_copyright, credenciales de SAMAI."
+          content: { application/json: { schema: { type: object } } }
+    post:
+      tags: [Parametrización]
+      summary: Guardar configuración, o probar la conexión con SAMAI
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [save, test_samai] }
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              description: "Solo action=save — cualquier subconjunto de estos campos"
+              properties:
+                nombre_empresa: { type: string }
+                subtitulo: { type: string }
+                nit: { type: string }
+                telefono: { type: string }
+                email: { type: string }
+                direccion: { type: string }
+                ciudad: { type: string }
+                website: { type: string }
+                pie_reporte: { type: string }
+                anio_copyright: { type: string }
+                samai_session_id: { type: string }
+                samai_xsrf_token: { type: string }
+                samai_tipmix: { type: string }
+      responses:
+        "200":
+          description: "`save` → `{success}`. `test_samai` → `{success, message}` con el resultado de la prueba de conexión."
+          content: { application/json: { schema: { type: object } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # REPORTES
+  # ══════════════════════════════════════════════════════════════
+  /backend/reportes/reporte_proceso.php:
+    get:
+      tags: [Reportes]
+      summary: Generar el reporte imprimible (HTML/PDF) de un proceso
+      description: >
+        Se abre en pestaña nueva con `window.open()`, por eso el token de
+        autenticación va en la URL (`?token=`) y no en el header
+        `Authorization`.
+      security:
+        - tokenQuery: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: integer }
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+          description: Token JWT (el mismo que se usa como Bearer en el resto de la API)
+        - name: honorarios
+          in: query
+          schema: { type: string, enum: ["0", "1"], default: "1" }
+          description: Si se incluye la sección de honorarios en el reporte
+      responses:
+        "200":
+          description: Página HTML (lista para imprimir/exportar a PDF desde el navegador) con los datos del proceso, actuaciones y honorarios.
+          content:
+            text/html: { schema: { type: string } }
+        "401":
+          description: Token ausente o inválido
+          content:
+            text/plain: { schema: { type: string, example: "Acceso no autorizado" } }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token obtenido en AuthController.php?action=login
+    tokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: Mismo JWT, pasado por query string (solo reporte_proceso.php)
