@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/Usuario.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $action  = $_POST['action'] ?? $_GET['action'] ?? '';
 $usuario = new Usuario();

@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/NotificacionConfig.php';
 require_once __DIR__ . '/../models/Usuario.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $config = new NotificacionConfig();

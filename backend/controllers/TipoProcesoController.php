@@ -2,7 +2,8 @@
 //require_once __DIR__ . '/../libs/auth.php';
 require_once __DIR__ . '/../models/TipoProceso.php';
 
-//verificarToken();
+header('Content-Type: application/json');
+verificarToken();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $tipo = new TipoProceso();

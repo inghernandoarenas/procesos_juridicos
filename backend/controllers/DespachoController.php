@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/Despacho.php';
+
 header('Content-Type: application/json');
+verificarToken();
+
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $model  = new Despacho();
 

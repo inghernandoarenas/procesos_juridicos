@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/Honorario.php';
 
 header('Content-Type: application/json');
+verificarToken();
 
 $action    = $_POST['action'] ?? $_GET['action'] ?? '';
 $honorario = new Honorario();

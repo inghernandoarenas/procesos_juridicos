@@ -2,7 +2,8 @@
 //equire_once __DIR__ . '/../libs/auth.php';
 require_once __DIR__ . '/../models/EstadoProceso.php';
 
-//verificarToken();
+header('Content-Type: application/json');
+verificarToken();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $estado = new EstadoProceso();
