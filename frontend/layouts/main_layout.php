@@ -19,13 +19,18 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     .sidebar {
         width: 220px !important;
         min-width: 220px !important;
+        height: 100vh;
         background: #2c3e50;
         color: white;
         padding: 15px 10px !important;
         transition: width .25s ease, min-width .25s ease, padding .25s ease;
-        overflow: hidden;
-        position: relative;
+        overflow-x: hidden;
+        overflow-y: auto;
+        position: sticky;
+        top: 0;
         flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
     }
     .sidebar.collapsed {
         width: 50px !important;
@@ -129,6 +134,47 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
     }
     .sidebar-search input::placeholder { color: rgba(255,255,255,.45); }
     .sidebar.collapsed .sidebar-search { display: none; }
+
+    /* Pie del sidebar: documentación del proyecto — separado del menú funcional */
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .sidebar-footer a {
+        display: flex;
+        align-items: center;
+        color: rgba(255,255,255,.6) !important;
+        text-decoration: none !important;
+        padding: 8px 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        white-space: nowrap;
+        transition: background .15s, color .15s;
+    }
+    .sidebar-footer a:hover { background: #34495e; color: white !important; }
+    .sidebar-footer a i { margin-right: 10px; width: 20px; flex-shrink: 0; font-size: 13px; }
+    .sidebar.collapsed .sidebar-footer a { justify-content: center; padding: 10px 0; }
+    .sidebar.collapsed .sidebar-footer a i { margin-right: 0 !important; width: auto !important; }
+    .sidebar.collapsed .sidebar-footer { position: relative; }
+    .sidebar.collapsed .sidebar-footer a::after {
+        content: attr(data-label);
+        position: absolute;
+        left: 56px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #1a252f;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .15s;
+        z-index: 1000;
+    }
+    .sidebar.collapsed .sidebar-footer a:hover::after { opacity: 1; }
     </style>
 </head>
 <body>
@@ -192,14 +238,15 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                     </a>
                 </li>
 
-                <!-- Documentación -->
-                <li>
-                    <a href="/procesos_juridicos/frontend/index.php?view=documentacion" data-label="Documentación">
-                        <i class="fas fa-book-open" style="margin-right:10px;width:20px;flex-shrink:0"></i>
-                        <span class="sidebar-label">Documentación</span>
-                    </a>
-                </li>
             </ul>
+
+            <!-- Documentación: no es un módulo funcional del sistema, va aparte del menú -->
+            <div class="sidebar-footer">
+                <a href="/procesos_juridicos/frontend/index.php?view=documentacion" data-label="Documentación">
+                    <i class="fas fa-book-open"></i>
+                    <span class="sidebar-label">Documentación</span>
+                </a>
+            </div>
         </div>
 
         <div class="main-content">

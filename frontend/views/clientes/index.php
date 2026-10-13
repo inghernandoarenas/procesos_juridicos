@@ -285,13 +285,14 @@ function renderPaginacionClientes() {
     let container = document.getElementById('paginacionClientes');
     if (!container) return;
     
-    let html = '';
-
-    html += `<button onclick="cambiarPaginaClientes(${paginaActualClientes - 1})" ${paginaActualClientes <= 1 ? 'disabled' : ''}>Anterior</button>`;
-    html += `<span>Página ${paginaActualClientes} de ${totalPaginasClientes}</span>`;
-    html += `<button onclick="cambiarPaginaClientes(${paginaActualClientes + 1})" ${paginaActualClientes >= totalPaginasClientes ? 'disabled' : ''}>Siguiente</button>`;
-    
-    container.innerHTML = html;
+    container.innerHTML = `
+        <button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes - 1})" ${paginaActualClientes <= 1 ? 'disabled' : ''}>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="pagination-info">Página ${paginaActualClientes} de ${totalPaginasClientes}</span>
+        <button class="pagination-btn" onclick="cambiarPaginaClientes(${paginaActualClientes + 1})" ${paginaActualClientes >= totalPaginasClientes ? 'disabled' : ''}>
+            <i class="fas fa-chevron-right"></i>
+        </button>`;
 }
 
 function cambiarPaginaClientes(pagina) {

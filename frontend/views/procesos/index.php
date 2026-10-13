@@ -487,7 +487,7 @@ function fetchWithAuth(url, options = {}) {
 <table id="tablaProcesos">
     <thead>
         <tr>
-            <th>Radicado</th><th>Cliente</th><th>Especialidad</th><th>Despacho</th><th>Departamento</th><th>Estado</th><th>Vencimiento</th><th style="width:30px;text-align:center">Priv.</th><th style="width:44px;text-align:center">Acciones</th>
+            <th>Radicado</th><th>Portal</th><th>Cliente</th><th>Especialidad</th><th style="width:60px;text-align:center">Privado</th><th style="width:44px;text-align:center">Acciones</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -1157,7 +1157,7 @@ function cargarProcesos(pagina = 1, buscar = '') {
         document.getElementById('heroTotal').textContent = result.total || 0;
 
         if (result.data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px">No se encontraron procesos</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px">No se encontraron procesos</td></tr>';
             document.getElementById('paginacionProcesos').innerHTML = '';
             return;
         }
@@ -1178,15 +1178,12 @@ function cargarProcesos(pagina = 1, buscar = '') {
             const privado = p.es_privado == 1;
             tbody.innerHTML += `
                 <tr${privado ? ' style="background:#fffbf0"' : ''}>
-                    <td style="font-size:12px"><strong style="color:#2980b9">${p.numero_radicado}</strong>
-                        ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7',publicaciones:'#e8f8f5'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',publicaciones:'#16a085'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : ''}
+                    <td style="font-size:12px"><strong style="color:#2980b9">${p.numero_radicado}</strong></td>
+                    <td style="font-size:12px">
+                        ${(p.fuente_consulta && p.fuente_consulta !== 'ninguna') ? `<span style="font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;background:${{rama:'#eaf4fd',samai:'#f3e8ff',penal:'#fdecea',tyba:'#fef3c7',publicaciones:'#e8f8f5'}[p.fuente_consulta]||'#f0f0f0'};color:${{rama:'#2980b9',samai:'#7c3aed',penal:'#c0392b',tyba:'#e67e22',publicaciones:'#16a085'}[p.fuente_consulta]||'#666'}">${p.fuente_consulta.toUpperCase()}</span>` : '<span style="color:#bbb">—</span>'}
                     </td>
                     <td style="font-size:12px">${p.nombre} ${p.apellido}</td>
                     <td style="font-size:12px">${p.tipo_proceso_nombre || '—'}</td>
-                    <td style="font-size:12px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.despacho_nombre||''}">${p.despacho_nombre || '—'}</td>
-                    <td style="font-size:12px">${p.departamento_nombre || '—'}</td>
-                    <td style="font-size:12px">${p.estado_proceso_nombre || '—'}</td>
-                    <td style="font-size:12px">${p.fecha_vencimiento || 'N/A'}</td>
                     <td style="text-align:center;padding:5px 2px">${privado ? '<i class="fas fa-lock" style="color:#f39c12;font-size:13px" title="Proceso privado"></i>' : ''}</td>
                     <td style="white-space:nowrap">
                         <div class="acc-wrap" id="acc-${p.id}">
