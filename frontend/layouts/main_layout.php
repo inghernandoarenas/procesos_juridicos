@@ -191,6 +191,14 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                         <span class="sidebar-label">Log Notificaciones</span>
                     </a>
                 </li>
+
+                <!-- Documentación -->
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=documentacion" data-label="Documentación">
+                        <i class="fas fa-book-open" style="margin-right:10px;width:20px;flex-shrink:0"></i>
+                        <span class="sidebar-label">Documentación</span>
+                    </a>
+                </li>
             </ul>
         </div>
 

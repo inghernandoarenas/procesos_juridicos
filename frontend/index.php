@@ -53,6 +53,7 @@ if (!empty($headers['Authorization'])) {
         'municipios'       => 'views/parametrizacion/municipios.php',
         'entidades'        => 'views/parametrizacion/entidades.php',
         'despachos'        => 'views/parametrizacion/despachos.php',
+        'documentacion'    => 'views/documentacion/index.php',
     ];
 
     $content = $views[$view] ?? $views['dashboard'];
