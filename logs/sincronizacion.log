@@ -1,0 +1,25 @@
+[2026-10-16 15:00:01] === INICIO SINCRO AUTOMÁTICA ===
+[2026-10-16 15:00:01] Procesos a revisar: 9
+[2026-10-16 15:00:01] --- Portal: RAMA JUDICIAL (5 procesos) ---
+[2026-10-16 15:00:01] Revisando proceso [rama]: 08001311000320230038501
+[2026-10-16 15:00:02]   ERROR: API no respondió para radicado 08001311000320230038501
+[2026-10-16 15:00:02] Revisando proceso [rama]: 70001333300920260001700
+[2026-10-16 15:00:03]   ERROR: API no respondió para radicado 70001333300920260001700
+[2026-10-16 15:00:03] Revisando proceso [rama]: 08001418900220260035500
+[2026-10-16 15:00:04]   ERROR: API no respondió para radicado 08001418900220260035500
+[2026-10-16 15:00:04] Revisando proceso [rama]: 08001405301420260002400
+[2026-10-16 15:00:05]   ERROR: API no respondió para radicado 08001405301420260002400
+[2026-10-16 15:00:05] Revisando proceso [rama]: 08001405301420220040400
+[2026-10-16 15:00:06]   ERROR: API no respondió para radicado 08001405301420220040400
+[2026-10-16 15:00:06] --- Portal: SAMAI (3 procesos) ---
+[2026-10-16 15:00:06] Revisando proceso [samai]: 08001333300320260007300
+[2026-10-16 15:00:09]   ERROR: SAMAI no respondió (¿el servicio Node está corriendo?) para 08001333300320260007300
+[2026-10-16 15:00:09] Revisando proceso [samai]: 08001333300920260005100
+[2026-10-16 15:00:12]   ERROR: SAMAI no respondió (¿el servicio Node está corriendo?) para 08001333300920260005100
+[2026-10-16 15:00:12] Revisando proceso [samai]: 08001333300720260011700
+[2026-10-16 15:00:14]   ERROR: SAMAI no respondió (¿el servicio Node está corriendo?) para 08001333300720260011700
+[2026-10-16 15:00:14] --- Portal: TYBA (1 procesos) ---
+[2026-10-16 15:00:14] Revisando proceso [tyba]: 08001333300720260001000
+[2026-10-16 15:00:16]   ERROR: TYBA no respondió (¿el servicio Node está corriendo?) para 08001333300720260001000
+[2026-10-16 15:00:16] === FIN SINCRO — Nuevas actuaciones: 0, Anexos nuevos: 0, Omitidos: 0, Errores: 9 ===
+

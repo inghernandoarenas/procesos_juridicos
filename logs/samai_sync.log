@@ -87,3 +87,21 @@
 [04:29:45]   ✓ Servicio devolvió 5 actuaciones (14463ms)
 [04:29:45] === SAMAI FIN — 5 actuaciones ===
 [04:35:49] ✓ 22 anexos del expediente
+[15:00:06] === SAMAI INICIO radicado=08001333300320260007300 ===
+[15:00:06] === SAMAI buscarProceso: 08001333300320260007300 ===
+[15:00:07]   Registros: 2
+[15:00:07]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:00:09]   ✗ Servicio no responde en http://127.0.0.1:3001 (2044ms)
+[15:00:09]   Asegúrate de correr: node server.js en samai-service
+[15:00:09] === SAMAI INICIO radicado=08001333300920260005100 ===
+[15:00:09] === SAMAI buscarProceso: 08001333300920260005100 ===
+[15:00:10]   Registros: 2
+[15:00:10]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:00:12]   ✗ Servicio no responde en http://127.0.0.1:3001 (2050ms)
+[15:00:12]   Asegúrate de correr: node server.js en samai-service
+[15:00:12] === SAMAI INICIO radicado=08001333300720260011700 ===
+[15:00:12] === SAMAI buscarProceso: 08001333300720260011700 ===
+[15:00:12]   Registros: 2
+[15:00:12]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:00:14]   ✗ Servicio no responde en http://127.0.0.1:3001 (2043ms)
+[15:00:14]   Asegúrate de correr: node server.js en samai-service
