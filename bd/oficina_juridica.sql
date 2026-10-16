@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jun 14, 2026 at 11:07 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 16-10-2026 a las 14:51:54
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `oficina_juridica`
+-- Base de datos: `oficina_juridica`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `actuaciones`
+-- Estructura de tabla para la tabla `actuaciones`
 --
 
 CREATE TABLE `actuaciones` (
@@ -42,35 +42,32 @@ CREATE TABLE `actuaciones` (
   `fecha_modificacion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `actuaciones_backup`
+-- Volcado de datos para la tabla `actuaciones`
 --
 
-CREATE TABLE `actuaciones_backup` (
-  `id` int(11) NOT NULL DEFAULT 0,
-  `proceso_id` int(11) NOT NULL,
-  `id_api` varchar(50) DEFAULT NULL,
-  `despacho` varchar(255) DEFAULT NULL,
-  `fecha` date NOT NULL,
-  `actuacion` varchar(255) NOT NULL,
-  `observaciones` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `usuario_creacion` int(11) DEFAULT NULL,
-  `usuario_modificacion` int(11) DEFAULT NULL,
-  `fecha_modificacion` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `actuaciones` (`id`, `proceso_id`, `id_api`, `fuente`, `despacho`, `fecha`, `actuacion`, `observaciones`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
+(472, 9, 'TYBA_19596b54', 'tyba', NULL, '2026-02-20', 'Envio A Superior Por Interpuestos Sin Finalizacion', 'Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(473, 9, 'TYBA_ccb6b5ee', 'tyba', NULL, '2026-02-11', 'Envío De Notificación', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(474, 9, 'TYBA_1464b511', 'tyba', NULL, '2026-02-10', 'Auto Concede', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(475, 9, 'TYBA_4f520d65', 'tyba', NULL, '2026-02-06', 'Solicitud Impugnacion', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(476, 9, 'TYBA_0ae56f57', 'tyba', NULL, '2026-02-04', 'Notificación Auto Admisorio', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(477, 9, 'TYBA_ca99f431', 'tyba', NULL, '2026-02-03', 'Sentencia', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(478, 9, 'TYBA_6e1c5bb1', 'tyba', NULL, '2026-01-26', 'Contestacion', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(479, 9, 'TYBA_2aae379b', 'tyba', NULL, '2026-01-22', 'Notificación Auto Admisorio', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(480, 9, 'TYBA_f29bd457', 'tyba', NULL, '2026-01-20', 'Auto Admite', 'Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL),
+(481, 9, 'TYBA_390fc26a', 'tyba', NULL, '2026-01-20', 'Radicación Y Reparto', 'Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.', '2026-10-12 01:22:31', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `anexos`
+-- Estructura de tabla para la tabla `anexos`
 --
 
 CREATE TABLE `anexos` (
   `id` int(11) NOT NULL,
   `proceso_id` int(11) NOT NULL,
+  `actuacion_id` int(11) DEFAULT NULL,
   `categoria_id` int(11) DEFAULT NULL,
   `nombre_archivo` varchar(255) DEFAULT NULL,
   `ruta_archivo` varchar(255) DEFAULT NULL,
@@ -81,10 +78,27 @@ CREATE TABLE `anexos` (
   `fecha_modificacion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `anexos`
+--
+
+INSERT INTO `anexos` (`id`, `proceso_id`, `actuacion_id`, `categoria_id`, `nombre_archivo`, `ruta_archivo`, `tipo_archivo`, `fecha_subida`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
+(118, 9, NULL, 7, '01DEMANDA.PDF', 'uploads/tyba_6acc36629b63c.PDF', 'PDF', '2026-10-12 01:22:42', NULL, NULL, NULL),
+(119, 9, 472, 8, '11ACTAREPARTO.PDF', 'uploads/tyba_6acc36e3cd3dd.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(120, 9, 473, 8, '10ENVÍODENOTIFICACIÓN.PDF', 'uploads/tyba_6acc36e3ce706.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(121, 9, 474, 4, '09AUTOCONCEDE.PDF', 'uploads/tyba_6acc36e3cf361.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(122, 9, 475, 8, '08SOLICITUDIMPUGNACION.PDF', 'uploads/tyba_6acc36e3d05e6.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(123, 9, 476, 4, '07NOTIFICACIÓNAUTOADMISORIO.PDF', 'uploads/tyba_6acc36e3d18ff.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(124, 9, 477, 4, '06SENTENCIA.PDF', 'uploads/tyba_6acc36e3d276b.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(125, 9, 478, 8, '05CONTESTACION.PDF', 'uploads/tyba_6acc36e3d3937.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(126, 9, 479, 4, '04NOTIFICACIÓNAUTOADMISORIO.PDF', 'uploads/tyba_6acc36e3d4e6e.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(127, 9, 480, 4, '03AUTOADMITE.PDF', 'uploads/tyba_6acc36e3d602a.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL),
+(128, 9, 481, 8, '02ACTAREPARTO.PDF', 'uploads/tyba_6acc36e3d7021.PDF', 'PDF', '2026-10-12 01:24:51', NULL, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `anexo_categorias`
+-- Estructura de tabla para la tabla `anexo_categorias`
 --
 
 CREATE TABLE `anexo_categorias` (
@@ -95,7 +109,7 @@ CREATE TABLE `anexo_categorias` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `anexo_categorias`
+-- Volcado de datos para la tabla `anexo_categorias`
 --
 
 INSERT INTO `anexo_categorias` (`id`, `nombre`, `activo`, `created_at`) VALUES
@@ -111,7 +125,7 @@ INSERT INTO `anexo_categorias` (`id`, `nombre`, `activo`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clientes`
+-- Estructura de tabla para la tabla `clientes`
 --
 
 CREATE TABLE `clientes` (
@@ -129,10 +143,25 @@ CREATE TABLE `clientes` (
   `fecha_modificacion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `tipo_identificacion`, `numero_identificacion`, `email`, `telefono`, `direccion`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
+(1, 'ELIZABETH', 'MERCADO ANGARITA', 'CC', '1045687079', '', '', '', '2026-06-25 21:17:12', NULL, NULL, NULL),
+(2, 'JOHAN', 'PARDO AVILA', 'CC', '72252064', '', '', '', '2026-06-25 21:18:38', NULL, NULL, NULL),
+(3, 'KETY MARGARITA', 'RUIZ MULFORD', 'CC', '1042970005', '', '3008066669', '', '2026-06-25 21:21:58', NULL, NULL, NULL),
+(4, 'HUGO MANUEL', 'ORTEGA AGUAS', NULL, NULL, '', '', '', '2026-06-26 02:16:48', NULL, NULL, NULL),
+(5, 'FIDUPREVISORA', 'FIDUPREVISORA', NULL, NULL, '', '', '', '2026-07-03 20:21:00', NULL, NULL, NULL),
+(6, 'CELSA ELVIRA', 'RODRIGUEZ RODRIGUEZ', NULL, NULL, '', '', '', '2026-07-03 20:24:23', NULL, NULL, NULL),
+(7, 'CVP', 'CIA S.A.', NULL, NULL, '', '', '', '2026-07-03 20:28:03', NULL, NULL, NULL),
+(8, 'Eduardo Emilio', 'Calderon Narvaez', NULL, NULL, '', '', '', '2026-07-14 22:51:23', NULL, NULL, NULL),
+(9, 'ANTHONY JOSE ', 'ANDRADE POLO', NULL, NULL, '', '', '', '2026-08-30 20:11:01', NULL, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `configuracion`
+-- Estructura de tabla para la tabla `configuracion`
 --
 
 CREATE TABLE `configuracion` (
@@ -144,17 +173,17 @@ CREATE TABLE `configuracion` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `configuracion`
+-- Volcado de datos para la tabla `configuracion`
 --
 
 INSERT INTO `configuracion` (`id`, `clave`, `valor`, `descripcion`, `updated_at`) VALUES
-(1, 'nombre_empresa', 'Asesores Legales SAS', 'Nombre del despacho o firma', '2026-04-17 21:46:51'),
+(1, 'nombre_empresa', 'Abogados Tico & Asociados', 'Nombre del despacho o firma', '2026-09-28 00:26:39'),
 (2, 'subtitulo', 'Sistema de Gestión de Procesos Judiciales', 'Subtítulo o eslogan', '2026-04-01 11:14:52'),
 (3, 'nit', '000.000.000.000-0', 'NIT o documento de identificación', '2026-04-02 01:04:00'),
-(4, 'telefono', '', 'Teléfono de contacto', '2026-04-01 11:14:52'),
-(5, 'email', '', 'Email de contacto', '2026-04-01 11:14:52'),
+(4, 'telefono', '+57 3244920873', 'Teléfono de contacto', '2026-10-12 03:54:01'),
+(5, 'email', 'hernando.17@hotmail.com', 'Email de contacto', '2026-10-12 03:54:01'),
 (6, 'direccion', '', 'Dirección física', '2026-04-01 11:14:52'),
-(7, 'ciudad', '', 'Ciudad', '2026-04-01 11:14:52'),
+(7, 'ciudad', 'Barranquilla', 'Ciudad', '2026-10-12 03:54:01'),
 (8, 'website', '', 'Sitio web', '2026-04-01 11:14:52'),
 (9, 'pie_reporte', 'Documento generado automáticamente por el Sistema de Gestión de Procesos Judiciales_edit', 'Texto del pie de página en reportes', '2026-04-17 21:32:45'),
 (10, 'anio_copyright', '2026', 'Año para el copyright en el footer', '2026-04-02 01:04:00'),
@@ -165,7 +194,7 @@ INSERT INTO `configuracion` (`id`, `clave`, `valor`, `descripcion`, `updated_at`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `departamentos`
+-- Estructura de tabla para la tabla `departamentos`
 --
 
 CREATE TABLE `departamentos` (
@@ -176,7 +205,7 @@ CREATE TABLE `departamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `departamentos`
+-- Volcado de datos para la tabla `departamentos`
 --
 
 INSERT INTO `departamentos` (`id`, `nombre`, `activo`, `created_at`) VALUES
@@ -217,7 +246,7 @@ INSERT INTO `departamentos` (`id`, `nombre`, `activo`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `despachos`
+-- Estructura de tabla para la tabla `despachos`
 --
 
 CREATE TABLE `despachos` (
@@ -233,7 +262,7 @@ CREATE TABLE `despachos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `despachos`
+-- Volcado de datos para la tabla `despachos`
 --
 
 INSERT INTO `despachos` (`id`, `nombre`, `codigo_oficial`, `descripcion`, `entidad_id`, `departamento_id`, `municipio_id`, `activo`, `created_at`) VALUES
@@ -2375,12 +2404,14 @@ INSERT INTO `despachos` (`id`, `nombre`, `codigo_oficial`, `descripcion`, `entid
 (2130, 'JUZGADO 001 PROMISCUO DE FAMILIA DEL CIRCUITO DE SAN JOSÉ DEL GUAVIARE', '950013184001G', NULL, NULL, NULL, NULL, 1, '2026-04-21 18:48:05'),
 (2131, 'JUZGADO 002 PROMISCUO DE FAMILIA DEL CIRCUITO DE SAN JOSÉ DEL GUAVIARE', '950013184002F', NULL, NULL, NULL, NULL, 1, '2026-04-21 18:48:05'),
 (2132, 'JUZGADO 001 PENAL MUNICIPAL CON FUNCIONES MIXTAS DE SAN JOSÉ DEL GUAVIARE', '950014046001I', NULL, NULL, NULL, NULL, 1, '2026-04-21 18:48:05'),
-(2133, 'JUZGADO 002 PENAL MUNICIPAL CON FUNCIONES MIXTAS DE SAN JOSÉ DEL GUAVIARE', '950014046002I', NULL, NULL, NULL, NULL, 1, '2026-04-21 18:48:05');
+(2133, 'JUZGADO 002 PENAL MUNICIPAL CON FUNCIONES MIXTAS DE SAN JOSÉ DEL GUAVIARE', '950014046002I', NULL, NULL, NULL, NULL, 1, '2026-04-21 18:48:05'),
+(2134, 'JUZGADO 009 ADMINISTRATIVO DE SINCELEJO (SUCRE)', NULL, 'JUZGADO 009 ADMINISTRATIVO DE SINCELEJO (SUCRE)', 9, 28, 997, 1, '2026-06-26 02:20:56'),
+(2135, 'SECRETARÍA DE LA SALA CIVIL - FAMILIA DEL TRIBUNAL SUPERIOR DE BARRANQUILLA', '080012213000', NULL, 4, 4, 141, 1, '2026-07-14 22:57:52');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `entidades`
+-- Estructura de tabla para la tabla `entidades`
 --
 
 CREATE TABLE `entidades` (
@@ -2392,12 +2423,12 @@ CREATE TABLE `entidades` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `entidades`
+-- Volcado de datos para la tabla `entidades`
 --
 
 INSERT INTO `entidades` (`id`, `nombre`, `descripcion`, `activo`, `created_at`) VALUES
 (1, 'Corte Suprema de Justicia', NULL, 1, '2026-04-19 01:07:05'),
-(2, 'Consejo de Estado', 'Consejo de estado que le tumba todas las mierdas raras que quiere hacer el malparido de petro.', 1, '2026-04-19 01:07:05'),
+(2, 'Consejo de Estado', NULL, 1, '2026-04-19 01:07:05'),
 (3, 'Consejo Superior de la Judicatura', NULL, 1, '2026-04-19 01:07:05'),
 (4, 'Tribunal Superior', NULL, 1, '2026-04-19 01:07:05'),
 (5, 'Tribunal Administrativo', NULL, 1, '2026-04-19 01:07:05'),
@@ -2412,7 +2443,7 @@ INSERT INTO `entidades` (`id`, `nombre`, `descripcion`, `activo`, `created_at`) 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estados_proceso`
+-- Estructura de tabla para la tabla `estados_proceso`
 --
 
 CREATE TABLE `estados_proceso` (
@@ -2427,7 +2458,7 @@ CREATE TABLE `estados_proceso` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `estados_proceso`
+-- Volcado de datos para la tabla `estados_proceso`
 --
 
 INSERT INTO `estados_proceso` (`id`, `nombre`, `color`, `activo`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
@@ -2436,12 +2467,12 @@ INSERT INTO `estados_proceso` (`id`, `nombre`, `color`, `activo`, `created_at`, 
 (3, 'Vencido', '#e74c3c', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (4, 'Terminado', '#2ecc71', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (5, 'Limbo juridico', '#021522', 0, '2026-03-30 23:30:40', NULL, NULL, NULL),
-(6, 'Limbo juridico', '#01090e', 1, '2026-04-17 21:40:53', NULL, NULL, NULL);
+(6, 'Limbo juridico', '#01090e', 0, '2026-04-17 21:40:53', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `honorarios`
+-- Estructura de tabla para la tabla `honorarios`
 --
 
 CREATE TABLE `honorarios` (
@@ -2461,7 +2492,7 @@ CREATE TABLE `honorarios` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `municipios`
+-- Estructura de tabla para la tabla `municipios`
 --
 
 CREATE TABLE `municipios` (
@@ -2473,22 +2504,1144 @@ CREATE TABLE `municipios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `municipios`
+-- Volcado de datos para la tabla `municipios`
 --
 
 INSERT INTO `municipios` (`id`, `departamento_id`, `nombre`, `activo`, `created_at`) VALUES
-(1, 4, 'Barranquilla', 1, '2026-04-19 01:16:17');
+(1, 1, 'Leticia', 1, '2026-06-16 21:09:42'),
+(2, 1, 'El Encanto', 1, '2026-06-16 21:09:42'),
+(3, 1, 'La Chorrera', 1, '2026-06-16 21:09:42'),
+(4, 1, 'La Pedrera', 1, '2026-06-16 21:09:42'),
+(5, 1, 'La Victoria', 1, '2026-06-16 21:09:42'),
+(6, 1, 'Mirití-Paraná', 1, '2026-06-16 21:09:42'),
+(7, 1, 'Puerto Alegría', 1, '2026-06-16 21:09:42'),
+(8, 1, 'Puerto Arica', 1, '2026-06-16 21:09:42'),
+(9, 1, 'Puerto Nariño', 1, '2026-06-16 21:09:42'),
+(10, 1, 'Puerto Santander', 1, '2026-06-16 21:09:42'),
+(11, 1, 'Tarapacá', 1, '2026-06-16 21:09:42'),
+(12, 2, 'Medellín', 1, '2026-06-16 21:09:42'),
+(13, 2, 'Abejorral', 1, '2026-06-16 21:09:42'),
+(14, 2, 'Abriaquí', 1, '2026-06-16 21:09:42'),
+(15, 2, 'Alejandría', 1, '2026-06-16 21:09:42'),
+(16, 2, 'Amagá', 1, '2026-06-16 21:09:42'),
+(17, 2, 'Amalfi', 1, '2026-06-16 21:09:42'),
+(18, 2, 'Andes', 1, '2026-06-16 21:09:42'),
+(19, 2, 'Angelópolis', 1, '2026-06-16 21:09:42'),
+(20, 2, 'Angostura', 1, '2026-06-16 21:09:42'),
+(21, 2, 'Anorí', 1, '2026-06-16 21:09:42'),
+(22, 2, 'Anzá', 1, '2026-06-16 21:09:42'),
+(23, 2, 'Apartadó', 1, '2026-06-16 21:09:42'),
+(24, 2, 'Arboletes', 1, '2026-06-16 21:09:42'),
+(25, 2, 'Argelia', 1, '2026-06-16 21:09:42'),
+(26, 2, 'Armenia', 1, '2026-06-16 21:09:42'),
+(27, 2, 'Barbosa', 1, '2026-06-16 21:09:42'),
+(28, 2, 'Bello', 1, '2026-06-16 21:09:42'),
+(29, 2, 'Betania', 1, '2026-06-16 21:09:42'),
+(30, 2, 'Betulia', 1, '2026-06-16 21:09:42'),
+(31, 2, 'Briceño', 1, '2026-06-16 21:09:42'),
+(32, 2, 'Buriticá', 1, '2026-06-16 21:09:42'),
+(33, 2, 'Cáceres', 1, '2026-06-16 21:09:42'),
+(34, 2, 'Caicedo', 1, '2026-06-16 21:09:42'),
+(35, 2, 'Caldas', 1, '2026-06-16 21:09:42'),
+(36, 2, 'Campamento', 1, '2026-06-16 21:09:42'),
+(37, 2, 'Cañasgordas', 1, '2026-06-16 21:09:42'),
+(38, 2, 'Caracolí', 1, '2026-06-16 21:09:42'),
+(39, 2, 'Caramanta', 1, '2026-06-16 21:09:42'),
+(40, 2, 'Carepa', 1, '2026-06-16 21:09:42'),
+(41, 2, 'Carolina del Príncipe', 1, '2026-06-16 21:09:42'),
+(42, 2, 'Caucasia', 1, '2026-06-16 21:09:42'),
+(43, 2, 'Chigorodó', 1, '2026-06-16 21:09:42'),
+(44, 2, 'Cisneros', 1, '2026-06-16 21:09:42'),
+(45, 2, 'Ciudad Bolívar', 1, '2026-06-16 21:09:42'),
+(46, 2, 'Cocorná', 1, '2026-06-16 21:09:42'),
+(47, 2, 'Concepción', 1, '2026-06-16 21:09:42'),
+(48, 2, 'Concordia', 1, '2026-06-16 21:09:42'),
+(49, 2, 'Copacabana', 1, '2026-06-16 21:09:42'),
+(50, 2, 'Dabeiba', 1, '2026-06-16 21:09:42'),
+(51, 2, 'Don Matías', 1, '2026-06-16 21:09:42'),
+(52, 2, 'Ebéjico', 1, '2026-06-16 21:09:42'),
+(53, 2, 'El Bagre', 1, '2026-06-16 21:09:42'),
+(54, 2, 'El Carmen de Viboral', 1, '2026-06-16 21:09:42'),
+(55, 2, 'El Peñol', 1, '2026-06-16 21:09:42'),
+(56, 2, 'El Retiro', 1, '2026-06-16 21:09:42'),
+(57, 2, 'El Santuario', 1, '2026-06-16 21:09:42'),
+(58, 2, 'Entrerríos', 1, '2026-06-16 21:09:42'),
+(59, 2, 'Envigado', 1, '2026-06-16 21:09:42'),
+(60, 2, 'Fredonia', 1, '2026-06-16 21:09:42'),
+(61, 2, 'Frontino', 1, '2026-06-16 21:09:42'),
+(62, 2, 'Giraldo', 1, '2026-06-16 21:09:42'),
+(63, 2, 'Girardota', 1, '2026-06-16 21:09:42'),
+(64, 2, 'Gómez Plata', 1, '2026-06-16 21:09:42'),
+(65, 2, 'Granada', 1, '2026-06-16 21:09:42'),
+(66, 2, 'Guadalupe', 1, '2026-06-16 21:09:42'),
+(67, 2, 'Guarne', 1, '2026-06-16 21:09:42'),
+(68, 2, 'Guatapé', 1, '2026-06-16 21:09:42'),
+(69, 2, 'Heliconia', 1, '2026-06-16 21:09:42'),
+(70, 2, 'Hispania', 1, '2026-06-16 21:09:42'),
+(71, 2, 'Itagüí', 1, '2026-06-16 21:09:42'),
+(72, 2, 'Ituango', 1, '2026-06-16 21:09:42'),
+(73, 2, 'Jericó', 1, '2026-06-16 21:09:42'),
+(74, 2, 'La Ceja', 1, '2026-06-16 21:09:42'),
+(75, 2, 'La Estrella', 1, '2026-06-16 21:09:42'),
+(76, 2, 'La Pintada', 1, '2026-06-16 21:09:42'),
+(77, 2, 'La Unión', 1, '2026-06-16 21:09:42'),
+(78, 2, 'Liborina', 1, '2026-06-16 21:09:42'),
+(79, 2, 'Maceo', 1, '2026-06-16 21:09:42'),
+(80, 2, 'Marinilla', 1, '2026-06-16 21:09:42'),
+(81, 2, 'Montebello', 1, '2026-06-16 21:09:42'),
+(82, 2, 'Murindó', 1, '2026-06-16 21:09:42'),
+(83, 2, 'Mutatá', 1, '2026-06-16 21:09:42'),
+(84, 2, 'Nariño', 1, '2026-06-16 21:09:42'),
+(85, 2, 'Nechí', 1, '2026-06-16 21:09:42'),
+(86, 2, 'Necoclí', 1, '2026-06-16 21:09:42'),
+(87, 2, 'Olaya', 1, '2026-06-16 21:09:42'),
+(88, 2, 'Peque', 1, '2026-06-16 21:09:42'),
+(89, 2, 'Pueblorrico', 1, '2026-06-16 21:09:42'),
+(90, 2, 'Puerto Berrío', 1, '2026-06-16 21:09:42'),
+(91, 2, 'Puerto Nare', 1, '2026-06-16 21:09:42'),
+(92, 2, 'Puerto Triunfo', 1, '2026-06-16 21:09:42'),
+(93, 2, 'Remedios', 1, '2026-06-16 21:09:42'),
+(94, 2, 'Rionegro', 1, '2026-06-16 21:09:42'),
+(95, 2, 'Sabanalarga', 1, '2026-06-16 21:09:42'),
+(96, 2, 'Sabaneta', 1, '2026-06-16 21:09:42'),
+(97, 2, 'Salgar', 1, '2026-06-16 21:09:42'),
+(98, 2, 'San Andrés de Cuerquia', 1, '2026-06-16 21:09:42'),
+(99, 2, 'San Carlos', 1, '2026-06-16 21:09:42'),
+(100, 2, 'San Francisco', 1, '2026-06-16 21:09:42'),
+(101, 2, 'San Jerónimo', 1, '2026-06-16 21:09:42'),
+(102, 2, 'San José de la Montaña', 1, '2026-06-16 21:09:42'),
+(103, 2, 'San Juan de Urabá', 1, '2026-06-16 21:09:42'),
+(104, 2, 'San Luis', 1, '2026-06-16 21:09:42'),
+(105, 2, 'San Pedro de los Milagros', 1, '2026-06-16 21:09:42'),
+(106, 2, 'San Pedro de Urabá', 1, '2026-06-16 21:09:42'),
+(107, 2, 'San Rafael', 1, '2026-06-16 21:09:42'),
+(108, 2, 'San Roque', 1, '2026-06-16 21:09:42'),
+(109, 2, 'San Vicente Ferrer', 1, '2026-06-16 21:09:42'),
+(110, 2, 'Santa Bárbara', 1, '2026-06-16 21:09:42'),
+(111, 2, 'Santa Rosa de Osos', 1, '2026-06-16 21:09:42'),
+(112, 2, 'Santo Domingo', 1, '2026-06-16 21:09:42'),
+(113, 2, 'Segovia', 1, '2026-06-16 21:09:42'),
+(114, 2, 'Sonsón', 1, '2026-06-16 21:09:42'),
+(115, 2, 'Sopetrán', 1, '2026-06-16 21:09:42'),
+(116, 2, 'Támesis', 1, '2026-06-16 21:09:42'),
+(117, 2, 'Tarazá', 1, '2026-06-16 21:09:42'),
+(118, 2, 'Tarso', 1, '2026-06-16 21:09:42'),
+(119, 2, 'Titiribí', 1, '2026-06-16 21:09:42'),
+(120, 2, 'Toledo', 1, '2026-06-16 21:09:42'),
+(121, 2, 'Turbo', 1, '2026-06-16 21:09:42'),
+(122, 2, 'Uramita', 1, '2026-06-16 21:09:42'),
+(123, 2, 'Urrao', 1, '2026-06-16 21:09:42'),
+(124, 2, 'Valdivia', 1, '2026-06-16 21:09:42'),
+(125, 2, 'Valparaíso', 1, '2026-06-16 21:09:42'),
+(126, 2, 'Vegachí', 1, '2026-06-16 21:09:42'),
+(127, 2, 'Venecia', 1, '2026-06-16 21:09:42'),
+(128, 2, 'Vigía del Fuerte', 1, '2026-06-16 21:09:42'),
+(129, 2, 'Yalí', 1, '2026-06-16 21:09:42'),
+(130, 2, 'Yarumal', 1, '2026-06-16 21:09:42'),
+(131, 2, 'Yolombó', 1, '2026-06-16 21:09:42'),
+(132, 2, 'Yondó', 1, '2026-06-16 21:09:42'),
+(133, 2, 'Zaragoza', 1, '2026-06-16 21:09:42'),
+(134, 3, 'Arauca', 1, '2026-06-16 21:09:42'),
+(135, 3, 'Arauquita', 1, '2026-06-16 21:09:42'),
+(136, 3, 'Cravo Norte', 1, '2026-06-16 21:09:42'),
+(137, 3, 'Fortul', 1, '2026-06-16 21:09:42'),
+(138, 3, 'Puerto Rondón', 1, '2026-06-16 21:09:42'),
+(139, 3, 'Saravena', 1, '2026-06-16 21:09:42'),
+(140, 3, 'Tame', 1, '2026-06-16 21:09:42'),
+(141, 4, 'Barranquilla', 1, '2026-06-16 21:09:42'),
+(142, 4, 'Baranoa', 1, '2026-06-16 21:09:42'),
+(143, 4, 'Campo de la Cruz', 1, '2026-06-16 21:09:42'),
+(144, 4, 'Candelaria', 1, '2026-06-16 21:09:42'),
+(145, 4, 'Galapa', 1, '2026-06-16 21:09:42'),
+(146, 4, 'Juan de Acosta', 1, '2026-06-16 21:09:42'),
+(147, 4, 'Luruaco', 1, '2026-06-16 21:09:42'),
+(148, 4, 'Malambo', 1, '2026-06-16 21:09:42'),
+(149, 4, 'Manatí', 1, '2026-06-16 21:09:42'),
+(150, 4, 'Palmar de Varela', 1, '2026-06-16 21:09:42'),
+(151, 4, 'Piojó', 1, '2026-06-16 21:09:42'),
+(152, 4, 'Polonuevo', 1, '2026-06-16 21:09:42'),
+(153, 4, 'Ponedera', 1, '2026-06-16 21:09:42'),
+(154, 4, 'Puerto Colombia', 1, '2026-06-16 21:09:42'),
+(155, 4, 'Repelón', 1, '2026-06-16 21:09:42'),
+(156, 4, 'Sabanagrande', 1, '2026-06-16 21:09:42'),
+(157, 4, 'Sabanalarga', 1, '2026-06-16 21:09:42'),
+(158, 4, 'Santa Lucía', 1, '2026-06-16 21:09:42'),
+(159, 4, 'Santo Tomás', 1, '2026-06-16 21:09:42'),
+(160, 4, 'Soledad', 1, '2026-06-16 21:09:42'),
+(161, 4, 'Suán', 1, '2026-06-16 21:09:42'),
+(162, 4, 'Tubará', 1, '2026-06-16 21:09:42'),
+(163, 4, 'Usiacurí', 1, '2026-06-16 21:09:42'),
+(164, 5, 'Cartagena', 1, '2026-06-16 21:09:42'),
+(165, 5, 'Achí', 1, '2026-06-16 21:09:42'),
+(166, 5, 'Altos del Rosario', 1, '2026-06-16 21:09:42'),
+(167, 5, 'Arenal', 1, '2026-06-16 21:09:42'),
+(168, 5, 'Arjona', 1, '2026-06-16 21:09:42'),
+(169, 5, 'Arroyohondo', 1, '2026-06-16 21:09:42'),
+(170, 5, 'Barranco de Loba', 1, '2026-06-16 21:09:42'),
+(171, 5, 'Calamar', 1, '2026-06-16 21:09:42'),
+(172, 5, 'Cantagallo', 1, '2026-06-16 21:09:42'),
+(173, 5, 'Cicuco', 1, '2026-06-16 21:09:42'),
+(174, 5, 'Clemencia', 1, '2026-06-16 21:09:42'),
+(175, 5, 'Córdoba', 1, '2026-06-16 21:09:42'),
+(176, 5, 'El Carmen de Bolívar', 1, '2026-06-16 21:09:42'),
+(177, 5, 'El Guamo', 1, '2026-06-16 21:09:42'),
+(178, 5, 'El Peñón', 1, '2026-06-16 21:09:42'),
+(179, 5, 'Hatillo de Loba', 1, '2026-06-16 21:09:42'),
+(180, 5, 'Magangué', 1, '2026-06-16 21:09:42'),
+(181, 5, 'Mahates', 1, '2026-06-16 21:09:42'),
+(182, 5, 'Margarita', 1, '2026-06-16 21:09:42'),
+(183, 5, 'María La Baja', 1, '2026-06-16 21:09:42'),
+(184, 5, 'Mompós', 1, '2026-06-16 21:09:42'),
+(185, 5, 'Montecristo', 1, '2026-06-16 21:09:42'),
+(186, 5, 'Morales', 1, '2026-06-16 21:09:42'),
+(187, 5, 'Norosí', 1, '2026-06-16 21:09:42'),
+(188, 5, 'Pinillos', 1, '2026-06-16 21:09:42'),
+(189, 5, 'Regidor', 1, '2026-06-16 21:09:42'),
+(190, 5, 'Río Viejo', 1, '2026-06-16 21:09:42'),
+(191, 5, 'San Cristóbal', 1, '2026-06-16 21:09:42'),
+(192, 5, 'San Estanislao', 1, '2026-06-16 21:09:42'),
+(193, 5, 'San Fernando', 1, '2026-06-16 21:09:42'),
+(194, 5, 'San Jacinto', 1, '2026-06-16 21:09:42'),
+(195, 5, 'San Jacinto del Cauca', 1, '2026-06-16 21:09:42'),
+(196, 5, 'San Juan Nepomuceno', 1, '2026-06-16 21:09:42'),
+(197, 5, 'San Martín de Loba', 1, '2026-06-16 21:09:42'),
+(198, 5, 'San Pablo', 1, '2026-06-16 21:09:42'),
+(199, 5, 'Santa Catalina', 1, '2026-06-16 21:09:42'),
+(200, 5, 'Santa Rosa', 1, '2026-06-16 21:09:42'),
+(201, 5, 'Santa Rosa del Sur', 1, '2026-06-16 21:09:42'),
+(202, 5, 'Simití', 1, '2026-06-16 21:09:42'),
+(203, 5, 'Soplaviento', 1, '2026-06-16 21:09:42'),
+(204, 5, 'Talaigua Nuevo', 1, '2026-06-16 21:09:42'),
+(205, 5, 'Tiquisio', 1, '2026-06-16 21:09:42'),
+(206, 5, 'Turbaco', 1, '2026-06-16 21:09:42'),
+(207, 5, 'Turbaná', 1, '2026-06-16 21:09:42'),
+(208, 5, 'Villanueva', 1, '2026-06-16 21:09:42'),
+(209, 5, 'Zambrano', 1, '2026-06-16 21:09:42'),
+(210, 6, 'Tunja', 1, '2026-06-16 21:09:42'),
+(211, 6, 'Almeida', 1, '2026-06-16 21:09:42'),
+(212, 6, 'Aquitania', 1, '2026-06-16 21:09:42'),
+(213, 6, 'Arcabuco', 1, '2026-06-16 21:09:42'),
+(214, 6, 'Belén', 1, '2026-06-16 21:09:42'),
+(215, 6, 'Berbeo', 1, '2026-06-16 21:09:42'),
+(216, 6, 'Betéitiva', 1, '2026-06-16 21:09:42'),
+(217, 6, 'Boavita', 1, '2026-06-16 21:09:42'),
+(218, 6, 'Boyacá', 1, '2026-06-16 21:09:42'),
+(219, 6, 'Briceño', 1, '2026-06-16 21:09:42'),
+(220, 6, 'Buenavista', 1, '2026-06-16 21:09:42'),
+(221, 6, 'Busbanzá', 1, '2026-06-16 21:09:42'),
+(222, 6, 'Caldas', 1, '2026-06-16 21:09:42'),
+(223, 6, 'Campohermoso', 1, '2026-06-16 21:09:42'),
+(224, 6, 'Cerinza', 1, '2026-06-16 21:09:42'),
+(225, 6, 'Chinavita', 1, '2026-06-16 21:09:42'),
+(226, 6, 'Chiquinquirá', 1, '2026-06-16 21:09:42'),
+(227, 6, 'Chíquiza', 1, '2026-06-16 21:09:42'),
+(228, 6, 'Chiscas', 1, '2026-06-16 21:09:42'),
+(229, 6, 'Chita', 1, '2026-06-16 21:09:42'),
+(230, 6, 'Chitaraque', 1, '2026-06-16 21:09:42'),
+(231, 6, 'Chivatá', 1, '2026-06-16 21:09:42'),
+(232, 6, 'Chivor', 1, '2026-06-16 21:09:42'),
+(233, 6, 'Ciénega', 1, '2026-06-16 21:09:42'),
+(234, 6, 'Cómbita', 1, '2026-06-16 21:09:42'),
+(235, 6, 'Coper', 1, '2026-06-16 21:09:42'),
+(236, 6, 'Corrales', 1, '2026-06-16 21:09:42'),
+(237, 6, 'Covarachía', 1, '2026-06-16 21:09:42'),
+(238, 6, 'Cubará', 1, '2026-06-16 21:09:42'),
+(239, 6, 'Cucaita', 1, '2026-06-16 21:09:42'),
+(240, 6, 'Cuítiva', 1, '2026-06-16 21:09:42'),
+(241, 6, 'Duitama', 1, '2026-06-16 21:09:42'),
+(242, 6, 'El Cocuy', 1, '2026-06-16 21:09:42'),
+(243, 6, 'El Espino', 1, '2026-06-16 21:09:42'),
+(244, 6, 'Firavitoba', 1, '2026-06-16 21:09:42'),
+(245, 6, 'Floresta', 1, '2026-06-16 21:09:42'),
+(246, 6, 'Gachantivá', 1, '2026-06-16 21:09:42'),
+(247, 6, 'Gámeza', 1, '2026-06-16 21:09:42'),
+(248, 6, 'Garagoa', 1, '2026-06-16 21:09:42'),
+(249, 6, 'Guacamayas', 1, '2026-06-16 21:09:42'),
+(250, 6, 'Guateque', 1, '2026-06-16 21:09:42'),
+(251, 6, 'Guayatá', 1, '2026-06-16 21:09:42'),
+(252, 6, 'Güicán de la Sierra', 1, '2026-06-16 21:09:42'),
+(253, 6, 'Iza', 1, '2026-06-16 21:09:42'),
+(254, 6, 'Jenesano', 1, '2026-06-16 21:09:42'),
+(255, 6, 'Jericó', 1, '2026-06-16 21:09:42'),
+(256, 6, 'La Capilla', 1, '2026-06-16 21:09:42'),
+(257, 6, 'La Uvita', 1, '2026-06-16 21:09:42'),
+(258, 6, 'La Victoria', 1, '2026-06-16 21:09:42'),
+(259, 6, 'Labranzagrande', 1, '2026-06-16 21:09:42'),
+(260, 6, 'Macanal', 1, '2026-06-16 21:09:42'),
+(261, 6, 'Maripí', 1, '2026-06-16 21:09:42'),
+(262, 6, 'Miraflores', 1, '2026-06-16 21:09:42'),
+(263, 6, 'Mongua', 1, '2026-06-16 21:09:42'),
+(264, 6, 'Monguí', 1, '2026-06-16 21:09:42'),
+(265, 6, 'Moniquirá', 1, '2026-06-16 21:09:42'),
+(266, 6, 'Motavita', 1, '2026-06-16 21:09:42'),
+(267, 6, 'Muzo', 1, '2026-06-16 21:09:42'),
+(268, 6, 'Nobsa', 1, '2026-06-16 21:09:42'),
+(269, 6, 'Nuevo Colón', 1, '2026-06-16 21:09:42'),
+(270, 6, 'Oicatá', 1, '2026-06-16 21:09:42'),
+(271, 6, 'Otanche', 1, '2026-06-16 21:09:42'),
+(272, 6, 'Pachavita', 1, '2026-06-16 21:09:42'),
+(273, 6, 'Páez', 1, '2026-06-16 21:09:42'),
+(274, 6, 'Paipa', 1, '2026-06-16 21:09:42'),
+(275, 6, 'Pajarito', 1, '2026-06-16 21:09:42'),
+(276, 6, 'Panqueba', 1, '2026-06-16 21:09:42'),
+(277, 6, 'Pauna', 1, '2026-06-16 21:09:42'),
+(278, 6, 'Paya', 1, '2026-06-16 21:09:42'),
+(279, 6, 'Paz de Río', 1, '2026-06-16 21:09:42'),
+(280, 6, 'Pesca', 1, '2026-06-16 21:09:42'),
+(281, 6, 'Pisba', 1, '2026-06-16 21:09:42'),
+(282, 6, 'Puerto Boyacá', 1, '2026-06-16 21:09:42'),
+(283, 6, 'Quípama', 1, '2026-06-16 21:09:42'),
+(284, 6, 'Ramiriquí', 1, '2026-06-16 21:09:42'),
+(285, 6, 'Ráquira', 1, '2026-06-16 21:09:42'),
+(286, 6, 'Rondón', 1, '2026-06-16 21:09:42'),
+(287, 6, 'Saboyá', 1, '2026-06-16 21:09:42'),
+(288, 6, 'Sáchica', 1, '2026-06-16 21:09:42'),
+(289, 6, 'Samacá', 1, '2026-06-16 21:09:42'),
+(290, 6, 'San Eduardo', 1, '2026-06-16 21:09:42'),
+(291, 6, 'San José de Pare', 1, '2026-06-16 21:09:42'),
+(292, 6, 'San Luis de Gaceno', 1, '2026-06-16 21:09:42'),
+(293, 6, 'San Mateo', 1, '2026-06-16 21:09:42'),
+(294, 6, 'San Miguel de Sema', 1, '2026-06-16 21:09:42'),
+(295, 6, 'San Pablo de Borbur', 1, '2026-06-16 21:09:42'),
+(296, 6, 'Santana', 1, '2026-06-16 21:09:42'),
+(297, 6, 'Santa María', 1, '2026-06-16 21:09:42'),
+(298, 6, 'Santa Rosa de Viterbo', 1, '2026-06-16 21:09:42'),
+(299, 6, 'Santa Sofía', 1, '2026-06-16 21:09:42'),
+(300, 6, 'Santander de Quilichao', 1, '2026-06-16 21:09:42'),
+(301, 6, 'Sativanorte', 1, '2026-06-16 21:09:42'),
+(302, 6, 'Sativasur', 1, '2026-06-16 21:09:42'),
+(303, 6, 'Siachoque', 1, '2026-06-16 21:09:42'),
+(304, 6, 'Soatá', 1, '2026-06-16 21:09:42'),
+(305, 6, 'Socha', 1, '2026-06-16 21:09:42'),
+(306, 6, 'Socotá', 1, '2026-06-16 21:09:42'),
+(307, 6, 'Sogamoso', 1, '2026-06-16 21:09:42'),
+(308, 6, 'Somondoco', 1, '2026-06-16 21:09:42'),
+(309, 6, 'Sora', 1, '2026-06-16 21:09:42'),
+(310, 6, 'Soracá', 1, '2026-06-16 21:09:42'),
+(311, 6, 'Sotaquirá', 1, '2026-06-16 21:09:42'),
+(312, 6, 'Susacón', 1, '2026-06-16 21:09:42'),
+(313, 6, 'Sutamarchán', 1, '2026-06-16 21:09:42'),
+(314, 6, 'Sutatenza', 1, '2026-06-16 21:09:42'),
+(315, 6, 'Tasco', 1, '2026-06-16 21:09:42'),
+(316, 6, 'Tenza', 1, '2026-06-16 21:09:42'),
+(317, 6, 'Tibaná', 1, '2026-06-16 21:09:42'),
+(318, 6, 'Tibasosa', 1, '2026-06-16 21:09:42'),
+(319, 6, 'Tinjacá', 1, '2026-06-16 21:09:42'),
+(320, 6, 'Tipacoque', 1, '2026-06-16 21:09:42'),
+(321, 6, 'Toca', 1, '2026-06-16 21:09:42'),
+(322, 6, 'Togüí', 1, '2026-06-16 21:09:42'),
+(323, 6, 'Tópaga', 1, '2026-06-16 21:09:42'),
+(324, 6, 'Tota', 1, '2026-06-16 21:09:42'),
+(325, 6, 'Turmequé', 1, '2026-06-16 21:09:42'),
+(326, 6, 'Tuta', 1, '2026-06-16 21:09:42'),
+(327, 6, 'Tutazá', 1, '2026-06-16 21:09:42'),
+(328, 6, 'Úmbita', 1, '2026-06-16 21:09:42'),
+(329, 6, 'Ventaquemada', 1, '2026-06-16 21:09:42'),
+(330, 6, 'Villa de Leyva', 1, '2026-06-16 21:09:42'),
+(331, 6, 'Viracachá', 1, '2026-06-16 21:09:42'),
+(332, 6, 'Zetaquira', 1, '2026-06-16 21:09:42'),
+(333, 7, 'Manizales', 1, '2026-06-16 21:09:42'),
+(334, 7, 'Aguadas', 1, '2026-06-16 21:09:42'),
+(335, 7, 'Anserma', 1, '2026-06-16 21:09:42'),
+(336, 7, 'Aranzazu', 1, '2026-06-16 21:09:42'),
+(337, 7, 'Belalcázar', 1, '2026-06-16 21:09:42'),
+(338, 7, 'Chinchiná', 1, '2026-06-16 21:09:42'),
+(339, 7, 'Filadelfia', 1, '2026-06-16 21:09:42'),
+(340, 7, 'La Dorada', 1, '2026-06-16 21:09:42'),
+(341, 7, 'La Merced', 1, '2026-06-16 21:09:42'),
+(342, 7, 'Manzanares', 1, '2026-06-16 21:09:42'),
+(343, 7, 'Marmato', 1, '2026-06-16 21:09:42'),
+(344, 7, 'Marquetalia', 1, '2026-06-16 21:09:42'),
+(345, 7, 'Marulanda', 1, '2026-06-16 21:09:42'),
+(346, 7, 'Neira', 1, '2026-06-16 21:09:42'),
+(347, 7, 'Norcasia', 1, '2026-06-16 21:09:42'),
+(348, 7, 'Pácora', 1, '2026-06-16 21:09:42'),
+(349, 7, 'Palestina', 1, '2026-06-16 21:09:42'),
+(350, 7, 'Pensilvania', 1, '2026-06-16 21:09:42'),
+(351, 7, 'Riosucio', 1, '2026-06-16 21:09:42'),
+(352, 7, 'Riosucio', 1, '2026-06-16 21:09:42'),
+(353, 7, 'Risaralda', 1, '2026-06-16 21:09:42'),
+(354, 7, 'Salamina', 1, '2026-06-16 21:09:42'),
+(355, 7, 'Samaná', 1, '2026-06-16 21:09:42'),
+(356, 7, 'San José', 1, '2026-06-16 21:09:42'),
+(357, 7, 'Supía', 1, '2026-06-16 21:09:42'),
+(358, 7, 'Victoria', 1, '2026-06-16 21:09:42'),
+(359, 7, 'Villamaría', 1, '2026-06-16 21:09:42'),
+(360, 7, 'Viterbo', 1, '2026-06-16 21:09:42'),
+(361, 8, 'Florencia', 1, '2026-06-16 21:09:42'),
+(362, 8, 'Albania', 1, '2026-06-16 21:09:42'),
+(363, 8, 'Belén de los Andaquíes', 1, '2026-06-16 21:09:42'),
+(364, 8, 'Cartagena del Chairá', 1, '2026-06-16 21:09:42'),
+(365, 8, 'Curillo', 1, '2026-06-16 21:09:42'),
+(366, 8, 'El Doncello', 1, '2026-06-16 21:09:42'),
+(367, 8, 'El Paujil', 1, '2026-06-16 21:09:42'),
+(368, 8, 'La Montañita', 1, '2026-06-16 21:09:42'),
+(369, 8, 'Milán', 1, '2026-06-16 21:09:42'),
+(370, 8, 'Morelia', 1, '2026-06-16 21:09:42'),
+(371, 8, 'Puerto Rico', 1, '2026-06-16 21:09:42'),
+(372, 8, 'San José del Fragua', 1, '2026-06-16 21:09:42'),
+(373, 8, 'San Vicente del Caguán', 1, '2026-06-16 21:09:42'),
+(374, 8, 'Solano', 1, '2026-06-16 21:09:42'),
+(375, 8, 'Solita', 1, '2026-06-16 21:09:42'),
+(376, 8, 'Valparaíso', 1, '2026-06-16 21:09:42'),
+(377, 9, 'Yopal', 1, '2026-06-16 21:09:42'),
+(378, 9, 'Aguazul', 1, '2026-06-16 21:09:42'),
+(379, 9, 'Chámeza', 1, '2026-06-16 21:09:42'),
+(380, 9, 'Hato Corozal', 1, '2026-06-16 21:09:42'),
+(381, 9, 'La Salina', 1, '2026-06-16 21:09:42'),
+(382, 9, 'Maní', 1, '2026-06-16 21:09:42'),
+(383, 9, 'Monterrey', 1, '2026-06-16 21:09:42'),
+(384, 9, 'Nunchía', 1, '2026-06-16 21:09:42'),
+(385, 9, 'Orocué', 1, '2026-06-16 21:09:42'),
+(386, 9, 'Paz de Ariporo', 1, '2026-06-16 21:09:42'),
+(387, 9, 'Pore', 1, '2026-06-16 21:09:42'),
+(388, 9, 'Recetor', 1, '2026-06-16 21:09:42'),
+(389, 9, 'Sabanalarga', 1, '2026-06-16 21:09:42'),
+(390, 9, 'Sácama', 1, '2026-06-16 21:09:42'),
+(391, 9, 'San Luis de Palenque', 1, '2026-06-16 21:09:42'),
+(392, 9, 'Támara', 1, '2026-06-16 21:09:42'),
+(393, 9, 'Tauramena', 1, '2026-06-16 21:09:42'),
+(394, 9, 'Trinidad', 1, '2026-06-16 21:09:42'),
+(395, 9, 'Villanueva', 1, '2026-06-16 21:09:42'),
+(396, 10, 'Popayán', 1, '2026-06-16 21:09:42'),
+(397, 10, 'Almaguer', 1, '2026-06-16 21:09:42'),
+(398, 10, 'Argelia', 1, '2026-06-16 21:09:42'),
+(399, 10, 'Balboa', 1, '2026-06-16 21:09:42'),
+(400, 10, 'Bolívar', 1, '2026-06-16 21:09:42'),
+(401, 10, 'Buenos Aires', 1, '2026-06-16 21:09:42'),
+(402, 10, 'Cajibío', 1, '2026-06-16 21:09:42'),
+(403, 10, 'Caldono', 1, '2026-06-16 21:09:42'),
+(404, 10, 'Caloto', 1, '2026-06-16 21:09:42'),
+(405, 10, 'Coconuco', 1, '2026-06-16 21:09:42'),
+(406, 10, 'Corinto', 1, '2026-06-16 21:09:42'),
+(407, 10, 'El Tambo', 1, '2026-06-16 21:09:42'),
+(408, 10, 'Florencia', 1, '2026-06-16 21:09:42'),
+(409, 10, 'Guachené', 1, '2026-06-16 21:09:42'),
+(410, 10, 'Guapi', 1, '2026-06-16 21:09:42'),
+(411, 10, 'Inzá', 1, '2026-06-16 21:09:42'),
+(412, 10, 'Jambaló', 1, '2026-06-16 21:09:42'),
+(413, 10, 'La Sierra', 1, '2026-06-16 21:09:42'),
+(414, 10, 'La Vega', 1, '2026-06-16 21:09:42'),
+(415, 10, 'López de Micay', 1, '2026-06-16 21:09:42'),
+(416, 10, 'Mercaderes', 1, '2026-06-16 21:09:42'),
+(417, 10, 'Miranda', 1, '2026-06-16 21:09:42'),
+(418, 10, 'Morales', 1, '2026-06-16 21:09:42'),
+(419, 10, 'Padilla', 1, '2026-06-16 21:09:42'),
+(420, 10, 'Páez', 1, '2026-06-16 21:09:42'),
+(421, 10, 'Patía', 1, '2026-06-16 21:09:42'),
+(422, 10, 'Piamonte', 1, '2026-06-16 21:09:42'),
+(423, 10, 'Piendamó', 1, '2026-06-16 21:09:42'),
+(424, 10, 'Puerto Tejada', 1, '2026-06-16 21:09:42'),
+(425, 10, 'Puracé', 1, '2026-06-16 21:09:42'),
+(426, 10, 'Rosas', 1, '2026-06-16 21:09:42'),
+(427, 10, 'San Sebastián', 1, '2026-06-16 21:09:42'),
+(428, 10, 'Santa Rosa', 1, '2026-06-16 21:09:42'),
+(429, 10, 'Santander de Quilichao', 1, '2026-06-16 21:09:42'),
+(430, 10, 'Silvia', 1, '2026-06-16 21:09:42'),
+(431, 10, 'Sotará', 1, '2026-06-16 21:09:42'),
+(432, 10, 'Suárez', 1, '2026-06-16 21:09:42'),
+(433, 10, 'Sucre', 1, '2026-06-16 21:09:42'),
+(434, 10, 'Timbío', 1, '2026-06-16 21:09:42'),
+(435, 10, 'Timbiquí', 1, '2026-06-16 21:09:42'),
+(436, 10, 'Toribío', 1, '2026-06-16 21:09:42'),
+(437, 10, 'Totoró', 1, '2026-06-16 21:09:42'),
+(438, 10, 'Villa Rica', 1, '2026-06-16 21:09:42'),
+(439, 11, 'Valledupar', 1, '2026-06-16 21:09:42'),
+(440, 11, 'Aguachica', 1, '2026-06-16 21:09:42'),
+(441, 11, 'Agustín Codazzi', 1, '2026-06-16 21:09:42'),
+(442, 11, 'Astrea', 1, '2026-06-16 21:09:42'),
+(443, 11, 'Becerril', 1, '2026-06-16 21:09:42'),
+(444, 11, 'Bosconia', 1, '2026-06-16 21:09:42'),
+(445, 11, 'Chimichagua', 1, '2026-06-16 21:09:42'),
+(446, 11, 'Chiriguaná', 1, '2026-06-16 21:09:42'),
+(447, 11, 'Curumaní', 1, '2026-06-16 21:09:42'),
+(448, 11, 'El Copey', 1, '2026-06-16 21:09:42'),
+(449, 11, 'El Paso', 1, '2026-06-16 21:09:42'),
+(450, 11, 'Gamarra', 1, '2026-06-16 21:09:42'),
+(451, 11, 'González', 1, '2026-06-16 21:09:42'),
+(452, 11, 'La Gloria', 1, '2026-06-16 21:09:42'),
+(453, 11, 'La Jagua de Ibirico', 1, '2026-06-16 21:09:42'),
+(454, 11, 'La Paz', 1, '2026-06-16 21:09:42'),
+(455, 11, 'Manaure Balcón del Cesar', 1, '2026-06-16 21:09:42'),
+(456, 11, 'Pailitas', 1, '2026-06-16 21:09:42'),
+(457, 11, 'Pelaya', 1, '2026-06-16 21:09:42'),
+(458, 11, 'Pueblo Bello', 1, '2026-06-16 21:09:42'),
+(459, 11, 'Río de Oro', 1, '2026-06-16 21:09:42'),
+(460, 11, 'La Jagua del Pilar', 1, '2026-06-16 21:09:42'),
+(461, 11, 'San Alberto', 1, '2026-06-16 21:09:42'),
+(462, 11, 'San Diego', 1, '2026-06-16 21:09:42'),
+(463, 11, 'San Martín', 1, '2026-06-16 21:09:42'),
+(464, 11, 'Tamalameque', 1, '2026-06-16 21:09:42'),
+(465, 12, 'Quibdó', 1, '2026-06-16 21:09:42'),
+(466, 12, 'Acandí', 1, '2026-06-16 21:09:42'),
+(467, 12, 'Alto Baudó', 1, '2026-06-16 21:09:42'),
+(468, 12, 'Atrato', 1, '2026-06-16 21:09:42'),
+(469, 12, 'Bagadó', 1, '2026-06-16 21:09:42'),
+(470, 12, 'Bahía Solano', 1, '2026-06-16 21:09:42'),
+(471, 12, 'Bajo Baudó', 1, '2026-06-16 21:09:42'),
+(472, 12, 'Bojayá', 1, '2026-06-16 21:09:42'),
+(473, 12, 'Carmen del Darién', 1, '2026-06-16 21:09:42'),
+(474, 12, 'Cértegui', 1, '2026-06-16 21:09:42'),
+(475, 12, 'Condoto', 1, '2026-06-16 21:09:42'),
+(476, 12, 'El Cantón del San Pablo', 1, '2026-06-16 21:09:42'),
+(477, 12, 'El Carmen de Atrato', 1, '2026-06-16 21:09:42'),
+(478, 12, 'El Litoral del San Juan', 1, '2026-06-16 21:09:42'),
+(479, 12, 'Istmina', 1, '2026-06-16 21:09:42'),
+(480, 12, 'Juradó', 1, '2026-06-16 21:09:42'),
+(481, 12, 'Lloró', 1, '2026-06-16 21:09:42'),
+(482, 12, 'Medio Atrato', 1, '2026-06-16 21:09:42'),
+(483, 12, 'Medio Baudó', 1, '2026-06-16 21:09:42'),
+(484, 12, 'Medio San Juan', 1, '2026-06-16 21:09:42'),
+(485, 12, 'Nóvita', 1, '2026-06-16 21:09:42'),
+(486, 12, 'Nuquí', 1, '2026-06-16 21:09:42'),
+(487, 12, 'Río Iro', 1, '2026-06-16 21:09:42'),
+(488, 12, 'Río Quito', 1, '2026-06-16 21:09:42'),
+(489, 12, 'Riosucio', 1, '2026-06-16 21:09:42'),
+(490, 12, 'San José del Palmar', 1, '2026-06-16 21:09:42'),
+(491, 12, 'Sipí', 1, '2026-06-16 21:09:42'),
+(492, 12, 'Tadó', 1, '2026-06-16 21:09:42'),
+(493, 12, 'Unguía', 1, '2026-06-16 21:09:42'),
+(494, 12, 'Unión Panamericana', 1, '2026-06-16 21:09:42'),
+(495, 13, 'Montería', 1, '2026-06-16 21:09:42'),
+(496, 13, 'Ayapel', 1, '2026-06-16 21:09:42'),
+(497, 13, 'Buenavista', 1, '2026-06-16 21:09:42'),
+(498, 13, 'Canalete', 1, '2026-06-16 21:09:42'),
+(499, 13, 'Cereté', 1, '2026-06-16 21:09:42'),
+(500, 13, 'Chimá', 1, '2026-06-16 21:09:42'),
+(501, 13, 'Chinú', 1, '2026-06-16 21:09:42'),
+(502, 13, 'Ciénaga de Oro', 1, '2026-06-16 21:09:42'),
+(503, 13, 'Cotorra', 1, '2026-06-16 21:09:42'),
+(504, 13, 'La Apartada', 1, '2026-06-16 21:09:42'),
+(505, 13, 'Lorica', 1, '2026-06-16 21:09:42'),
+(506, 13, 'Los Córdobas', 1, '2026-06-16 21:09:42'),
+(507, 13, 'Momil', 1, '2026-06-16 21:09:42'),
+(508, 13, 'Montelíbano', 1, '2026-06-16 21:09:42'),
+(509, 13, 'Moñitos', 1, '2026-06-16 21:09:42'),
+(510, 13, 'Planeta Rica', 1, '2026-06-16 21:09:42'),
+(511, 13, 'Pueblo Nuevo', 1, '2026-06-16 21:09:42'),
+(512, 13, 'Puerto Escondido', 1, '2026-06-16 21:09:42'),
+(513, 13, 'Puerto Libertador', 1, '2026-06-16 21:09:42'),
+(514, 13, 'Purísima de la Concepción', 1, '2026-06-16 21:09:42'),
+(515, 13, 'Sahagún', 1, '2026-06-16 21:09:42'),
+(516, 13, 'San Andrés de Sotavento', 1, '2026-06-16 21:09:42'),
+(517, 13, 'San Antero', 1, '2026-06-16 21:09:42'),
+(518, 13, 'San Bernardo del Viento', 1, '2026-06-16 21:09:42'),
+(519, 13, 'San Carlos', 1, '2026-06-16 21:09:42'),
+(520, 13, 'San José de Uré', 1, '2026-06-16 21:09:42'),
+(521, 13, 'San Pelayo', 1, '2026-06-16 21:09:42'),
+(522, 13, 'Tierralta', 1, '2026-06-16 21:09:42'),
+(523, 13, 'Tuchín', 1, '2026-06-16 21:09:42'),
+(524, 13, 'Valencia', 1, '2026-06-16 21:09:42'),
+(525, 14, 'Bogotá D.C.', 1, '2026-06-16 21:09:42'),
+(526, 14, 'Agua de Dios', 1, '2026-06-16 21:09:42'),
+(527, 14, 'Albán', 1, '2026-06-16 21:09:42'),
+(528, 14, 'Anapoima', 1, '2026-06-16 21:09:42'),
+(529, 14, 'Anolaima', 1, '2026-06-16 21:09:42'),
+(530, 14, 'Apulo', 1, '2026-06-16 21:09:42'),
+(531, 14, 'Arbeláez', 1, '2026-06-16 21:09:42'),
+(532, 14, 'Beltrán', 1, '2026-06-16 21:09:42'),
+(533, 14, 'Bituima', 1, '2026-06-16 21:09:42'),
+(534, 14, 'Bojacá', 1, '2026-06-16 21:09:42'),
+(535, 14, 'Cabrera', 1, '2026-06-16 21:09:42'),
+(536, 14, 'Cachipay', 1, '2026-06-16 21:09:42'),
+(537, 14, 'Cajicá', 1, '2026-06-16 21:09:42'),
+(538, 14, 'Caparrapí', 1, '2026-06-16 21:09:42'),
+(539, 14, 'Cáqueza', 1, '2026-06-16 21:09:42'),
+(540, 14, 'Carmen de Carupa', 1, '2026-06-16 21:09:42'),
+(541, 14, 'Chaguaní', 1, '2026-06-16 21:09:42'),
+(542, 14, 'Chía', 1, '2026-06-16 21:09:42'),
+(543, 14, 'Chipaque', 1, '2026-06-16 21:09:42'),
+(544, 14, 'Choachí', 1, '2026-06-16 21:09:42'),
+(545, 14, 'Chocontá', 1, '2026-06-16 21:09:42'),
+(546, 14, 'Cogua', 1, '2026-06-16 21:09:42'),
+(547, 14, 'Cota', 1, '2026-06-16 21:09:42'),
+(548, 14, 'Cucunubá', 1, '2026-06-16 21:09:42'),
+(549, 14, 'El Colegio', 1, '2026-06-16 21:09:42'),
+(550, 14, 'El Peñón', 1, '2026-06-16 21:09:42'),
+(551, 14, 'El Rosal', 1, '2026-06-16 21:09:42'),
+(552, 14, 'Facatativá', 1, '2026-06-16 21:09:42'),
+(553, 14, 'Fomeque', 1, '2026-06-16 21:09:42'),
+(554, 14, 'Fosca', 1, '2026-06-16 21:09:42'),
+(555, 14, 'Funza', 1, '2026-06-16 21:09:42'),
+(556, 14, 'Fúquene', 1, '2026-06-16 21:09:42'),
+(557, 14, 'Fusagasugá', 1, '2026-06-16 21:09:42'),
+(558, 14, 'Gachalá', 1, '2026-06-16 21:09:42'),
+(559, 14, 'Gachancipá', 1, '2026-06-16 21:09:42'),
+(560, 14, 'Gachetá', 1, '2026-06-16 21:09:42'),
+(561, 14, 'Gama', 1, '2026-06-16 21:09:42'),
+(562, 14, 'Girardot', 1, '2026-06-16 21:09:42'),
+(563, 14, 'Granada', 1, '2026-06-16 21:09:42'),
+(564, 14, 'Guachetá', 1, '2026-06-16 21:09:42'),
+(565, 14, 'Guaduas', 1, '2026-06-16 21:09:42'),
+(566, 14, 'Guasca', 1, '2026-06-16 21:09:42'),
+(567, 14, 'Guataquí', 1, '2026-06-16 21:09:42'),
+(568, 14, 'Guatavita', 1, '2026-06-16 21:09:42'),
+(569, 14, 'Guayabal de Síquima', 1, '2026-06-16 21:09:42'),
+(570, 14, 'Guayabetal', 1, '2026-06-16 21:09:42'),
+(571, 14, 'Gutiérrez', 1, '2026-06-16 21:09:42'),
+(572, 14, 'Jerusalén', 1, '2026-06-16 21:09:42'),
+(573, 14, 'Junín', 1, '2026-06-16 21:09:42'),
+(574, 14, 'La Calera', 1, '2026-06-16 21:09:42'),
+(575, 14, 'La Mesa', 1, '2026-06-16 21:09:42'),
+(576, 14, 'La Palma', 1, '2026-06-16 21:09:42'),
+(577, 14, 'La Peña', 1, '2026-06-16 21:09:42'),
+(578, 14, 'La Vega', 1, '2026-06-16 21:09:42'),
+(579, 14, 'Lenguazaque', 1, '2026-06-16 21:09:42'),
+(580, 14, 'Macheta', 1, '2026-06-16 21:09:42'),
+(581, 14, 'Madrid', 1, '2026-06-16 21:09:42'),
+(582, 14, 'Manta', 1, '2026-06-16 21:09:42'),
+(583, 14, 'Medina', 1, '2026-06-16 21:09:42'),
+(584, 14, 'Mosquera', 1, '2026-06-16 21:09:42'),
+(585, 14, 'Nariño', 1, '2026-06-16 21:09:42'),
+(586, 14, 'Nemocón', 1, '2026-06-16 21:09:42'),
+(587, 14, 'Nilo', 1, '2026-06-16 21:09:42'),
+(588, 14, 'Nimaima', 1, '2026-06-16 21:09:42'),
+(589, 14, 'Nocaima', 1, '2026-06-16 21:09:42'),
+(590, 14, 'Pacho', 1, '2026-06-16 21:09:42'),
+(591, 14, 'Paime', 1, '2026-06-16 21:09:42'),
+(592, 14, 'Pandi', 1, '2026-06-16 21:09:42'),
+(593, 14, 'Paratebueno', 1, '2026-06-16 21:09:42'),
+(594, 14, 'Pasca', 1, '2026-06-16 21:09:42'),
+(595, 14, 'Puerto Salgar', 1, '2026-06-16 21:09:42'),
+(596, 14, 'Pulí', 1, '2026-06-16 21:09:42'),
+(597, 14, 'Quebradanegra', 1, '2026-06-16 21:09:42'),
+(598, 14, 'Quetame', 1, '2026-06-16 21:09:42'),
+(599, 14, 'Quipile', 1, '2026-06-16 21:09:42'),
+(600, 14, 'Ricaurte', 1, '2026-06-16 21:09:42'),
+(601, 14, 'San Antonio del Tequendama', 1, '2026-06-16 21:09:42'),
+(602, 14, 'San Bernardo', 1, '2026-06-16 21:09:42'),
+(603, 14, 'San Cayetano', 1, '2026-06-16 21:09:42'),
+(604, 14, 'San Francisco', 1, '2026-06-16 21:09:42'),
+(605, 14, 'San Juan de Rioseco', 1, '2026-06-16 21:09:42'),
+(606, 14, 'Sasaima', 1, '2026-06-16 21:09:42'),
+(607, 14, 'Sesquilé', 1, '2026-06-16 21:09:42'),
+(608, 14, 'Sibaté', 1, '2026-06-16 21:09:42'),
+(609, 14, 'Silvania', 1, '2026-06-16 21:09:42'),
+(610, 14, 'Simijaca', 1, '2026-06-16 21:09:42'),
+(611, 14, 'Soacha', 1, '2026-06-16 21:09:42'),
+(612, 14, 'Sopó', 1, '2026-06-16 21:09:42'),
+(613, 14, 'Subachoque', 1, '2026-06-16 21:09:42'),
+(614, 14, 'Suesca', 1, '2026-06-16 21:09:42'),
+(615, 14, 'Supatá', 1, '2026-06-16 21:09:42'),
+(616, 14, 'Susa', 1, '2026-06-16 21:09:42'),
+(617, 14, 'Sutatausa', 1, '2026-06-16 21:09:42'),
+(618, 14, 'Tabio', 1, '2026-06-16 21:09:42'),
+(619, 14, 'Tausa', 1, '2026-06-16 21:09:42'),
+(620, 14, 'Tena', 1, '2026-06-16 21:09:42'),
+(621, 14, 'Tibacuy', 1, '2026-06-16 21:09:42'),
+(622, 14, 'Tibirita', 1, '2026-06-16 21:09:42'),
+(623, 14, 'Tocaima', 1, '2026-06-16 21:09:42'),
+(624, 14, 'Tocancipá', 1, '2026-06-16 21:09:42'),
+(625, 14, 'Topaipí', 1, '2026-06-16 21:09:42'),
+(626, 14, 'Ubalá', 1, '2026-06-16 21:09:42'),
+(627, 14, 'Ubaque', 1, '2026-06-16 21:09:42'),
+(628, 14, 'Ubaté', 1, '2026-06-16 21:09:42'),
+(629, 14, 'Une', 1, '2026-06-16 21:09:42'),
+(630, 14, 'Útica', 1, '2026-06-16 21:09:42'),
+(631, 14, 'Vergara', 1, '2026-06-16 21:09:42'),
+(632, 14, 'Vianí', 1, '2026-06-16 21:09:42'),
+(633, 14, 'Villagómez', 1, '2026-06-16 21:09:42'),
+(634, 14, 'Villapinzón', 1, '2026-06-16 21:09:42'),
+(635, 14, 'Villeta', 1, '2026-06-16 21:09:42'),
+(636, 14, 'Viotá', 1, '2026-06-16 21:09:42'),
+(637, 14, 'Yacopí', 1, '2026-06-16 21:09:42'),
+(638, 14, 'Zipacón', 1, '2026-06-16 21:09:42'),
+(639, 14, 'Zipaquirá', 1, '2026-06-16 21:09:42'),
+(640, 15, 'Inírida', 1, '2026-06-16 21:09:42'),
+(641, 15, 'Barranco Minas', 1, '2026-06-16 21:09:42'),
+(642, 15, 'Cacahual', 1, '2026-06-16 21:09:42'),
+(643, 15, 'La Guadalupe', 1, '2026-06-16 21:09:42'),
+(644, 15, 'Mapiripana', 1, '2026-06-16 21:09:42'),
+(645, 15, 'Morichal', 1, '2026-06-16 21:09:42'),
+(646, 15, 'Pana Pana', 1, '2026-06-16 21:09:42'),
+(647, 15, 'Puerto Colombia', 1, '2026-06-16 21:09:42'),
+(648, 15, 'San Felipe', 1, '2026-06-16 21:09:42'),
+(649, 16, 'San José del Guaviare', 1, '2026-06-16 21:09:42'),
+(650, 16, 'Calamar', 1, '2026-06-16 21:09:42'),
+(651, 16, 'El Retorno', 1, '2026-06-16 21:09:42'),
+(652, 16, 'Miraflores', 1, '2026-06-16 21:09:42'),
+(653, 17, 'Neiva', 1, '2026-06-16 21:09:42'),
+(654, 17, 'Acevedo', 1, '2026-06-16 21:09:42'),
+(655, 17, 'Agrado', 1, '2026-06-16 21:09:42'),
+(656, 17, 'Aipe', 1, '2026-06-16 21:09:42'),
+(657, 17, 'Algeciras', 1, '2026-06-16 21:09:42'),
+(658, 17, 'Altamira', 1, '2026-06-16 21:09:42'),
+(659, 17, 'Baraya', 1, '2026-06-16 21:09:42'),
+(660, 17, 'Campoalegre', 1, '2026-06-16 21:09:42'),
+(661, 17, 'Colombia', 1, '2026-06-16 21:09:42'),
+(662, 17, 'Elías', 1, '2026-06-16 21:09:42'),
+(663, 17, 'Garzón', 1, '2026-06-16 21:09:42'),
+(664, 17, 'Gigante', 1, '2026-06-16 21:09:42'),
+(665, 17, 'Guadalupe', 1, '2026-06-16 21:09:42'),
+(666, 17, 'Hobo', 1, '2026-06-16 21:09:42'),
+(667, 17, 'Iquira', 1, '2026-06-16 21:09:42'),
+(668, 17, 'Isnos', 1, '2026-06-16 21:09:42'),
+(669, 17, 'La Argentina', 1, '2026-06-16 21:09:42'),
+(670, 17, 'La Plata', 1, '2026-06-16 21:09:42'),
+(671, 17, 'Nátaga', 1, '2026-06-16 21:09:42'),
+(672, 17, 'Oporapa', 1, '2026-06-16 21:09:42'),
+(673, 17, 'Paicol', 1, '2026-06-16 21:09:42'),
+(674, 17, 'Palermo', 1, '2026-06-16 21:09:42'),
+(675, 17, 'Palestina', 1, '2026-06-16 21:09:42'),
+(676, 17, 'Pital', 1, '2026-06-16 21:09:42'),
+(677, 17, 'Pitalito', 1, '2026-06-16 21:09:42'),
+(678, 17, 'Rivera', 1, '2026-06-16 21:09:42'),
+(679, 17, 'Saladoblanco', 1, '2026-06-16 21:09:42'),
+(680, 17, 'San Agustín', 1, '2026-06-16 21:09:42'),
+(681, 17, 'Santa María', 1, '2026-06-16 21:09:42'),
+(682, 17, 'Suaza', 1, '2026-06-16 21:09:42'),
+(683, 17, 'Tarqui', 1, '2026-06-16 21:09:42'),
+(684, 17, 'Tesalia', 1, '2026-06-16 21:09:42'),
+(685, 17, 'Tello', 1, '2026-06-16 21:09:42'),
+(686, 17, 'Teruel', 1, '2026-06-16 21:09:42'),
+(687, 17, 'Timaná', 1, '2026-06-16 21:09:42'),
+(688, 17, 'Villavieja', 1, '2026-06-16 21:09:42'),
+(689, 17, 'Yaguará', 1, '2026-06-16 21:09:42'),
+(690, 18, 'Riohacha', 1, '2026-06-16 21:09:42'),
+(691, 18, 'Albania', 1, '2026-06-16 21:09:42'),
+(692, 18, 'Barrancas', 1, '2026-06-16 21:09:42'),
+(693, 18, 'Dibulla', 1, '2026-06-16 21:09:42'),
+(694, 18, 'Distracción', 1, '2026-06-16 21:09:42'),
+(695, 18, 'El Molino', 1, '2026-06-16 21:09:42'),
+(696, 18, 'Fonseca', 1, '2026-06-16 21:09:42'),
+(697, 18, 'Hatonuevo', 1, '2026-06-16 21:09:42'),
+(698, 18, 'La Jagua del Pilar', 1, '2026-06-16 21:09:42'),
+(699, 18, 'Maicao', 1, '2026-06-16 21:09:42'),
+(700, 18, 'Manaure', 1, '2026-06-16 21:09:42'),
+(701, 18, 'San Juan del Cesar', 1, '2026-06-16 21:09:42'),
+(702, 18, 'Uribia', 1, '2026-06-16 21:09:42'),
+(703, 18, 'Urumita', 1, '2026-06-16 21:09:42'),
+(704, 18, 'Villanueva', 1, '2026-06-16 21:09:42'),
+(705, 19, 'Santa Marta', 1, '2026-06-16 21:09:42'),
+(706, 19, 'Algarrobo', 1, '2026-06-16 21:09:42'),
+(707, 19, 'Aracataca', 1, '2026-06-16 21:09:42'),
+(708, 19, 'Ariguaní', 1, '2026-06-16 21:09:42'),
+(709, 19, 'Cerro de San Antonio', 1, '2026-06-16 21:09:42'),
+(710, 19, 'Chivolo', 1, '2026-06-16 21:09:42'),
+(711, 19, 'Ciénaga', 1, '2026-06-16 21:09:42'),
+(712, 19, 'Concordia', 1, '2026-06-16 21:09:42'),
+(713, 19, 'El Banco', 1, '2026-06-16 21:09:42'),
+(714, 19, 'El Piñón', 1, '2026-06-16 21:09:42'),
+(715, 19, 'El Retén', 1, '2026-06-16 21:09:42'),
+(716, 19, 'Fundación', 1, '2026-06-16 21:09:42'),
+(717, 19, 'Guamal', 1, '2026-06-16 21:09:42'),
+(718, 19, 'Nueva Granada', 1, '2026-06-16 21:09:42'),
+(719, 19, 'Pedraza', 1, '2026-06-16 21:09:42'),
+(720, 19, 'Pijiño del Carmen', 1, '2026-06-16 21:09:42'),
+(721, 19, 'Pivijay', 1, '2026-06-16 21:09:42'),
+(722, 19, 'Plato', 1, '2026-06-16 21:09:42'),
+(723, 19, 'Puebloviejo', 1, '2026-06-16 21:09:42'),
+(724, 19, 'Remolino', 1, '2026-06-16 21:09:42'),
+(725, 19, 'Sabanas de San Ángel', 1, '2026-06-16 21:09:42'),
+(726, 19, 'Salamina', 1, '2026-06-16 21:09:42'),
+(727, 19, 'San Sebastián de Buenavista', 1, '2026-06-16 21:09:42'),
+(728, 19, 'San Zenón', 1, '2026-06-16 21:09:42'),
+(729, 19, 'Santa Ana', 1, '2026-06-16 21:09:42'),
+(730, 19, 'Santa Bárbara de Pinto', 1, '2026-06-16 21:09:42'),
+(731, 19, 'Sitionuevo', 1, '2026-06-16 21:09:42'),
+(732, 19, 'Tenerife', 1, '2026-06-16 21:09:42'),
+(733, 19, 'Zapayán', 1, '2026-06-16 21:09:42'),
+(734, 19, 'Zona Bananera', 1, '2026-06-16 21:09:42'),
+(735, 20, 'Villavicencio', 1, '2026-06-16 21:09:42'),
+(736, 20, 'Acacías', 1, '2026-06-16 21:09:42'),
+(737, 20, 'Barranca de Upía', 1, '2026-06-16 21:09:42'),
+(738, 20, 'Cabuyaro', 1, '2026-06-16 21:09:42'),
+(739, 20, 'Castilla la Nueva', 1, '2026-06-16 21:09:42'),
+(740, 20, 'Cubarral', 1, '2026-06-16 21:09:42'),
+(741, 20, 'Cumaral', 1, '2026-06-16 21:09:42'),
+(742, 20, 'El Calvario', 1, '2026-06-16 21:09:42'),
+(743, 20, 'El Castillo', 1, '2026-06-16 21:09:42'),
+(744, 20, 'El Dorado', 1, '2026-06-16 21:09:42'),
+(745, 20, 'Fuente de Oro', 1, '2026-06-16 21:09:42'),
+(746, 20, 'Granada', 1, '2026-06-16 21:09:42'),
+(747, 20, 'Guamal', 1, '2026-06-16 21:09:42'),
+(748, 20, 'La Macarena', 1, '2026-06-16 21:09:42'),
+(749, 20, 'La Uribe', 1, '2026-06-16 21:09:42'),
+(750, 20, 'Lejanías', 1, '2026-06-16 21:09:42'),
+(751, 20, 'Mapiripán', 1, '2026-06-16 21:09:42'),
+(752, 20, 'Mesetas', 1, '2026-06-16 21:09:42'),
+(753, 20, 'Puerto Concordia', 1, '2026-06-16 21:09:42'),
+(754, 20, 'Puerto Gaitán', 1, '2026-06-16 21:09:42'),
+(755, 20, 'Puerto Lleras', 1, '2026-06-16 21:09:42'),
+(756, 20, 'Puerto López', 1, '2026-06-16 21:09:42'),
+(757, 20, 'Puerto Rico', 1, '2026-06-16 21:09:42'),
+(758, 20, 'Restrepo', 1, '2026-06-16 21:09:42'),
+(759, 20, 'San Carlos de Guaroa', 1, '2026-06-16 21:09:42'),
+(760, 20, 'San Juan de Arama', 1, '2026-06-16 21:09:42'),
+(761, 20, 'San Juanito', 1, '2026-06-16 21:09:42'),
+(762, 20, 'San Martín', 1, '2026-06-16 21:09:42'),
+(763, 20, 'Vistahermosa', 1, '2026-06-16 21:09:42'),
+(764, 21, 'Pasto', 1, '2026-06-16 21:09:42'),
+(765, 21, 'Albán', 1, '2026-06-16 21:09:42'),
+(766, 21, 'Aldana', 1, '2026-06-16 21:09:42'),
+(767, 21, 'Ancuya', 1, '2026-06-16 21:09:42'),
+(768, 21, 'Arboleda', 1, '2026-06-16 21:09:42'),
+(769, 21, 'Barbacoas', 1, '2026-06-16 21:09:42'),
+(770, 21, 'Belén', 1, '2026-06-16 21:09:42'),
+(771, 21, 'Buesaco', 1, '2026-06-16 21:09:42'),
+(772, 21, 'Chachagüí', 1, '2026-06-16 21:09:42'),
+(773, 21, 'Colón', 1, '2026-06-16 21:09:42'),
+(774, 21, 'Consacá', 1, '2026-06-16 21:09:42'),
+(775, 21, 'Contadero', 1, '2026-06-16 21:09:42'),
+(776, 21, 'Córdoba', 1, '2026-06-16 21:09:42'),
+(777, 21, 'Cuaspud Carlosama', 1, '2026-06-16 21:09:42'),
+(778, 21, 'Cumbal', 1, '2026-06-16 21:09:42'),
+(779, 21, 'Cumbitara', 1, '2026-06-16 21:09:42'),
+(780, 21, 'El Charco', 1, '2026-06-16 21:09:42'),
+(781, 21, 'El Peñol', 1, '2026-06-16 21:09:42'),
+(782, 21, 'El Rosario', 1, '2026-06-16 21:09:42'),
+(783, 21, 'El Tablón de Gómez', 1, '2026-06-16 21:09:42'),
+(784, 21, 'El Tambo', 1, '2026-06-16 21:09:42'),
+(785, 21, 'Francisco Pizarro', 1, '2026-06-16 21:09:42'),
+(786, 21, 'Funes', 1, '2026-06-16 21:09:42'),
+(787, 21, 'Guachucal', 1, '2026-06-16 21:09:42'),
+(788, 21, 'Guaitarilla', 1, '2026-06-16 21:09:42'),
+(789, 21, 'Gualmatán', 1, '2026-06-16 21:09:42'),
+(790, 21, 'Iles', 1, '2026-06-16 21:09:42'),
+(791, 21, 'Imués', 1, '2026-06-16 21:09:42'),
+(792, 21, 'Ipiales', 1, '2026-06-16 21:09:42'),
+(793, 21, 'La Cruz', 1, '2026-06-16 21:09:42'),
+(794, 21, 'La Florida', 1, '2026-06-16 21:09:42'),
+(795, 21, 'La Llanada', 1, '2026-06-16 21:09:42'),
+(796, 21, 'La Tola', 1, '2026-06-16 21:09:42'),
+(797, 21, 'La Unión', 1, '2026-06-16 21:09:42'),
+(798, 21, 'Leiva', 1, '2026-06-16 21:09:42'),
+(799, 21, 'Linares', 1, '2026-06-16 21:09:42'),
+(800, 21, 'Los Andes', 1, '2026-06-16 21:09:42'),
+(801, 21, 'Magüí', 1, '2026-06-16 21:09:42'),
+(802, 21, 'Mallama', 1, '2026-06-16 21:09:42'),
+(803, 21, 'Mosquera', 1, '2026-06-16 21:09:42'),
+(804, 21, 'Nariño', 1, '2026-06-16 21:09:42'),
+(805, 21, 'Olaya Herrera', 1, '2026-06-16 21:09:42'),
+(806, 21, 'Ospina', 1, '2026-06-16 21:09:42'),
+(807, 21, 'Policarpa', 1, '2026-06-16 21:09:42'),
+(808, 21, 'Potosí', 1, '2026-06-16 21:09:42'),
+(809, 21, 'Providencia', 1, '2026-06-16 21:09:42'),
+(810, 21, 'Puerres', 1, '2026-06-16 21:09:42'),
+(811, 21, 'Pupiales', 1, '2026-06-16 21:09:42'),
+(812, 21, 'Ricaurte', 1, '2026-06-16 21:09:42'),
+(813, 21, 'Roberto Payán', 1, '2026-06-16 21:09:42'),
+(814, 21, 'Samaniego', 1, '2026-06-16 21:09:42'),
+(815, 21, 'San Bernardo', 1, '2026-06-16 21:09:42'),
+(816, 21, 'San Lorenzo', 1, '2026-06-16 21:09:42'),
+(817, 21, 'San Pablo', 1, '2026-06-16 21:09:42'),
+(818, 21, 'San Pedro de Cartago', 1, '2026-06-16 21:09:42'),
+(819, 21, 'Sandoná', 1, '2026-06-16 21:09:42'),
+(820, 21, 'Santa Bárbara', 1, '2026-06-16 21:09:42'),
+(821, 21, 'Santacruz', 1, '2026-06-16 21:09:42'),
+(822, 21, 'Sapuyes', 1, '2026-06-16 21:09:42'),
+(823, 21, 'Taminango', 1, '2026-06-16 21:09:42'),
+(824, 21, 'Tangua', 1, '2026-06-16 21:09:42'),
+(825, 21, 'Tumaco', 1, '2026-06-16 21:09:42'),
+(826, 21, 'Túquerres', 1, '2026-06-16 21:09:42'),
+(827, 21, 'Yacuanquer', 1, '2026-06-16 21:09:42'),
+(828, 22, 'Cúcuta', 1, '2026-06-16 21:09:42'),
+(829, 22, 'Ábrego', 1, '2026-06-16 21:09:42'),
+(830, 22, 'Arboledas', 1, '2026-06-16 21:09:42'),
+(831, 22, 'Bochalema', 1, '2026-06-16 21:09:42'),
+(832, 22, 'Bucarasica', 1, '2026-06-16 21:09:42'),
+(833, 22, 'Cachirá', 1, '2026-06-16 21:09:42'),
+(834, 22, 'Cácota', 1, '2026-06-16 21:09:42'),
+(835, 22, 'Chinácota', 1, '2026-06-16 21:09:42'),
+(836, 22, 'Chitagá', 1, '2026-06-16 21:09:42'),
+(837, 22, 'Convención', 1, '2026-06-16 21:09:42'),
+(838, 22, 'Cucutilla', 1, '2026-06-16 21:09:42'),
+(839, 22, 'Durania', 1, '2026-06-16 21:09:42'),
+(840, 22, 'El Carmen', 1, '2026-06-16 21:09:42'),
+(841, 22, 'El Tarra', 1, '2026-06-16 21:09:42'),
+(842, 22, 'El Zulia', 1, '2026-06-16 21:09:42'),
+(843, 22, 'Gramalote', 1, '2026-06-16 21:09:42'),
+(844, 22, 'Hacarí', 1, '2026-06-16 21:09:42'),
+(845, 22, 'Herrán', 1, '2026-06-16 21:09:42'),
+(846, 22, 'La Esperanza', 1, '2026-06-16 21:09:42'),
+(847, 22, 'La Playa de Belén', 1, '2026-06-16 21:09:42'),
+(848, 22, 'Labateca', 1, '2026-06-16 21:09:42'),
+(849, 22, 'Los Patios', 1, '2026-06-16 21:09:42'),
+(850, 22, 'Lourdes', 1, '2026-06-16 21:09:42'),
+(851, 22, 'Mutiscua', 1, '2026-06-16 21:09:42'),
+(852, 22, 'Ocaña', 1, '2026-06-16 21:09:42'),
+(853, 22, 'Pamplona', 1, '2026-06-16 21:09:42'),
+(854, 22, 'Pamplonita', 1, '2026-06-16 21:09:42'),
+(855, 22, 'Puerto Santander', 1, '2026-06-16 21:09:42'),
+(856, 22, 'Ragonvalia', 1, '2026-06-16 21:09:42'),
+(857, 22, 'Salazar', 1, '2026-06-16 21:09:42'),
+(858, 22, 'San Calixto', 1, '2026-06-16 21:09:42'),
+(859, 22, 'San Cayetano', 1, '2026-06-16 21:09:42'),
+(860, 22, 'Santiago', 1, '2026-06-16 21:09:42'),
+(861, 22, 'Santo Tomás', 1, '2026-06-16 21:09:42'),
+(862, 22, 'Sardinata', 1, '2026-06-16 21:09:42'),
+(863, 22, 'Silos', 1, '2026-06-16 21:09:42'),
+(864, 22, 'Teorama', 1, '2026-06-16 21:09:42'),
+(865, 22, 'Tibú', 1, '2026-06-16 21:09:42'),
+(866, 22, 'Toledo', 1, '2026-06-16 21:09:42'),
+(867, 22, 'Villa Caro', 1, '2026-06-16 21:09:42'),
+(868, 22, 'Villa del Rosario', 1, '2026-06-16 21:09:42'),
+(869, 23, 'Mocoa', 1, '2026-06-16 21:09:42'),
+(870, 23, 'Colón', 1, '2026-06-16 21:09:42'),
+(871, 23, 'Leguízamo', 1, '2026-06-16 21:09:42'),
+(872, 23, 'Orito', 1, '2026-06-16 21:09:42'),
+(873, 23, 'Puerto Asís', 1, '2026-06-16 21:09:42'),
+(874, 23, 'Puerto Caicedo', 1, '2026-06-16 21:09:42'),
+(875, 23, 'Puerto Guzmán', 1, '2026-06-16 21:09:42'),
+(876, 23, 'San Francisco', 1, '2026-06-16 21:09:42'),
+(877, 23, 'San Miguel', 1, '2026-06-16 21:09:42'),
+(878, 23, 'Santiago', 1, '2026-06-16 21:09:42'),
+(879, 23, 'Sibundoy', 1, '2026-06-16 21:09:42'),
+(880, 23, 'Valle del Guamuez', 1, '2026-06-16 21:09:42'),
+(881, 23, 'Villagarzón', 1, '2026-06-16 21:09:42'),
+(882, 24, 'Armenia', 1, '2026-06-16 21:09:42'),
+(883, 24, 'Buenavista', 1, '2026-06-16 21:09:42'),
+(884, 24, 'Calarcá', 1, '2026-06-16 21:09:42'),
+(885, 24, 'Circasia', 1, '2026-06-16 21:09:42'),
+(886, 24, 'Córdoba', 1, '2026-06-16 21:09:42'),
+(887, 24, 'Filandia', 1, '2026-06-16 21:09:42'),
+(888, 24, 'Génova', 1, '2026-06-16 21:09:42'),
+(889, 24, 'La Tebaida', 1, '2026-06-16 21:09:42'),
+(890, 24, 'Montenegro', 1, '2026-06-16 21:09:42'),
+(891, 24, 'Pijao', 1, '2026-06-16 21:09:42'),
+(892, 24, 'Quimbaya', 1, '2026-06-16 21:09:42'),
+(893, 24, 'Salento', 1, '2026-06-16 21:09:42'),
+(894, 25, 'Pereira', 1, '2026-06-16 21:09:42'),
+(895, 25, 'Apía', 1, '2026-06-16 21:09:42'),
+(896, 25, 'Balboa', 1, '2026-06-16 21:09:42'),
+(897, 25, 'Belén de Umbría', 1, '2026-06-16 21:09:42'),
+(898, 25, 'Dosquebradas', 1, '2026-06-16 21:09:42'),
+(899, 25, 'Guática', 1, '2026-06-16 21:09:42'),
+(900, 25, 'La Celia', 1, '2026-06-16 21:09:42'),
+(901, 25, 'La Virginia', 1, '2026-06-16 21:09:42'),
+(902, 25, 'Marsella', 1, '2026-06-16 21:09:42'),
+(903, 25, 'Mistrató', 1, '2026-06-16 21:09:42'),
+(904, 25, 'Pueblo Rico', 1, '2026-06-16 21:09:42'),
+(905, 25, 'Quinchía', 1, '2026-06-16 21:09:42'),
+(906, 25, 'Santa Rosa de Cabal', 1, '2026-06-16 21:09:42'),
+(907, 25, 'Santuario', 1, '2026-06-16 21:09:42'),
+(908, 26, 'San Andrés', 1, '2026-06-16 21:09:42'),
+(909, 26, 'Providencia', 1, '2026-06-16 21:09:42'),
+(910, 27, 'Bucaramanga', 1, '2026-06-16 21:09:42'),
+(911, 27, 'Aguada', 1, '2026-06-16 21:09:42'),
+(912, 27, 'Albania', 1, '2026-06-16 21:09:42'),
+(913, 27, 'Aratoca', 1, '2026-06-16 21:09:42'),
+(914, 27, 'Barbosa', 1, '2026-06-16 21:09:42'),
+(915, 27, 'Barichara', 1, '2026-06-16 21:09:42'),
+(916, 27, 'Barrancabermeja', 1, '2026-06-16 21:09:42'),
+(917, 27, 'Betulia', 1, '2026-06-16 21:09:42'),
+(918, 27, 'Bolívar', 1, '2026-06-16 21:09:42'),
+(919, 27, 'Cabrera', 1, '2026-06-16 21:09:42'),
+(920, 27, 'California', 1, '2026-06-16 21:09:42'),
+(921, 27, 'Capitanejo', 1, '2026-06-16 21:09:42'),
+(922, 27, 'Carcasí', 1, '2026-06-16 21:09:42'),
+(923, 27, 'Cepitá', 1, '2026-06-16 21:09:42'),
+(924, 27, 'Cerrito', 1, '2026-06-16 21:09:42'),
+(925, 27, 'Charalá', 1, '2026-06-16 21:09:42'),
+(926, 27, 'Charta', 1, '2026-06-16 21:09:42'),
+(927, 27, 'Chimá', 1, '2026-06-16 21:09:42'),
+(928, 27, 'Chipatá', 1, '2026-06-16 21:09:42'),
+(929, 27, 'Cimitarra', 1, '2026-06-16 21:09:42'),
+(930, 27, 'Concepción', 1, '2026-06-16 21:09:42'),
+(931, 27, 'Confines', 1, '2026-06-16 21:09:42'),
+(932, 27, 'Contratación', 1, '2026-06-16 21:09:42'),
+(933, 27, 'Coromoro', 1, '2026-06-16 21:09:42'),
+(934, 27, 'Curití', 1, '2026-06-16 21:09:42'),
+(935, 27, 'El Carmen de Chucurí', 1, '2026-06-16 21:09:42'),
+(936, 27, 'El Guacamayo', 1, '2026-06-16 21:09:42'),
+(937, 27, 'El Peñón', 1, '2026-06-16 21:09:42'),
+(938, 27, 'El Playón', 1, '2026-06-16 21:09:42'),
+(939, 27, 'Encino', 1, '2026-06-16 21:09:42'),
+(940, 27, 'Enciso', 1, '2026-06-16 21:09:42'),
+(941, 27, 'Florián', 1, '2026-06-16 21:09:42'),
+(942, 27, 'Floridablanca', 1, '2026-06-16 21:09:42'),
+(943, 27, 'Galán', 1, '2026-06-16 21:09:42'),
+(944, 27, 'Gámbita', 1, '2026-06-16 21:09:42'),
+(945, 27, 'Girón', 1, '2026-06-16 21:09:42'),
+(946, 27, 'Guaca', 1, '2026-06-16 21:09:42'),
+(947, 27, 'Guadalupe', 1, '2026-06-16 21:09:42'),
+(948, 27, 'Guapotá', 1, '2026-06-16 21:09:42'),
+(949, 27, 'Guavatá', 1, '2026-06-16 21:09:42'),
+(950, 27, 'Güepsa', 1, '2026-06-16 21:09:42'),
+(951, 27, 'Hato', 1, '2026-06-16 21:09:42'),
+(952, 27, 'Jesús María', 1, '2026-06-16 21:09:42'),
+(953, 27, 'Jordán', 1, '2026-06-16 21:09:42'),
+(954, 27, 'La Belleza', 1, '2026-06-16 21:09:42'),
+(955, 27, 'La Paz', 1, '2026-06-16 21:09:42'),
+(956, 27, 'Landázuri', 1, '2026-06-16 21:09:42'),
+(957, 27, 'Lebríja', 1, '2026-06-16 21:09:42'),
+(958, 27, 'Los Santos', 1, '2026-06-16 21:09:42'),
+(959, 27, 'Macaravita', 1, '2026-06-16 21:09:42'),
+(960, 27, 'Málaga', 1, '2026-06-16 21:09:42'),
+(961, 27, 'Matanza', 1, '2026-06-16 21:09:42'),
+(962, 27, 'Mogotes', 1, '2026-06-16 21:09:42'),
+(963, 27, 'Molagavita', 1, '2026-06-16 21:09:42'),
+(964, 27, 'Ocamonte', 1, '2026-06-16 21:09:42'),
+(965, 27, 'Oiba', 1, '2026-06-16 21:09:42'),
+(966, 27, 'Onzaga', 1, '2026-06-16 21:09:42'),
+(967, 27, 'Palmar', 1, '2026-06-16 21:09:42'),
+(968, 27, 'Palmas del Socorro', 1, '2026-06-16 21:09:42'),
+(969, 27, 'Páramo', 1, '2026-06-16 21:09:42'),
+(970, 27, 'Piedecuesta', 1, '2026-06-16 21:09:42'),
+(971, 27, 'Pinchote', 1, '2026-06-16 21:09:42'),
+(972, 27, 'Puente Nacional', 1, '2026-06-16 21:09:42'),
+(973, 27, 'Puerto Parra', 1, '2026-06-16 21:09:42'),
+(974, 27, 'Puerto Wilches', 1, '2026-06-16 21:09:42'),
+(975, 27, 'Rionegro', 1, '2026-06-16 21:09:42'),
+(976, 27, 'Sabana de Torres', 1, '2026-06-16 21:09:42'),
+(977, 27, 'San Andrés', 1, '2026-06-16 21:09:42'),
+(978, 27, 'San Benito', 1, '2026-06-16 21:09:42'),
+(979, 27, 'San Gil', 1, '2026-06-16 21:09:42'),
+(980, 27, 'San Joaquín', 1, '2026-06-16 21:09:42'),
+(981, 27, 'San José de Miranda', 1, '2026-06-16 21:09:42'),
+(982, 27, 'San Miguel', 1, '2026-06-16 21:09:42'),
+(983, 27, 'San Vicente de Chucurí', 1, '2026-06-16 21:09:42'),
+(984, 27, 'Santa Bárbara', 1, '2026-06-16 21:09:42'),
+(985, 27, 'Santa Helena del Opón', 1, '2026-06-16 21:09:42'),
+(986, 27, 'Simacota', 1, '2026-06-16 21:09:42'),
+(987, 27, 'Socorro', 1, '2026-06-16 21:09:42'),
+(988, 27, 'Suaita', 1, '2026-06-16 21:09:42'),
+(989, 27, 'Sucre', 1, '2026-06-16 21:09:42'),
+(990, 27, 'Suratá', 1, '2026-06-16 21:09:42'),
+(991, 27, 'Tona', 1, '2026-06-16 21:09:42'),
+(992, 27, 'Valle de San José', 1, '2026-06-16 21:09:42'),
+(993, 27, 'Vélez', 1, '2026-06-16 21:09:42'),
+(994, 27, 'Vetas', 1, '2026-06-16 21:09:42'),
+(995, 27, 'Villanueva', 1, '2026-06-16 21:09:42'),
+(996, 27, 'Zapatoca', 1, '2026-06-16 21:09:42'),
+(997, 28, 'Sincelejo', 1, '2026-06-16 21:09:42'),
+(998, 28, 'Buenavista', 1, '2026-06-16 21:09:42'),
+(999, 28, 'Caimito', 1, '2026-06-16 21:09:42'),
+(1000, 28, 'Chalán', 1, '2026-06-16 21:09:42'),
+(1001, 28, 'Coloso', 1, '2026-06-16 21:09:42'),
+(1002, 28, 'Corozal', 1, '2026-06-16 21:09:42'),
+(1003, 28, 'Coveñas', 1, '2026-06-16 21:09:42'),
+(1004, 28, 'El Roble', 1, '2026-06-16 21:09:42'),
+(1005, 28, 'Galeras', 1, '2026-06-16 21:09:42'),
+(1006, 28, 'Guaranda', 1, '2026-06-16 21:09:42'),
+(1007, 28, 'La Unión', 1, '2026-06-16 21:09:42'),
+(1008, 28, 'Los Palmitos', 1, '2026-06-16 21:09:42'),
+(1009, 28, 'Majagual', 1, '2026-06-16 21:09:42'),
+(1010, 28, 'Morroa', 1, '2026-06-16 21:09:42'),
+(1011, 28, 'Ovejas', 1, '2026-06-16 21:09:42'),
+(1012, 28, 'Palmito', 1, '2026-06-16 21:09:42'),
+(1013, 28, 'Sampués', 1, '2026-06-16 21:09:42'),
+(1014, 28, 'San Benito Abad', 1, '2026-06-16 21:09:42'),
+(1015, 28, 'San Juan de Betulia', 1, '2026-06-16 21:09:42'),
+(1016, 28, 'San Luis de Sincé', 1, '2026-06-16 21:09:42'),
+(1017, 28, 'San Marcos', 1, '2026-06-16 21:09:42'),
+(1018, 28, 'San Onofre', 1, '2026-06-16 21:09:42'),
+(1019, 28, 'San Pedro', 1, '2026-06-16 21:09:42'),
+(1020, 28, 'Santiago de Tolú', 1, '2026-06-16 21:09:42'),
+(1021, 28, 'Sucre', 1, '2026-06-16 21:09:42'),
+(1022, 28, 'Tolú Viejo', 1, '2026-06-16 21:09:42'),
+(1023, 29, 'Ibagué', 1, '2026-06-16 21:09:42'),
+(1024, 29, 'Alpujarra', 1, '2026-06-16 21:09:42'),
+(1025, 29, 'Alvarado', 1, '2026-06-16 21:09:42'),
+(1026, 29, 'Ambalema', 1, '2026-06-16 21:09:42'),
+(1027, 29, 'Anzoátegui', 1, '2026-06-16 21:09:42'),
+(1028, 29, 'Armero', 1, '2026-06-16 21:09:42'),
+(1029, 29, 'Ataco', 1, '2026-06-16 21:09:42'),
+(1030, 29, 'Cajamarca', 1, '2026-06-16 21:09:42'),
+(1031, 29, 'Carmen de Apicalá', 1, '2026-06-16 21:09:42'),
+(1032, 29, 'Casabianca', 1, '2026-06-16 21:09:42'),
+(1033, 29, 'Chaparral', 1, '2026-06-16 21:09:42'),
+(1034, 29, 'Coello', 1, '2026-06-16 21:09:42'),
+(1035, 29, 'Coyaima', 1, '2026-06-16 21:09:42'),
+(1036, 29, 'Cunday', 1, '2026-06-16 21:09:42'),
+(1037, 29, 'Dolores', 1, '2026-06-16 21:09:42'),
+(1038, 29, 'Espinal', 1, '2026-06-16 21:09:42'),
+(1039, 29, 'Falan', 1, '2026-06-16 21:09:42'),
+(1040, 29, 'Flandes', 1, '2026-06-16 21:09:42'),
+(1041, 29, 'Fresno', 1, '2026-06-16 21:09:42'),
+(1042, 29, 'Guamo', 1, '2026-06-16 21:09:42'),
+(1043, 29, 'Herveo', 1, '2026-06-16 21:09:42'),
+(1044, 29, 'Honda', 1, '2026-06-16 21:09:42'),
+(1045, 29, 'Icononzo', 1, '2026-06-16 21:09:42'),
+(1046, 29, 'Lérida', 1, '2026-06-16 21:09:42'),
+(1047, 29, 'Líbano', 1, '2026-06-16 21:09:42'),
+(1048, 29, 'Mariquita', 1, '2026-06-16 21:09:42'),
+(1049, 29, 'Melgar', 1, '2026-06-16 21:09:42'),
+(1050, 29, 'Murillo', 1, '2026-06-16 21:09:42'),
+(1051, 29, 'Natagaima', 1, '2026-06-16 21:09:42');
+INSERT INTO `municipios` (`id`, `departamento_id`, `nombre`, `activo`, `created_at`) VALUES
+(1052, 29, 'Ortega', 1, '2026-06-16 21:09:42'),
+(1053, 29, 'Palocabildo', 1, '2026-06-16 21:09:42'),
+(1054, 29, 'Piedras', 1, '2026-06-16 21:09:42'),
+(1055, 29, 'Planadas', 1, '2026-06-16 21:09:42'),
+(1056, 29, 'Prado', 1, '2026-06-16 21:09:42'),
+(1057, 29, 'Purificación', 1, '2026-06-16 21:09:42'),
+(1058, 29, 'Rioblanco', 1, '2026-06-16 21:09:42'),
+(1059, 29, 'Roncesvalles', 1, '2026-06-16 21:09:42'),
+(1060, 29, 'Rovira', 1, '2026-06-16 21:09:42'),
+(1061, 29, 'Saldaña', 1, '2026-06-16 21:09:42'),
+(1062, 29, 'San Antonio', 1, '2026-06-16 21:09:42'),
+(1063, 29, 'San Luis', 1, '2026-06-16 21:09:42'),
+(1064, 29, 'Santa Isabel', 1, '2026-06-16 21:09:42'),
+(1065, 29, 'Suárez', 1, '2026-06-16 21:09:42'),
+(1066, 29, 'Valle de San Juan', 1, '2026-06-16 21:09:42'),
+(1067, 29, 'Venadillo', 1, '2026-06-16 21:09:42'),
+(1068, 29, 'Villahermosa', 1, '2026-06-16 21:09:42'),
+(1069, 29, 'Villarrica', 1, '2026-06-16 21:09:42'),
+(1070, 30, 'Cali', 1, '2026-06-16 21:09:42'),
+(1071, 30, 'Alcalá', 1, '2026-06-16 21:09:42'),
+(1072, 30, 'Andalucía', 1, '2026-06-16 21:09:42'),
+(1073, 30, 'Ansermanuevo', 1, '2026-06-16 21:09:42'),
+(1074, 30, 'Argelia', 1, '2026-06-16 21:09:42'),
+(1075, 30, 'Bolívar', 1, '2026-06-16 21:09:42'),
+(1076, 30, 'Buenaventura', 1, '2026-06-16 21:09:42'),
+(1077, 30, 'Buga', 1, '2026-06-16 21:09:42'),
+(1078, 30, 'Bugalagrande', 1, '2026-06-16 21:09:42'),
+(1079, 30, 'Caicedonia', 1, '2026-06-16 21:09:42'),
+(1080, 30, 'Calima', 1, '2026-06-16 21:09:42'),
+(1081, 30, 'Candelaria', 1, '2026-06-16 21:09:42'),
+(1082, 30, 'Cartago', 1, '2026-06-16 21:09:42'),
+(1083, 30, 'Dagua', 1, '2026-06-16 21:09:42'),
+(1084, 30, 'El Águila', 1, '2026-06-16 21:09:42'),
+(1085, 30, 'El Cairo', 1, '2026-06-16 21:09:42'),
+(1086, 30, 'El Cerrito', 1, '2026-06-16 21:09:42'),
+(1087, 30, 'El Dovio', 1, '2026-06-16 21:09:42'),
+(1088, 30, 'Florida', 1, '2026-06-16 21:09:42'),
+(1089, 30, 'Ginebra', 1, '2026-06-16 21:09:42'),
+(1090, 30, 'Guacarí', 1, '2026-06-16 21:09:42'),
+(1091, 30, 'Jamundí', 1, '2026-06-16 21:09:42'),
+(1092, 30, 'La Cumbre', 1, '2026-06-16 21:09:42'),
+(1093, 30, 'La Unión', 1, '2026-06-16 21:09:42'),
+(1094, 30, 'La Victoria', 1, '2026-06-16 21:09:42'),
+(1095, 30, 'Obando', 1, '2026-06-16 21:09:42'),
+(1096, 30, 'Palmira', 1, '2026-06-16 21:09:42'),
+(1097, 30, 'Pradera', 1, '2026-06-16 21:09:42'),
+(1098, 30, 'Restrepo', 1, '2026-06-16 21:09:42'),
+(1099, 30, 'Riofrío', 1, '2026-06-16 21:09:42'),
+(1100, 30, 'Roldanillo', 1, '2026-06-16 21:09:42'),
+(1101, 30, 'San Pedro', 1, '2026-06-16 21:09:42'),
+(1102, 30, 'Sevilla', 1, '2026-06-16 21:09:42'),
+(1103, 30, 'Toro', 1, '2026-06-16 21:09:42'),
+(1104, 30, 'Trujillo', 1, '2026-06-16 21:09:42'),
+(1105, 30, 'Tuluá', 1, '2026-06-16 21:09:42'),
+(1106, 30, 'Ulloa', 1, '2026-06-16 21:09:42'),
+(1107, 30, 'Versalles', 1, '2026-06-16 21:09:42'),
+(1108, 30, 'Vijes', 1, '2026-06-16 21:09:42'),
+(1109, 30, 'Yotoco', 1, '2026-06-16 21:09:42'),
+(1110, 30, 'Yumbo', 1, '2026-06-16 21:09:42'),
+(1111, 30, 'Zarzal', 1, '2026-06-16 21:09:42'),
+(1112, 31, 'Mitú', 1, '2026-06-16 21:09:42'),
+(1113, 31, 'Carurú', 1, '2026-06-16 21:09:42'),
+(1114, 31, 'Pacoa', 1, '2026-06-16 21:09:42'),
+(1115, 31, 'Taraira', 1, '2026-06-16 21:09:42'),
+(1116, 31, 'Papunaua', 1, '2026-06-16 21:09:42'),
+(1117, 31, 'Yavaraté', 1, '2026-06-16 21:09:42'),
+(1118, 32, 'Puerto Carreño', 1, '2026-06-16 21:09:42'),
+(1119, 32, 'Cumaribo', 1, '2026-06-16 21:09:42'),
+(1120, 32, 'La Primavera', 1, '2026-06-16 21:09:42'),
+(1121, 32, 'Santa Rosalía', 1, '2026-06-16 21:09:42'),
+(1122, 33, 'Bogotá D.C.', 1, '2026-06-16 21:09:42');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notificaciones_config`
+-- Estructura de tabla para la tabla `notificaciones_config`
 --
 
 CREATE TABLE `notificaciones_config` (
   `id` int(11) NOT NULL,
   `usuario_id` int(11) NOT NULL,
-  `tipo` enum('email','whatsapp','ambos') DEFAULT 'email',
+  `tipo` enum('email','sms','whatsapp','todos') NOT NULL DEFAULT 'email',
   `email` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `activo` tinyint(4) DEFAULT 1,
@@ -2497,25 +3650,23 @@ CREATE TABLE `notificaciones_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `notificaciones_config`
+-- Volcado de datos para la tabla `notificaciones_config`
 --
 
 INSERT INTO `notificaciones_config` (`id`, `usuario_id`, `tipo`, `email`, `telefono`, `activo`, `created_at`, `updated_at`) VALUES
-(1, 1, 'email', 'hernando.17@hotmail.com', '3244920874', 1, '2026-03-30 02:33:32', '2026-04-17 21:44:09'),
-(2, 2, 'ambos', 'ing.hernando.arenas@gmail.com', '3332913337', 1, '2026-03-30 23:32:59', '2026-03-30 23:33:09'),
-(3, 1, 'email', 'kettyruiz@gmail.com', '3244920873', 1, '2026-04-17 21:43:55', NULL);
+(3, 1, 'todos', 'ing.hernando.arenas@gmail.com', '573008066669', 1, '2026-04-17 21:43:55', '2026-10-02 20:08:29');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notificaciones_log`
+-- Estructura de tabla para la tabla `notificaciones_log`
 --
 
 CREATE TABLE `notificaciones_log` (
   `id` int(11) NOT NULL,
   `proceso_id` int(11) NOT NULL,
   `actuacion_id` int(11) NOT NULL,
-  `tipo_envio` enum('email','whatsapp') NOT NULL,
+  `tipo_envio` enum('email','whatsapp','sms') NOT NULL,
   `destinatario` varchar(100) NOT NULL,
   `estado` enum('pendiente','enviado','fallido') DEFAULT 'pendiente',
   `mensaje` text DEFAULT NULL,
@@ -2523,10 +3674,130 @@ CREATE TABLE `notificaciones_log` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `notificaciones_log`
+--
+
+INSERT INTO `notificaciones_log` (`id`, `proceso_id`, `actuacion_id`, `tipo_envio`, `destinatario`, `estado`, `mensaje`, `fecha_envio`, `created_at`) VALUES
+(368, 8, 327, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Radicación Y Reparto\nFecha: 01/07/2026\nObservaciones: ACTUACIÓN RADICACIÓN Y REPARTO\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:25', '2026-10-01 12:18:25'),
+(369, 8, 327, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Radicación Y Reparto\nFecha: 01/07/2026\nObservaciones: ACTUACIÓN RADICACIÓN Y REPARTO\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:25', '2026-10-01 12:18:25'),
+(370, 8, 326, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijación En Lista (3) Dias\nFecha: 13/07/2026\nObservaciones: CONSTANCIA SECRETARIAL FIJACION EN LISTA DEL RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:26', '2026-10-01 12:18:26'),
+(371, 8, 326, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijación En Lista (3) Dias\nFecha: 13/07/2026\nObservaciones: CONSTANCIA SECRETARIAL FIJACION EN LISTA DEL RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:31', '2026-10-01 12:18:31'),
+(372, 8, 325, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Auto Decide Apelacion O Recursos\nFecha: 14/07/2026\nObservaciones: Declarar Bien Denegado del recurso de apelación interpuesto contra el auto del 20 de febrero de 2026\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:32', '2026-10-01 12:18:32'),
+(373, 8, 325, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Auto Decide Apelacion O Recursos\nFecha: 14/07/2026\nObservaciones: Declarar Bien Denegado del recurso de apelación interpuesto contra el auto del 20 de febrero de 2026\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:37', '2026-10-01 12:18:37'),
+(374, 8, 324, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Al Despacho Por Reparto\nFecha: 14/07/2026\nObservaciones: NUEVO REPARTO RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:38', '2026-10-01 12:18:38'),
+(375, 8, 324, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Al Despacho Por Reparto\nFecha: 14/07/2026\nObservaciones: NUEVO REPARTO RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:43', '2026-10-01 12:18:43'),
+(376, 8, 323, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijacion Estado\nFecha: 14/07/2026\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:44', '2026-10-01 12:18:44'),
+(377, 8, 323, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijacion Estado\nFecha: 14/07/2026\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:49', '2026-10-01 12:18:49'),
+(378, 8, 322, 'email', 'ing.hernando.arenas@gmail.com', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Remite A Juzgado De Origen\nFecha: 23/07/2026\nObservaciones: SE COMUNICA Y REMITE EXPEDIENTE DIGITAL A JUZGADO DE ORIGEN\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:50', '2026-10-01 12:18:50'),
+(379, 8, 322, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Remite A Juzgado De Origen\nFecha: 23/07/2026\nObservaciones: SE COMUNICA Y REMITE EXPEDIENTE DIGITAL A JUZGADO DE ORIGEN\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 12:18:55', '2026-10-01 12:18:55'),
+(380, 8, 333, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Radicación Y Reparto\nFecha: 01/07/2026\nObservaciones: ACTUACIÓN RADICACIÓN Y REPARTO\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:58:57', '2026-10-01 20:58:57'),
+(381, 8, 333, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Radicación Y Reparto\nFecha: 01/07/2026\nObservaciones: ACTUACIÓN RADICACIÓN Y REPARTO\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:58:58', '2026-10-01 20:58:58'),
+(382, 8, 332, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijación En Lista (3) Dias\nFecha: 13/07/2026\nObservaciones: CONSTANCIA SECRETARIAL FIJACION EN LISTA DEL RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:00', '2026-10-01 20:59:00'),
+(383, 8, 332, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijación En Lista (3) Dias\nFecha: 13/07/2026\nObservaciones: CONSTANCIA SECRETARIAL FIJACION EN LISTA DEL RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:04', '2026-10-01 20:59:04'),
+(384, 8, 331, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Auto Decide Apelacion O Recursos\nFecha: 14/07/2026\nObservaciones: Declarar Bien Denegado del recurso de apelación interpuesto contra el auto del 20 de febrero de 2026\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:06', '2026-10-01 20:59:06'),
+(385, 8, 331, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Auto Decide Apelacion O Recursos\nFecha: 14/07/2026\nObservaciones: Declarar Bien Denegado del recurso de apelación interpuesto contra el auto del 20 de febrero de 2026\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:09', '2026-10-01 20:59:09'),
+(386, 8, 330, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Al Despacho Por Reparto\nFecha: 14/07/2026\nObservaciones: NUEVO REPARTO RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:11', '2026-10-01 20:59:11'),
+(387, 8, 330, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Al Despacho Por Reparto\nFecha: 14/07/2026\nObservaciones: NUEVO REPARTO RECURSO DE QUEJA\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:15', '2026-10-01 20:59:15'),
+(388, 8, 329, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijacion Estado\nFecha: 14/07/2026\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:17', '2026-10-01 20:59:17'),
+(389, 8, 329, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Fijacion Estado\nFecha: 14/07/2026\nObservaciones: Sin observaciones\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:21', '2026-10-01 20:59:21'),
+(390, 8, 328, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Remite A Juzgado De Origen\nFecha: 23/07/2026\nObservaciones: SE COMUNICA Y REMITE EXPEDIENTE DIGITAL A JUZGADO DE ORIGEN\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:23', '2026-10-01 20:59:23'),
+(391, 8, 328, 'whatsapp', '3244920873', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001311000320230038501.\n\nActuación: Remite A Juzgado De Origen\nFecha: 23/07/2026\nObservaciones: SE COMUNICA Y REMITE EXPEDIENTE DIGITAL A JUZGADO DE ORIGEN\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-01 20:59:27', '2026-10-01 20:59:27'),
+(473, 9, 370, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:56', '2026-10-03 18:59:56'),
+(474, 9, 370, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:56', '2026-10-03 18:59:56'),
+(475, 9, 370, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:56', '2026-10-03 18:59:56'),
+(476, 9, 369, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:59', '2026-10-03 18:59:59'),
+(477, 9, 369, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:59', '2026-10-03 18:59:59'),
+(478, 9, 369, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 18:59:59', '2026-10-03 18:59:59'),
+(479, 9, 368, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:01', '2026-10-03 19:00:01'),
+(480, 9, 368, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:01', '2026-10-03 19:00:01'),
+(481, 9, 368, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:01', '2026-10-03 19:00:01'),
+(482, 9, 367, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:04', '2026-10-03 19:00:04'),
+(483, 9, 367, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:04', '2026-10-03 19:00:04'),
+(484, 9, 367, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:04', '2026-10-03 19:00:04'),
+(485, 9, 366, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:06', '2026-10-03 19:00:06'),
+(486, 9, 366, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:06', '2026-10-03 19:00:06'),
+(487, 9, 366, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:06', '2026-10-03 19:00:06'),
+(488, 9, 365, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:08', '2026-10-03 19:00:08'),
+(489, 9, 365, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:09', '2026-10-03 19:00:09'),
+(490, 9, 365, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:09', '2026-10-03 19:00:09'),
+(491, 9, 364, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:11', '2026-10-03 19:00:11'),
+(492, 9, 364, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:11', '2026-10-03 19:00:11'),
+(493, 9, 364, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:11', '2026-10-03 19:00:11'),
+(494, 9, 363, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:13', '2026-10-03 19:00:13'),
+(495, 9, 363, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:13', '2026-10-03 19:00:13'),
+(496, 9, 363, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:13', '2026-10-03 19:00:13'),
+(497, 9, 362, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:16', '2026-10-03 19:00:16'),
+(498, 9, 362, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:16', '2026-10-03 19:00:16'),
+(499, 9, 362, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:16', '2026-10-03 19:00:16'),
+(500, 9, 361, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:19', '2026-10-03 19:00:19'),
+(501, 9, 361, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:19', '2026-10-03 19:00:19'),
+(502, 9, 361, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:00:19', '2026-10-03 19:00:19'),
+(503, 9, 380, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:14', '2026-10-03 19:05:14'),
+(504, 9, 380, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:15', '2026-10-03 19:05:15'),
+(505, 9, 380, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:15', '2026-10-03 19:05:15'),
+(506, 9, 379, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:19', '2026-10-03 19:05:19'),
+(507, 9, 379, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:19', '2026-10-03 19:05:19'),
+(508, 9, 379, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:19', '2026-10-03 19:05:19'),
+(509, 9, 378, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:22', '2026-10-03 19:05:22'),
+(510, 9, 378, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:22', '2026-10-03 19:05:22'),
+(511, 9, 378, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:22', '2026-10-03 19:05:22'),
+(512, 9, 377, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:25', '2026-10-03 19:05:25'),
+(513, 9, 377, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:25', '2026-10-03 19:05:25'),
+(514, 9, 377, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:25', '2026-10-03 19:05:25'),
+(515, 9, 376, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:28', '2026-10-03 19:05:28'),
+(516, 9, 376, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:29', '2026-10-03 19:05:29'),
+(517, 9, 376, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:29', '2026-10-03 19:05:29'),
+(518, 9, 375, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:31', '2026-10-03 19:05:31'),
+(519, 9, 375, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:31', '2026-10-03 19:05:31'),
+(520, 9, 375, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:31', '2026-10-03 19:05:31'),
+(521, 9, 374, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:33', '2026-10-03 19:05:33'),
+(522, 9, 374, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:33', '2026-10-03 19:05:33'),
+(523, 9, 374, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:33', '2026-10-03 19:05:33'),
+(524, 9, 373, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:35', '2026-10-03 19:05:35'),
+(525, 9, 373, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:36', '2026-10-03 19:05:36'),
+(526, 9, 373, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:36', '2026-10-03 19:05:36'),
+(527, 9, 372, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:39', '2026-10-03 19:05:39'),
+(528, 9, 372, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:39', '2026-10-03 19:05:39'),
+(529, 9, 372, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:39', '2026-10-03 19:05:39'),
+(530, 9, 371, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:41', '2026-10-03 19:05:41'),
+(531, 9, 371, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:42', '2026-10-03 19:05:42'),
+(532, 9, 371, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-03 19:05:42', '2026-10-03 19:05:42'),
+(776, 9, 481, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:54', '2026-10-12 01:24:54'),
+(777, 9, 481, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:55', '2026-10-12 01:24:55'),
+(778, 9, 481, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Radicación Y Reparto\nFecha: 20/01/2026\nObservaciones: Ciclo: RADICACIÓN Y REPARTO | Registro: 20/01/2026 9:48:55 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:55', '2026-10-12 01:24:55'),
+(779, 9, 480, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:58', '2026-10-12 01:24:58'),
+(780, 9, 480, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:58', '2026-10-12 01:24:58'),
+(781, 9, 480, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Admite\nFecha: 20/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:29:38 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:24:58', '2026-10-12 01:24:58'),
+(782, 9, 479, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:02', '2026-10-12 01:25:02'),
+(783, 9, 479, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:02', '2026-10-12 01:25:02'),
+(784, 9, 479, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 22/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:33:05 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:02', '2026-10-12 01:25:02'),
+(785, 9, 478, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:04', '2026-10-12 01:25:04'),
+(786, 9, 478, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:04', '2026-10-12 01:25:04'),
+(787, 9, 478, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Contestacion\nFecha: 26/01/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:38:02 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:04', '2026-10-12 01:25:04'),
+(788, 9, 477, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:08', '2026-10-12 01:25:08'),
+(789, 9, 477, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:08', '2026-10-12 01:25:08'),
+(790, 9, 477, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Sentencia\nFecha: 03/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 9:41:48 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:08', '2026-10-12 01:25:08'),
+(791, 9, 476, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:11', '2026-10-12 01:25:11'),
+(792, 9, 476, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:11', '2026-10-12 01:25:11'),
+(793, 9, 476, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Notificación Auto Admisorio\nFecha: 04/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:01:58 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:11', '2026-10-12 01:25:11'),
+(794, 9, 475, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:14', '2026-10-12 01:25:14'),
+(795, 9, 475, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:14', '2026-10-12 01:25:14'),
+(796, 9, 475, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Solicitud Impugnacion\nFecha: 06/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:03:16 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:14', '2026-10-12 01:25:14'),
+(797, 9, 474, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:16', '2026-10-12 01:25:16'),
+(798, 9, 474, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:16', '2026-10-12 01:25:16'),
+(799, 9, 474, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Auto Concede\nFecha: 10/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:06:50 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:16', '2026-10-12 01:25:16'),
+(800, 9, 473, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:19', '2026-10-12 01:25:19'),
+(801, 9, 473, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:19', '2026-10-12 01:25:19'),
+(802, 9, 473, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envío De Notificación\nFecha: 11/02/2026\nObservaciones: Ciclo: CONSTITUCIONALES | Registro: 17/02/2026 10:22:14 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:19', '2026-10-12 01:25:19'),
+(803, 9, 472, 'email', 'ing.hernando.arenas@gmail.com', 'enviado', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:22', '2026-10-12 01:25:22'),
+(804, 9, 472, 'sms', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:22', '2026-10-12 01:25:22'),
+(805, 9, 472, 'whatsapp', '573008066669', 'fallido', 'Se ha registrado una nueva actuación para el proceso 08001333300720260001000.\n\nActuación: Envio A Superior Por Interpuestos Sin Finalizacion\nFecha: 20/02/2026\nObservaciones: Ciclo: SALIDAS | Registro: 20/02/2026 8:23:32 a. m.\n\nIngrese al sistema para más detalles: http://localhost/procesos_juridicos/frontend/index.php?view=procesos', '2026-10-12 01:25:23', '2026-10-12 01:25:23');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `procesos`
+-- Estructura de tabla para la tabla `procesos`
 --
 
 CREATE TABLE `procesos` (
@@ -2553,10 +3824,25 @@ CREATE TABLE `procesos` (
   `es_privado` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `procesos`
+--
+
+INSERT INTO `procesos` (`id`, `cliente_id`, `tipo_proceso_id`, `estado_proceso_id`, `numero_radicado`, `tipo_proceso`, `descripcion`, `estado`, `fecha_inicio`, `fecha_vencimiento`, `sincronizar_api`, `fuente_consulta`, `departamento_id`, `municipio_id`, `despacho_id`, `entidad_id`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`, `es_privado`) VALUES
+(1, 1, 5, 1, '08001405301420220040400', NULL, 'Sujetos Procesales:\r\nDemandante/accionante: LUIS GUILLERMO SANZ DEL VECCHIO\r\nDemandado/indiciado/causante: elizabeth mercado angarita\r\nDefensor Privado: luis eduardo sanz de la rosa', 'Activo', '2022-07-06', NULL, 0, 'rama', 4, 141, 261, 10, '2026-06-25 21:34:00', NULL, NULL, NULL, 0),
+(2, 2, 1, 1, '08001405301420260002400', NULL, 'DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA * (ATLÁNTICO)\r\n--- [ PROCESO PRIVADO ] ---', 'Activo', '2026-01-01', NULL, 0, 'rama', 4, 141, NULL, 6, '2026-06-26 02:07:45', NULL, NULL, NULL, 1),
+(3, 3, 1, 1, '08001418900220260035500', NULL, 'JUZGADO 002 DE PEQUEÑAS CAUSAS Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA (ATLÁNTICO)\r\n--- [ PROCESO PRIVADO ] ---', 'Activo', '2026-01-01', NULL, 0, 'rama', 4, 141, 334, 6, '2026-06-26 02:10:42', NULL, NULL, NULL, 1),
+(4, 4, 4, 1, '70001333300920260001700', NULL, 'Demandante: HUGO MANUEL ORTEGA AGUAS\r\nDemandado: LA NACION MINISTERIO DE TRANSPORTE.-\r\nDefensor Privado: ALBERTO DAVID OSPINO CURE', 'Activo', '2026-01-29', NULL, 0, 'rama', 28, 997, 2134, 9, '2026-06-26 02:22:41', NULL, NULL, NULL, 0),
+(5, 5, 4, 1, '08001333300720260011700', NULL, 'OTROS PROCESOS - Ingreso: 15/04/2026 - Vigente: SI\r\nPonente: JESUS ENRIQUE HERNANDEZ GAMEZ\r\nDemandante: FIDUPREVISORA\r\nDemandado: CONSORCIO LAS GARDENIAS Y OTROS', 'Activo', '2026-04-15', NULL, 0, 'samai', 4, 141, NULL, 9, '2026-07-03 20:22:20', NULL, NULL, NULL, 0),
+(6, 6, 4, 1, '08001333300920260005100', NULL, 'OTROS PROCESOS - Ingreso: 26/02/2026 - Vigente: SI\r\nPonente: JANNETTE DEL SOCORRO VILLADIEGO CABALLERO\r\nDemandante: CELSA ELVIRA RODRÍGUEZ RODRÍGUEZ\r\nDemandado: NUEVA EPS - NUEVA EMPRESA PROMOTORA DE SALUD S.A.', 'Activo', '2026-02-26', NULL, 0, 'samai', 4, 141, NULL, 9, '2026-07-03 20:25:29', NULL, NULL, NULL, 0),
+(7, 7, 4, 1, '08001333300320260007300', NULL, '	OTROS PROCESOS - Ingreso: 23/02/2026 - Vigente: SI\r\nPonente: EDGARDO MANUEL ATENCIO ROYERO\r\nDemandante: C.V.P. CIA S.A.\r\nDemandado: GOBERNACION DEL ATLANTICO.', 'Activo', '2026-02-23', NULL, 0, 'samai', 4, 141, NULL, 9, '2026-07-03 20:28:57', NULL, NULL, NULL, 0),
+(8, 8, 5, 1, '08001311000320230038501', NULL, 'DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA * (ATLÁNTICO)', 'Activo', '2026-07-14', NULL, 0, 'rama', 4, 141, 2135, 4, '2026-07-15 00:50:50', NULL, NULL, NULL, 0),
+(9, 9, 4, 1, '08001333300720260001000', NULL, 'Mediante Providencia De Fecha 10 febrero De 2026, Concede Impugnación Contra Sentencia. Por Lo Que Esta Oficina De Servicios Procede A Realizar Reparto Ante Administrativo Del Atlántico.', 'Activo', '2026-01-20', NULL, 0, 'tyba', 4, 141, 264, 9, '2026-08-31 22:31:55', NULL, NULL, NULL, 0);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tipos_proceso`
+-- Estructura de tabla para la tabla `tipos_proceso`
 --
 
 CREATE TABLE `tipos_proceso` (
@@ -2571,24 +3857,24 @@ CREATE TABLE `tipos_proceso` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tipos_proceso`
+-- Volcado de datos para la tabla `tipos_proceso`
 --
 
 INSERT INTO `tipos_proceso` (`id`, `nombre`, `descripcion`, `activo`, `created_at`, `usuario_creacion`, `usuario_modificacion`, `fecha_modificacion`) VALUES
-(1, 'Civil', 'Procesos civiles y comerciales...', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(2, 'Penal', 'Procesos penales', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(3, 'Laboral', 'Procesos laborales y de seguridad social', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(4, 'Contencioso', 'Proceso contencioso administrativo', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(5, 'Familia', 'Procesos de familia', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(1, 'Civil', '', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(2, 'Penal', '', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(3, 'Laboral', '', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(4, 'Contencioso', '', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
+(5, 'Familia', '', 1, '2026-03-30 02:07:11', NULL, NULL, NULL),
 (6, 'Contencioso administrativo', 'Procesos contencioso administrativos', 0, '2026-03-30 02:07:11', NULL, NULL, NULL),
-(7, 'Tipo de prueba', 'Este es un registro de prueba_ update', 1, '2026-03-30 23:29:39', NULL, NULL, NULL),
-(8, 'Tutelas', 'Protección de derechos fundamentales', 1, '2026-04-03 17:26:53', NULL, NULL, NULL),
-(9, 'Mi tipo de prueba', 'esto es una prueba de insert', 1, '2026-04-17 21:38:49', NULL, NULL, NULL);
+(7, 'Tipo de prueba', 'Este es un registro de prueba_ update', 0, '2026-03-30 23:29:39', NULL, NULL, NULL),
+(8, 'Tutelas', '', 1, '2026-04-03 17:26:53', NULL, NULL, NULL),
+(9, 'Mi tipo de prueba', 'esto es una prueba de insert', 0, '2026-04-17 21:38:49', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -2604,7 +3890,7 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `usuarios`
+-- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `telefono`, `usuario`, `password`, `cargo`, `activo`, `created_at`) VALUES
@@ -2612,11 +3898,11 @@ INSERT INTO `usuarios` (`id`, `nombre`, `email`, `telefono`, `usuario`, `passwor
 (2, 'Hernando Arenas Lambis', 'ing.hernando.arenas@gmail.com', '3332913337', 'nando', '9a286406c252a3d14218228974e1f567', NULL, 1, '2026-03-30 23:32:02');
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `actuaciones`
+-- Indices de la tabla `actuaciones`
 --
 ALTER TABLE `actuaciones`
   ADD PRIMARY KEY (`id`),
@@ -2626,27 +3912,28 @@ ALTER TABLE `actuaciones`
   ADD KEY `idx_actuaciones_timeline` (`proceso_id`,`despacho`,`fecha`);
 
 --
--- Indexes for table `anexos`
+-- Indices de la tabla `anexos`
 --
 ALTER TABLE `anexos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `proceso_id` (`proceso_id`),
-  ADD KEY `fk_anexo_categoria` (`categoria_id`);
+  ADD KEY `fk_anexo_categoria` (`categoria_id`),
+  ADD KEY `fk_anexos_actuacion` (`actuacion_id`);
 
 --
--- Indexes for table `anexo_categorias`
+-- Indices de la tabla `anexo_categorias`
 --
 ALTER TABLE `anexo_categorias`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `clientes`
+-- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `configuracion`
+-- Indices de la tabla `configuracion`
 --
 ALTER TABLE `configuracion`
   ADD PRIMARY KEY (`id`),
@@ -2654,14 +3941,14 @@ ALTER TABLE `configuracion`
   ADD UNIQUE KEY `uq_clave` (`clave`);
 
 --
--- Indexes for table `departamentos`
+-- Indices de la tabla `departamentos`
 --
 ALTER TABLE `departamentos`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_nombre` (`nombre`);
 
 --
--- Indexes for table `despachos`
+-- Indices de la tabla `despachos`
 --
 ALTER TABLE `despachos`
   ADD PRIMARY KEY (`id`),
@@ -2670,20 +3957,20 @@ ALTER TABLE `despachos`
   ADD KEY `idx_depto` (`departamento_id`);
 
 --
--- Indexes for table `entidades`
+-- Indices de la tabla `entidades`
 --
 ALTER TABLE `entidades`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_nombre` (`nombre`);
 
 --
--- Indexes for table `estados_proceso`
+-- Indices de la tabla `estados_proceso`
 --
 ALTER TABLE `estados_proceso`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `honorarios`
+-- Indices de la tabla `honorarios`
 --
 ALTER TABLE `honorarios`
   ADD PRIMARY KEY (`id`),
@@ -2691,21 +3978,21 @@ ALTER TABLE `honorarios`
   ADD KEY `estado` (`estado`);
 
 --
--- Indexes for table `municipios`
+-- Indices de la tabla `municipios`
 --
 ALTER TABLE `municipios`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_depto` (`departamento_id`);
 
 --
--- Indexes for table `notificaciones_config`
+-- Indices de la tabla `notificaciones_config`
 --
 ALTER TABLE `notificaciones_config`
   ADD PRIMARY KEY (`id`),
   ADD KEY `usuario_id` (`usuario_id`);
 
 --
--- Indexes for table `notificaciones_log`
+-- Indices de la tabla `notificaciones_log`
 --
 ALTER TABLE `notificaciones_log`
   ADD PRIMARY KEY (`id`),
@@ -2713,7 +4000,7 @@ ALTER TABLE `notificaciones_log`
   ADD KEY `actuacion_id` (`actuacion_id`);
 
 --
--- Indexes for table `procesos`
+-- Indices de la tabla `procesos`
 --
 ALTER TABLE `procesos`
   ADD PRIMARY KEY (`id`),
@@ -2726,13 +4013,13 @@ ALTER TABLE `procesos`
   ADD KEY `idx_entidad` (`entidad_id`);
 
 --
--- Indexes for table `tipos_proceso`
+-- Indices de la tabla `tipos_proceso`
 --
 ALTER TABLE `tipos_proceso`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `usuarios`
+-- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
@@ -2740,149 +4027,150 @@ ALTER TABLE `usuarios`
   ADD UNIQUE KEY `usuario` (`usuario`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `actuaciones`
+-- AUTO_INCREMENT de la tabla `actuaciones`
 --
 ALTER TABLE `actuaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=482;
 
 --
--- AUTO_INCREMENT for table `anexos`
+-- AUTO_INCREMENT de la tabla `anexos`
 --
 ALTER TABLE `anexos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
 
 --
--- AUTO_INCREMENT for table `anexo_categorias`
+-- AUTO_INCREMENT de la tabla `anexo_categorias`
 --
 ALTER TABLE `anexo_categorias`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `clientes`
+-- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `configuracion`
+-- AUTO_INCREMENT de la tabla `configuracion`
 --
 ALTER TABLE `configuracion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
--- AUTO_INCREMENT for table `departamentos`
+-- AUTO_INCREMENT de la tabla `departamentos`
 --
 ALTER TABLE `departamentos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
--- AUTO_INCREMENT for table `despachos`
+-- AUTO_INCREMENT de la tabla `despachos`
 --
 ALTER TABLE `despachos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2134;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2136;
 
 --
--- AUTO_INCREMENT for table `entidades`
+-- AUTO_INCREMENT de la tabla `entidades`
 --
 ALTER TABLE `entidades`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `estados_proceso`
+-- AUTO_INCREMENT de la tabla `estados_proceso`
 --
 ALTER TABLE `estados_proceso`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `honorarios`
+-- AUTO_INCREMENT de la tabla `honorarios`
 --
 ALTER TABLE `honorarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `municipios`
+-- AUTO_INCREMENT de la tabla `municipios`
 --
 ALTER TABLE `municipios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1123;
 
 --
--- AUTO_INCREMENT for table `notificaciones_config`
+-- AUTO_INCREMENT de la tabla `notificaciones_config`
 --
 ALTER TABLE `notificaciones_config`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `notificaciones_log`
+-- AUTO_INCREMENT de la tabla `notificaciones_log`
 --
 ALTER TABLE `notificaciones_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=806;
 
 --
--- AUTO_INCREMENT for table `procesos`
+-- AUTO_INCREMENT de la tabla `procesos`
 --
 ALTER TABLE `procesos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `tipos_proceso`
+-- AUTO_INCREMENT de la tabla `tipos_proceso`
 --
 ALTER TABLE `tipos_proceso`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `actuaciones`
+-- Filtros para la tabla `actuaciones`
 --
 ALTER TABLE `actuaciones`
   ADD CONSTRAINT `actuaciones_ibfk_1` FOREIGN KEY (`proceso_id`) REFERENCES `procesos` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `anexos`
+-- Filtros para la tabla `anexos`
 --
 ALTER TABLE `anexos`
   ADD CONSTRAINT `anexos_ibfk_1` FOREIGN KEY (`proceso_id`) REFERENCES `procesos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_anexo_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `anexo_categorias` (`id`);
+  ADD CONSTRAINT `fk_anexo_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `anexo_categorias` (`id`),
+  ADD CONSTRAINT `fk_anexos_actuacion` FOREIGN KEY (`actuacion_id`) REFERENCES `actuaciones` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `honorarios`
+-- Filtros para la tabla `honorarios`
 --
 ALTER TABLE `honorarios`
   ADD CONSTRAINT `fk_honorario_proceso` FOREIGN KEY (`proceso_id`) REFERENCES `procesos` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `municipios`
+-- Filtros para la tabla `municipios`
 --
 ALTER TABLE `municipios`
   ADD CONSTRAINT `municipios_ibfk_1` FOREIGN KEY (`departamento_id`) REFERENCES `departamentos` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `notificaciones_config`
+-- Filtros para la tabla `notificaciones_config`
 --
 ALTER TABLE `notificaciones_config`
   ADD CONSTRAINT `notificaciones_config_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `notificaciones_log`
+-- Filtros para la tabla `notificaciones_log`
 --
 ALTER TABLE `notificaciones_log`
   ADD CONSTRAINT `notificaciones_log_ibfk_1` FOREIGN KEY (`proceso_id`) REFERENCES `procesos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `notificaciones_log_ibfk_2` FOREIGN KEY (`actuacion_id`) REFERENCES `actuaciones` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `procesos`
+-- Filtros para la tabla `procesos`
 --
 ALTER TABLE `procesos`
   ADD CONSTRAINT `procesos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
