@@ -21,6 +21,29 @@ class Usuario {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // Cards visibles del dashboard (JSON array de ids). null = sin preferencia
+    // guardada todavía (o la columna aún no existe) -> el front usa los defaults.
+    public function getPreferenciasDashboard($id) {
+        try {
+            $stmt = $this->conn->prepare("SELECT preferencias_dashboard FROM " . $this->table . " WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $v = $stmt->fetchColumn();
+            $arr = $v ? json_decode($v, true) : null;
+            return is_array($arr) ? $arr : null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function savePreferenciasDashboard($id, array $visibles) {
+        try {
+            $stmt = $this->conn->prepare("UPDATE " . $this->table . " SET preferencias_dashboard = :p WHERE id = :id");
+            return $stmt->execute([':p' => json_encode($visibles), ':id' => $id]);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     public function getAll() {
         $query = "SELECT id, nombre, email, usuario, telefono, activo, created_at
                   FROM " . $this->table . " WHERE activo = 1 ORDER BY nombre";

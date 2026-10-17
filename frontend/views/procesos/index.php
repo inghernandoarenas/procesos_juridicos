@@ -862,10 +862,12 @@ document.addEventListener('click', () => cerrarAcc());
 
 // ── Mapa de fuentes ──────────────────────────────────────────
 const FUENTES = {
-    rama:    { label: 'Rama Judicial', icon: 'fa-balance-scale', color: '#2980b9', controller: 'SincronizarRamaController.php'  },
-    samai:   { label: 'SAMAI',         icon: 'fa-landmark',      color: '#7c3aed', controller: 'Sincronizarsamaicontroller.php' },
+    // trae_anexos: solo SAMAI y TYBA bajan documentos en segundo plano (y por
+    // eso muestran el banner de progreso). Rama Judicial solo trae actuaciones.
+    rama:    { label: 'Rama Judicial', icon: 'fa-balance-scale', color: '#2980b9', controller: 'SincronizarRamaController.php', trae_anexos: false },
+    samai:   { label: 'SAMAI',         icon: 'fa-landmark',      color: '#7c3aed', controller: 'Sincronizarsamaicontroller.php', trae_anexos: true },
     penal:   { label: 'SIUGJ (Laboral)', icon: 'fa-gavel',         color: '#c0392b', controller: null },
-    tyba:    { label: 'TYBA',          icon: 'fa-folder-open',   color: '#e67e22', controller: 'SincronizarTybaController.php' },
+    tyba:    { label: 'TYBA',          icon: 'fa-folder-open',   color: '#e67e22', controller: 'SincronizarTybaController.php', trae_anexos: true },
     ninguna:       { label: 'Sin portal',    icon: 'fa-ban',           color: '#95a5a6', controller: null },
     // publicaciones: { label: 'Publicaciones', icon: 'fa-newspaper', color: '#16a085', controller: null }, // PAUSADO
 };
@@ -1100,7 +1102,7 @@ function sincronizarRama() {
             // Las actuaciones ya llegaron; los anexos siguen bajando en el
             // servidor en background (ver SincronizarTybaController /
             // Sincronizarsamaicontroller). Avisar cuando terminen.
-            if (data.success) {
+            if (data.success && cfg.trae_anexos) {
                 iniciarPollingAnexos(procesoActual, cfg.label);
             }
         })

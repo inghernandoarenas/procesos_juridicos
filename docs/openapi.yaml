@@ -140,13 +140,15 @@ paths:
         - name: action
           in: query
           required: true
-          schema: { type: string, enum: [create, update, delete] }
+          schema: { type: string, enum: [create, update, delete, save_preferencias] }
+          description: "`save_preferencias` guarda en el usuario autenticado el JSON de cards visibles del dashboard (campo `dashboard`)"
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
+                dashboard: { type: string, description: "Solo save_preferencias: JSON array de ids, ej. [\"cardFinanzas\",\"cardVencer\"]" }
                 id: { type: integer, description: "Requerido para update/delete" }
                 cliente_id: { type: integer }
                 tipo_proceso_id: { type: integer, nullable: true }
@@ -792,7 +794,8 @@ paths:
         - name: action
           in: query
           required: true
-          schema: { type: string, enum: [list, get] }
+          schema: { type: string, enum: [list, get, get_preferencias] }
+          description: "`get_preferencias` devuelve `{success, dashboard}` con los ids de cards visibles del usuario autenticado (`null` si no hay preferencia guardada)"
         - name: id
           in: query
           schema: { type: integer }

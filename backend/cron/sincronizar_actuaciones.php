@@ -18,6 +18,10 @@ ini_set('max_execution_time', 0);
 ini_set('memory_limit', '512M');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+// Los error_log() de las clases Api* (cURL, HTTP != 200, etc.) en CLI se
+// pierden por stderr. Se redirigen a un archivo para poder diagnosticar.
+ini_set('error_log', __DIR__ . '/../../logs/cron_php_errors.log');
 
 define('SISTEMA_URL', 'http://localhost');
 
@@ -50,7 +54,7 @@ function writeLog($message) {
 function guardarActuacionesYNotificar(Actuacion $actuacionModel, NotificacionService $notificacionSvc, array $proceso, array $actuaciones, string $fuente): int {
     if (empty($actuaciones)) return 0;
 
-    $insertadas = $actuacionModel->insertarLote($actuaciones, $proceso['id'], $fuente);
+    $insertadas = $actuacionModel->insertarLote($actuaciones, (int)$proceso['id'], $fuente);
     $nuevas     = count($insertadas);
 
     writeLog("  [$fuente] Actuaciones recibidas: " . count($actuaciones) . " — nuevas: $nuevas");
@@ -59,7 +63,7 @@ function guardarActuacionesYNotificar(Actuacion $actuacionModel, NotificacionSer
         try {
             $resultados = $notificacionSvc->notificarNuevaActuacion($proceso, $act);
             writeLog("    📧 Notificaciones enviadas (" . ($act['actuacion'] ?? '') . "): " . count($resultados));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             writeLog("    ⚠️ Error en notificación: " . $e->getMessage());
         }
     }
@@ -67,7 +71,29 @@ function guardarActuacionesYNotificar(Actuacion $actuacionModel, NotificacionSer
     return $nuevas;
 }
 
+// Captura errores fatales (los que NO son Exception, p.ej. TypeError) que
+// antes mataban el script en silencio sin dejar rastro en el log.
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        writeLog("💥 ERROR FATAL: {$e['message']} en {$e['file']}:{$e['line']}");
+    }
+});
+
 writeLog("=== INICIO SINCRO AUTOMÁTICA ===");
+writeLog("Entorno: PHP " . PHP_VERSION . " (" . PHP_SAPI . "), php.ini=" . (php_ini_loaded_file() ?: 'ninguno')
+    . ", allow_url_fopen=" . (ini_get('allow_url_fopen') ? 'on' : 'OFF')
+    . ", openssl=" . (extension_loaded('openssl') ? 'on' : 'OFF')
+    . ", curl=" . (extension_loaded('curl') ? 'on' : 'OFF'));
+
+// ¿Está vivo el servicio Node (SAMAI/TYBA)?
+$ch = curl_init('http://127.0.0.1:3001/health');
+curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5]);
+$h = curl_exec($ch);
+$hc = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$he = curl_error($ch);
+curl_close($ch);
+writeLog("samai-service /health: " . ($hc === 200 ? "OK" : "NO RESPONDE (HTTP $hc $he)"));
 
 $procesoModel = new Proceso();
 $procesos     = $procesoModel->getAll();
@@ -121,7 +147,7 @@ foreach ($porFuente['rama'] as $proceso) {
         }
 
         $totalNuevas += guardarActuacionesYNotificar($actuacionModel, $notificacionSvc, $proceso, $actuaciones, 'rama');
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         writeLog("  ❌ EXCEPCIÓN [rama]: " . $e->getMessage());
         $errores++;
     }
@@ -144,12 +170,16 @@ foreach ($porFuente['samai'] as $proceso) {
 
         // Expediente general (único listado de documentos que expone SAMAI)
         $anexos = $apiSamai->consultarAnexosPorRadicado($proceso['numero_radicado'], $proceso['id']);
-        if ($anexos !== null && is_array($anexos) && !empty($anexos)) {
-            $anexoModel->insertarLoteSamai($anexos, $proceso['id'], null);
+        if ($anexos === null) {
+            writeLog("  [samai] ⚠️ Documentos del expediente: el servicio devolvió error/timeout (ver logs/cron_php_errors.log)");
+        } elseif (!empty($anexos)) {
+            $anexoModel->insertarLoteSamai($anexos, (int)$proceso['id'], null);
             $totalAnexos += count($anexos);
             writeLog("  [samai] Documentos del expediente: " . count($anexos));
+        } else {
+            writeLog("  [samai] Documentos del expediente: 0");
         }
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         writeLog("  ❌ EXCEPCIÓN [samai]: " . $e->getMessage());
         $errores++;
     }
@@ -172,21 +202,29 @@ foreach ($porFuente['tyba'] as $proceso) {
 
         // 3a. Anexos generales del proceso (pestaña "Archivos")
         $anexosGenerales = $apiTyba->consultarAnexosPorRadicado($proceso['numero_radicado'], $proceso['id']);
-        if ($anexosGenerales !== null && is_array($anexosGenerales) && !empty($anexosGenerales)) {
-            $anexoModel->insertarLoteTyba($anexosGenerales, $proceso['id'], null);
+        if ($anexosGenerales === null) {
+            writeLog("  [tyba] ⚠️ Anexos generales: error/timeout (ver logs/cron_php_errors.log)");
+        } elseif (!empty($anexosGenerales)) {
+            $anexoModel->insertarLoteTyba($anexosGenerales, (int)$proceso['id'], null);
             $totalAnexos += count($anexosGenerales);
             writeLog("  [tyba] Anexos generales: " . count($anexosGenerales));
+        } else {
+            writeLog("  [tyba] Anexos generales: 0");
         }
 
         // 3b. Anexos propios de cada actuación (entra al detalle de cada una,
         //     puede tardar varios minutos en procesos con muchas actuaciones)
         $anexosPorActuacion = $apiTyba->consultarAnexosPorActuacion($proceso['numero_radicado'], $proceso['id']);
-        if ($anexosPorActuacion !== null && is_array($anexosPorActuacion) && !empty($anexosPorActuacion)) {
-            $anexoModel->insertarLoteTybaPorActuacion($anexosPorActuacion, $proceso['id'], null);
+        if ($anexosPorActuacion === null) {
+            writeLog("  [tyba] ⚠️ Anexos por actuación: error/timeout (ver logs/cron_php_errors.log)");
+        } elseif (!empty($anexosPorActuacion)) {
+            $res = $anexoModel->insertarLoteTybaPorActuacion($anexosPorActuacion, (int)$proceso['id'], null);
             $totalAnexos += count($anexosPorActuacion);
-            writeLog("  [tyba] Anexos por actuación: " . count($anexosPorActuacion));
+            writeLog("  [tyba] Anexos por actuación: " . count($anexosPorActuacion) . " actuaciones con archivos — resultado: " . json_encode($res));
+        } else {
+            writeLog("  [tyba] Anexos por actuación: 0");
         }
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         writeLog("  ❌ EXCEPCIÓN [tyba]: " . $e->getMessage());
         $errores++;
     }

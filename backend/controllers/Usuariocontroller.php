@@ -3,10 +3,28 @@ require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../libs/auth.php';
 
 header('Content-Type: application/json');
-verificarToken();
+$payload = verificarToken();
 
 $action  = $_POST['action'] ?? $_GET['action'] ?? '';
 $usuario = new Usuario();
+
+// Preferencias del dashboard del usuario autenticado (id tomado del JWT,
+// nunca del request: cada usuario solo lee/escribe las suyas).
+if ($action === 'get_preferencias') {
+    echo json_encode(['success' => true, 'dashboard' => $usuario->getPreferenciasDashboard((int)$payload['id'])]);
+    exit;
+}
+
+if ($action === 'save_preferencias') {
+    $visibles = json_decode($_POST['dashboard'] ?? '', true);
+    if (!is_array($visibles)) {
+        echo json_encode(['success' => false, 'message' => 'Formato inválido']);
+        exit;
+    }
+    $visibles = array_values(array_filter($visibles, 'is_string'));
+    echo json_encode(['success' => $usuario->savePreferenciasDashboard((int)$payload['id'], $visibles)]);
+    exit;
+}
 
 if ($action === 'list') {
     echo json_encode($usuario->getAll());

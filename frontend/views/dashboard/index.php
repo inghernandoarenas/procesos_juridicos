@@ -356,8 +356,9 @@ document.addEventListener('mousemove', e => {
 
 // ── Personalización de cards (mostrar/ocultar) ─────────────────
 // Cada card se puede apagar si al usuario no le sirve. La preferencia se
-// guarda por navegador (localStorage) — no por usuario en la BD, así no
-// toca el login ni la base de datos para algo puramente visual.
+// se guarda por usuario en la BD (usuarios.preferencias_dashboard) para que
+// sobreviva a cerrar sesión / cambiar de navegador. localStorage queda solo
+// como caché y respaldo si el servidor no responde.
 const DASH_CARDS = [
     { id: 'cardFinanzas',      titulo: 'Resumen Financiero',             icono: 'fa-chart-line',           color: '#27ae60', defecto: true,
       desc: 'Cuánto se ha cobrado este mes, cuánto está pendiente por cobrar y cuánto está vencido sin cobrar, sumando todos los procesos.' },
@@ -374,7 +375,10 @@ const DASH_CARDS = [
 ];
 const DASH_PREFS_KEY = 'dashboard_cards_visibles';
 
+let prefsCards = null; // cache en memoria (viene del servidor)
+
 function cargarPrefsCards() {
+    if (Array.isArray(prefsCards)) return prefsCards;
     try {
         const guardado = JSON.parse(localStorage.getItem(DASH_PREFS_KEY));
         if (Array.isArray(guardado)) return guardado;
@@ -418,7 +422,15 @@ function cerrarPersonalizarDashboard() {
 function guardarPersonalizarDashboard() {
     const checks   = document.querySelectorAll('#listaPersonalizarCards input[type=checkbox]');
     const visibles = Array.from(checks).filter(ch => ch.checked).map(ch => ch.dataset.cardId);
-    localStorage.setItem(DASH_PREFS_KEY, JSON.stringify(visibles));
+    prefsCards = visibles;
+    try { localStorage.setItem(DASH_PREFS_KEY, JSON.stringify(visibles)); } catch (e) {}
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=save_preferencias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'dashboard=' + encodeURIComponent(JSON.stringify(visibles))
+    }).then(r => r.json()).then(d => {
+        if (!d.success) toast('No se pudo guardar en el servidor; quedó solo en este navegador', 'error');
+    }).catch(() => {});
     aplicarPrefsCards();
     cerrarPersonalizarDashboard();
     toast('Preferencias del dashboard guardadas', 'success');
@@ -648,7 +660,25 @@ function sincronizarPublicaciones() {
 }
 
 // ── Init ──────────────────────────────────────────────────────
-aplicarPrefsCards();
+aplicarPrefsCards(); // primero con caché local (sin parpadeo), luego se corrige con la del servidor
+fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=get_preferencias')
+    .then(r => r.json())
+    .then(d => {
+        if (d && Array.isArray(d.dashboard)) {
+            prefsCards = d.dashboard;
+            try { localStorage.setItem(DASH_PREFS_KEY, JSON.stringify(d.dashboard)); } catch (e) {}
+            aplicarPrefsCards();
+        } else if (d && d.success) {
+            // Migración: si había preferencia local y aún no hay en el servidor, subirla
+            try {
+                const local = JSON.parse(localStorage.getItem(DASH_PREFS_KEY));
+                if (Array.isArray(local)) fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=save_preferencias', {
+                    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'dashboard=' + encodeURIComponent(JSON.stringify(local))
+                });
+            } catch (e) {}
+        }
+    }).catch(() => {});
 cargarFinanzas();
 cargarPublicaciones();
 cargarProximosVencer();
