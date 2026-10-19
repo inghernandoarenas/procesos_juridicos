@@ -420,3 +420,92 @@
 [15:45:13] === FIN — total resultado: 6 actuaciones ===
 [15:45:13] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
 [15:45:30] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[14:46:59] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[14:47:00] === INICIO radicado=08001311000320230038501 ===
+[14:47:00] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[14:47:01]   OK 780ms — 867 bytes
+[14:47:01]   Pag 1 — despachos en esta pagina: 1
+[14:47:01]   totalPaginas=1 (registros=1, porPagina=20)
+[14:47:01] Total despachos encontrados: 1
+[14:47:01] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[14:47:01] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[14:47:02]   OK 712ms — 2560 bytes
+[14:47:02]   Pag 1 — actuaciones recibidas: 6
+[14:47:02]   totalPaginas=1 (registros=6, porPagina=40)
+[14:47:02]   Pag 1 completada. totalPaginas=1
+[14:47:02]   Despacho 3283876501 — total actuaciones extraidas: 6
+[14:47:02] === FIN — total resultado: 6 actuaciones ===
+[14:47:02] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[14:47:21] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[15:00:03] === INICIO radicado=08001311000320230038501 ===
+[15:00:03] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[15:00:04]   OK 1334ms — 867 bytes
+[15:00:04]   Pag 1 — despachos en esta pagina: 1
+[15:00:04]   totalPaginas=1 (registros=1, porPagina=20)
+[15:00:04] Total despachos encontrados: 1
+[15:00:04] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[15:00:04] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[15:00:05]   OK 734ms — 2560 bytes
+[15:00:05]   Pag 1 — actuaciones recibidas: 6
+[15:00:05]   totalPaginas=1 (registros=6, porPagina=40)
+[15:00:05]   Pag 1 completada. totalPaginas=1
+[15:00:05]   Despacho 3283876501 — total actuaciones extraidas: 6
+[15:00:05] === FIN — total resultado: 6 actuaciones ===
+[15:00:05] === INICIO radicado=70001333300920260001700 ===
+[15:00:05] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=70001333300920260001700&SoloActivos=false&pagina=1
+[15:00:05]   OK 701ms — 27 bytes
+[15:00:05] ERROR: JSON inválido en endpoint procesos
+[15:00:05] === INICIO radicado=08001418900220260035500 ===
+[15:00:05] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001418900220260035500&SoloActivos=false&pagina=1
+[15:00:06]   OK 717ms — 662 bytes
+[15:00:06]   Pag 1 — despachos en esta pagina: 1
+[15:00:06]   totalPaginas=1 (registros=1, porPagina=20)
+[15:00:06] Total despachos encontrados: 1
+[15:00:06] -- Despacho 0: idProceso=3243914981 | JUZGADO 002 DE PEQUEÑAS CAUSAS  Y COMPETENCIA MÚLTIPLE DE BARRANQUILLA
+[15:00:06] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3243914981?pagina=1
+[15:00:07]   OK 718ms — 81 bytes
+[15:00:07]   Pag 1 — actuaciones recibidas: 0
+[15:00:07]   Despacho 3243914981 — total actuaciones extraidas: 0
+[15:00:07] === FIN — total resultado: 0 actuaciones ===
+[15:00:07] === INICIO radicado=08001405301420260002400 ===
+[15:00:07] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001405301420260002400&SoloActivos=false&pagina=1
+[15:00:07]   OK 720ms — 655 bytes
+[15:00:07]   Pag 1 — despachos en esta pagina: 1
+[15:00:07]   totalPaginas=1 (registros=1, porPagina=20)
+[15:00:07] Total despachos encontrados: 1
+[15:00:07] -- Despacho 0: idProceso=3240263041 | DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *
+[15:00:07] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3240263041?pagina=1
+[15:00:08]   OK 721ms — 81 bytes
+[15:00:08]   Pag 1 — actuaciones recibidas: 0
+[15:00:08]   Despacho 3240263041 — total actuaciones extraidas: 0
+[15:00:08] === FIN — total resultado: 0 actuaciones ===
+[15:00:08] === INICIO radicado=08001405301420220040400 ===
+[15:00:08] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001405301420220040400&SoloActivos=false&pagina=1
+[15:00:09]   OK 712ms — 1403 bytes
+[15:00:09]   Pag 1 — despachos en esta pagina: 2
+[15:00:09]   totalPaginas=1 (registros=2, porPagina=20)
+[15:00:09] Total despachos encontrados: 2
+[15:00:09] -- Despacho 0: idProceso=133905621 | DESPACHO 014 - JUZGADO MUNICIPAL - CIVIL ORALIDAD - BARRANQUILLA *
+[15:00:09] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=1
+[15:00:10]   OK 890ms — 14547 bytes
+[15:00:10]   Pag 1 — actuaciones recibidas: 40
+[15:00:10]   totalPaginas=2 (registros=45, porPagina=40)
+[15:00:10]   Pag 1 completada. totalPaginas=2
+[15:00:10] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/133905621?pagina=2
+[15:00:11]   OK 734ms — 1996 bytes
+[15:00:11]   Pag 2 — actuaciones recibidas: 5
+[15:00:11]   totalPaginas=2 (registros=45, porPagina=40)
+[15:00:11]   Pag 2 completada. totalPaginas=2
+[15:00:11]   Despacho 133905621 — total actuaciones extraidas: 45
+[15:00:11] -- Despacho 1: idProceso=3177386321 | JUZGADO 004 CIVIL MUNICIPAL DE EJECUCIÓN DE SENTENCIAS DE BARRANQUILLA
+[15:00:11] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3177386321?pagina=1
+[15:00:11]   OK 716ms — 3371 bytes
+[15:00:11]   Pag 1 — actuaciones recibidas: 9
+[15:00:11]   totalPaginas=1 (registros=9, porPagina=40)
+[15:00:11]   Pag 1 completada. totalPaginas=1
+[15:00:11]   Despacho 3177386321 — total actuaciones extraidas: 9
+[15:00:11] === FIN — total resultado: 54 actuaciones ===
+[15:29:58] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[15:30:11] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[15:30:14] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
+[03:15:56] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0

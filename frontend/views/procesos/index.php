@@ -2,80 +2,43 @@
 /* ══════════════════════════════════════════
    ANEXOS
 ══════════════════════════════════════════ */
-.anexos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 14px;
-    padding: 4px 2px;
+.anexos-tabla-wrap { border: 1px solid #e8ecef; border-radius: 10px; overflow: hidden; }
+.anexos-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
+.anexos-tabla thead th {
+    background: #f8f9fa; color: #7f8c8d; text-align: left;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    padding: 9px 10px; border-bottom: 1px solid #e8ecef; white-space: nowrap;
+    user-select: none;
 }
-.anexo-card {
-    background: #fff;
-    border: 1px solid #e8ecef;
-    border-radius: 10px;
-    padding: 16px 14px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    transition: box-shadow .2s, transform .2s;
-    position: relative;
-    cursor: default;
+.anexos-tabla thead th.ordenable { cursor: pointer; }
+.anexos-tabla thead th.ordenable:hover { color: #2c3e50; background: #f1f4f7; }
+.anexos-tabla thead th .ord { margin-left: 4px; font-size: 9px; opacity: .45; }
+.anexos-tabla thead th.activa .ord { opacity: 1; color: #2980b9; }
+.anexos-tabla tbody td { padding: 7px 10px; border-bottom: 1px solid #f1f3f5; color: #2c3e50; vertical-align: middle; }
+.anexos-tabla tbody tr:last-child td { border-bottom: none; }
+.anexos-tabla tbody tr:hover { background: #f8fbfe; }
+.anexo-doc { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.anexo-doc-icono { font-size: 18px; line-height: 1; flex-shrink: 0; }
+.anexo-doc-nombre { font-weight: 600; word-break: break-word; line-height: 1.3; }
+.anexo-chip {
+    display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 10px; white-space: nowrap;
 }
-.anexo-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,.1);
-    transform: translateY(-2px);
-}
-.anexo-icono {
-    font-size: 40px;
-    line-height: 1;
-}
-.anexo-nombre {
-    font-size: 12px;
-    font-weight: 600;
-    color: #2c3e50;
-    text-align: center;
-    word-break: break-all;
-    line-height: 1.4;
-    max-height: 36px;
-    overflow: hidden;
-}
-.anexo-meta {
-    font-size: 10px;
-    color: #95a5a6;
-    text-align: center;
-    line-height: 1.6;
-}
-.anexo-acciones {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
+.anexo-act { color: #2c3e50; line-height: 1.3; }
+.anexo-act small { display: block; color: #95a5a6; font-size: 10px; }
+.anexo-acciones { display: flex; gap: 5px; justify-content: flex-end; }
 .anexo-btn {
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: opacity .2s;
+    border: none; border-radius: 6px; padding: 5px 9px; font-size: 11px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    transition: opacity .2s; text-decoration: none;
 }
 .anexo-btn:hover { opacity: .8; }
 .anexo-btn.descargar { background: #eaf4fd; color: #2980b9; }
 .anexo-btn.eliminar  { background: #fdecea; color: #e74c3c; }
-
-.anexo-tipo-badge {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: .3px;
+.anexos-buscar {
+    padding: 6px 10px 6px 28px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px;
+    color: #2c3e50; width: 210px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2395a5a6' stroke-width='3'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4-4'/%3E%3C/svg%3E") no-repeat 9px center;
 }
 /* Zona de drop */
 .upload-zone {
@@ -612,7 +575,7 @@ function fetchWithAuth(url, options = {}) {
 
 <!-- ══ MODAL ANEXOS ══════════════════════════════════════════ -->
 <div id="modalAnexos" class="modal">
-    <div class="modal-content" style="width:88%;max-width:980px">
+    <div class="modal-content" style="width:92%;max-width:1180px">
         <span class="close" onclick="cerrarModalAnexos()">&times;</span>
 
         <div style="margin-top:30px">
@@ -669,11 +632,41 @@ function fetchWithAuth(url, options = {}) {
                         style="padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;color:#2c3e50">
                     <option value="">Todas las categorías</option>
                 </select>
+                <select id="filtroOrigen" onchange="filtrarAnexos()"
+                        style="padding:6px 10px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;color:#2c3e50">
+                    <option value="">Todos los orígenes</option>
+                    <option value="TYBA">TYBA</option>
+                    <option value="SAMAI">SAMAI</option>
+                    <option value="Manual">Subidos a mano</option>
+                </select>
+                <input type="text" id="anexosBuscar" class="anexos-buscar" placeholder="Buscar documento..."
+                       oninput="filtrarAnexos()">
                 <span id="anexosSubtituloCount" style="font-size:12px;color:#95a5a6;margin-left:auto"></span>
             </div>
 
-            <!-- Grid de archivos agrupado por categoría -->
+            <!-- Tabla de documentos -->
             <div id="listaAnexos"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL GENERAR DOCUMENTO (plantillas) ══════════════════ -->
+<div id="modalGenerarDoc" class="modal">
+    <div class="modal-content" style="width:92%;max-width:480px">
+        <span class="close" onclick="cerrarGenerarDoc()">&times;</span>
+        <h3><i class="fas fa-file-signature" style="color:#e67e22"></i> Generar documento</h3>
+        <p id="genDocProceso" style="margin:0 0 14px;font-size:12px;color:#7f8c8d"></p>
+        <div class="form-group">
+            <label>Plantilla</label>
+            <select id="genDocPlantilla"><option value="">Cargando...</option></select>
+            <small id="genDocDesc" style="display:block;margin-top:4px;color:#95a5a6;font-size:11px"></small>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:16px;cursor:pointer">
+            <input type="checkbox" id="genDocGuardar" checked style="width:auto"> Guardar también una copia en los Anexos del proceso
+        </label>
+        <div style="text-align:right">
+            <button class="btn" style="background:#95a5a6;color:#fff;padding:8px 14px" onclick="cerrarGenerarDoc()">Cancelar</button>
+            <button class="btn btn-primary" id="genDocBtn" style="padding:8px 14px" onclick="generarDoc()"><i class="fas fa-download"></i> Generar y descargar</button>
         </div>
     </div>
 </div>
@@ -1197,6 +1190,7 @@ function cargarProcesos(pagina = 1, buscar = '') {
                                 <button class="acc-item" onclick="verActuaciones(${p.id});cerrarAcc()"><i class="fas fa-stream"></i> Actuaciones</button>
                                 <button class="acc-item" onclick="editarProceso(${p.id});cerrarAcc()"><i class="fas fa-edit"></i> Editar</button>
                                 <button class="acc-item" onclick="abrirModalAnexos(${p.id});cerrarAcc()"><i class="fas fa-paperclip"></i> Anexos</button>
+                                <button class="acc-item" onclick='abrirGenerarDoc(${p.id},${JSON.stringify(p.numero_radicado||"")});cerrarAcc()'><i class="fas fa-file-signature" style="color:#e67e22"></i> Generar documento</button>
                                 <button class="acc-item" onclick='abrirHonorarios(${p.id},${JSON.stringify(p.numero_radicado||"")});cerrarAcc()'><i class="fas fa-dollar-sign" style="color:#27ae60"></i> Honorarios</button>
                                 <button class="acc-item" onclick="abrirReporte(${p.id});cerrarAcc()"><i class="fas fa-file-pdf" style="color:#e74c3c"></i> Reporte PDF</button>
                                 <div class="acc-sep"></div>
@@ -1493,6 +1487,8 @@ function cerrarModalAnexos() {
     document.getElementById('modalAnexos').style.display = 'none';
     document.getElementById('archivoInput').value = '';
     document.getElementById('filtroCategoria').value = '';
+    document.getElementById('filtroOrigen').value = '';
+    document.getElementById('anexosBuscar').value = '';
 }
 
 function cargarCategorias() {
@@ -1549,9 +1545,28 @@ function cargarAnexos(procesoId) {
         });
 }
 
+// Estado de orden de la tabla de documentos
+let anexosOrden = { col: 'categoria', dir: 'asc' };
+
+function escHtml(t) {
+    return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function ordenarAnexos(col) {
+    anexosOrden = { col, dir: (anexosOrden.col === col && anexosOrden.dir === 'asc') ? 'desc' : 'asc' };
+    filtrarAnexos();
+}
+
 function filtrarAnexos() {
-    const catId    = document.getElementById('filtroCategoria').value;
-    const filtrados = catId ? anexosData.filter(a => String(a.categoria_id) === catId) : anexosData;
+    const catId  = document.getElementById('filtroCategoria').value;
+    const origen = document.getElementById('filtroOrigen').value;
+    const texto  = (document.getElementById('anexosBuscar').value || '').trim().toLowerCase();
+    const filtrados = anexosData.filter(a =>
+        (!catId  || String(a.categoria_id) === catId) &&
+        (!origen || a.origen === origen) &&
+        (!texto  || (a.nombre_archivo || '').toLowerCase().includes(texto)
+                 || (a.actuacion_nombre || '').toLowerCase().includes(texto))
+    );
     renderAnexos(filtrados);
 }
 
@@ -1566,37 +1581,60 @@ function renderAnexos(data) {
         contenedor.innerHTML =
             `<div class="anexos-empty">
                 <i class="fas fa-folder-open"></i>
-                <p>${anexosData.length === 0 ? 'No hay documentos adjuntos para este proceso' : 'No hay documentos en esta categoría'}</p>
+                <p>${anexosData.length === 0 ? 'No hay documentos adjuntos para este proceso' : 'No hay documentos con ese filtro'}</p>
             </div>`;
         return;
     }
 
-    // Agrupar por categoría
-    const grupos = {};
-    data.forEach(a => {
-        const cat = a.categoria_nombre || 'Sin categoría';
-        if (!grupos[cat]) grupos[cat] = [];
-        grupos[cat].push(a);
-    });
+    // Orden
+    const val = {
+        nombre:    a => (a.nombre_archivo || '').toLowerCase(),
+        categoria: a => (a.categoria_nombre || 'zzz').toLowerCase(),
+        origen:    a => a.origen || '',
+        actuacion: a => (a.actuacion_fecha || '') + (a.actuacion_nombre || ''),
+        fecha:     a => a.fecha_subida || ''
+    }[anexosOrden.col];
+    const dir = anexosOrden.dir === 'asc' ? 1 : -1;
+    data = [...data].sort((x, y) => (val(x) > val(y) ? 1 : val(x) < val(y) ? -1 : 0) * dir);
 
-    let html = '';
-    Object.keys(grupos).sort().forEach(cat => {
-        const items = grupos[cat].map(a => {
-            const info  = getIconoAnexo(a.tipo_archivo, a.nombre_archivo);
-            const fecha = new Date(a.fecha_subida).toLocaleDateString('es-CO',
-                { day:'2-digit', month:'short', year:'numeric' });
-            const nombre = a.nombre_archivo.length > 22
-                ? a.nombre_archivo.substring(0, 20) + '…'
-                : a.nombre_archivo;
-            return `
-            <div class="anexo-card">
-                <span class="anexo-tipo-badge" style="background:${info.bg};color:${info.fg}">${info.badge}</span>
-                <div class="anexo-icono">${info.icono}</div>
-                <div class="anexo-nombre" title="${a.nombre_archivo}">${nombre}</div>
-                <div class="anexo-meta">${fecha}</div>
+    const chipOrigen = {
+        TYBA:   'background:#fdf2e9;color:#e67e22',
+        SAMAI:  'background:#f1ebfb;color:#7c3aed',
+        Manual: 'background:#eaf4fd;color:#2980b9'
+    };
+    const th = (col, titulo) => {
+        const activa = anexosOrden.col === col;
+        const flecha = activa ? (anexosOrden.dir === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort';
+        return `<th class="ordenable ${activa ? 'activa' : ''}" onclick="ordenarAnexos('${col}')">${titulo}<i class="fas ${flecha} ord"></i></th>`;
+    };
+
+    const filas = data.map(a => {
+        const info  = getIconoAnexo(a.tipo_archivo, a.nombre_archivo);
+        const fecha = new Date(a.fecha_subida).toLocaleDateString('es-CO',
+            { day:'2-digit', month:'short', year:'numeric' });
+        const nombre = escHtml(a.nombre_archivo);
+        const actuacion = a.actuacion_nombre
+            ? `<div class="anexo-act">${escHtml(a.actuacion_nombre)}<small>${a.actuacion_fecha ? new Date(a.actuacion_fecha + 'T00:00:00').toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) : ''}</small></div>`
+            : `<span style="color:#95a5a6">${a.origen === 'Manual' ? '—' : 'Expediente general'}</span>`;
+        const subidoPor = a.origen === 'Manual' && a.subido_por
+            ? `<small style="display:block;color:#95a5a6;font-size:10px">por ${escHtml(a.subido_por)}</small>` : '';
+        return `
+        <tr>
+            <td>
+                <div class="anexo-doc">
+                    <span class="anexo-doc-icono">${info.icono}</span>
+                    <span class="anexo-doc-nombre" title="${nombre}">${nombre}</span>
+                    <span class="anexo-chip" style="background:${info.bg};color:${info.fg}">${info.badge}</span>
+                </div>
+            </td>
+            <td>${a.categoria_nombre ? escHtml(a.categoria_nombre) : '<span style="color:#95a5a6">Sin categoría</span>'}</td>
+            <td><span class="anexo-chip" style="${chipOrigen[a.origen] || chipOrigen.Manual}">${escHtml(a.origen || 'Manual')}</span>${subidoPor}</td>
+            <td>${actuacion}</td>
+            <td style="white-space:nowrap">${fecha}</td>
+            <td>
                 <div class="anexo-acciones">
                     <a href="/procesos_juridicos/${a.ruta_archivo}" target="_blank"
-                       class="anexo-btn descargar" download="${a.nombre_archivo}">
+                       class="anexo-btn descargar" download="${nombre}">
                         <i class="fas fa-download"></i> Ver
                     </a>
                     ${Number(a.origen_automatico) === 1
@@ -1609,21 +1647,24 @@ function renderAnexos(data) {
                                <i class="fas fa-trash"></i>
                            </button>`}
                 </div>
-            </div>`;
-        }).join('');
+            </td>
+        </tr>`;
+    }).join('');
 
-        html += `
-        <div style="margin-bottom:20px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #eef2f7">
-                <i class="fas fa-folder" style="color:#3498db;font-size:13px"></i>
-                <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#2c3e50">${cat}</span>
-                <span style="font-size:11px;color:#95a5a6;background:#f0f4f8;padding:1px 8px;border-radius:10px">${grupos[cat].length}</span>
-            </div>
-            <div class="anexos-grid">${items}</div>
-        </div>`;
-    });
-
-    contenedor.innerHTML = html;
+    contenedor.innerHTML = `
+    <div class="anexos-tabla-wrap">
+        <table class="anexos-tabla">
+            <thead><tr>
+                ${th('nombre', 'Documento')}
+                ${th('categoria', 'Categoría')}
+                ${th('origen', 'Origen')}
+                ${th('actuacion', 'Actuación')}
+                ${th('fecha', 'Fecha')}
+                <th></th>
+            </tr></thead>
+            <tbody>${filas}</tbody>
+        </table>
+    </div>`;
 }
 
 function eliminarAnexo(id, procesoId) {
@@ -1638,6 +1679,68 @@ function eliminarAnexo(id, procesoId) {
                 else { toast(data.error || 'No se pudo eliminar el archivo', 'error'); }
             });
     }
+}
+
+// ── Generar documento desde plantilla ─────────────────────────
+let genDocProcesoId = 0;
+let genDocPlantillas = [];
+
+function abrirGenerarDoc(id, radicado) {
+    genDocProcesoId = id;
+    document.getElementById('genDocProceso').textContent = 'Proceso ' + radicado;
+    document.getElementById('modalGenerarDoc').style.display = 'block';
+    const sel = document.getElementById('genDocPlantilla');
+    sel.innerHTML = '<option value="">Cargando...</option>';
+    fetchWithAuth('/procesos_juridicos/backend/controllers/PlantillaController.php?action=list')
+        .then(r => r.json()).then(list => {
+            genDocPlantillas = Array.isArray(list) ? list : [];
+            sel.innerHTML = genDocPlantillas.length
+                ? genDocPlantillas.map(p => `<option value="${p.id}">${p.categoria} — ${p.nombre}</option>`).join('')
+                : '<option value="">No hay plantillas (créalas en el menú Plantillas)</option>';
+            mostrarDescPlantilla();
+        });
+    sel.onchange = mostrarDescPlantilla;
+}
+function mostrarDescPlantilla() {
+    const p = genDocPlantillas.find(x => x.id == document.getElementById('genDocPlantilla').value);
+    document.getElementById('genDocDesc').textContent = p ? (p.descripcion || '') : '';
+}
+function cerrarGenerarDoc() { document.getElementById('modalGenerarDoc').style.display = 'none'; }
+
+function generarDoc() {
+    const plantillaId = document.getElementById('genDocPlantilla').value;
+    if (!plantillaId) { toast('Selecciona una plantilla', 'warning'); return; }
+    const btn = document.getElementById('genDocBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+    const fd = new FormData();
+    fd.append('action', 'generar');
+    fd.append('plantilla_id', plantillaId);
+    fd.append('proceso_id', genDocProcesoId);
+    if (document.getElementById('genDocGuardar').checked) fd.append('guardar', '1');
+
+    fetchWithAuth('/procesos_juridicos/backend/controllers/PlantillaController.php', { method: 'POST', body: fd })
+        .then(async r => {
+            if (!r.ok || (r.headers.get('Content-Type') || '').includes('application/json')) {
+                const e = await r.json().catch(() => ({}));
+                throw new Error(e.message || 'No se pudo generar el documento');
+            }
+            const falt = JSON.parse(decodeURIComponent(r.headers.get('X-Plantilla-Faltantes') || '[]'));
+            const guardado = r.headers.get('X-Plantilla-Guardado') === '1';
+            let nombre = 'documento.docx';
+            const m = (r.headers.get('Content-Disposition') || '').match(/filename\*=UTF-8''([^;]+)/i);
+            if (m) { try { nombre = decodeURIComponent(m[1]); } catch (e) {} }
+            const url = URL.createObjectURL(await r.blob());
+            const a = document.createElement('a');
+            a.href = url; a.download = nombre;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            cerrarGenerarDoc();
+            toast('Documento generado' + (guardado ? ' y guardado en Anexos' : ''), 'success', 4000);
+            if (falt.length) toast('Sin datos (quedaron en blanco): ' + falt.join(', '), 'warning', 8000);
+        })
+        .catch(e => { if (e && e.message) toast(e.message, 'error', 6000); })
+        .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Generar y descargar'; });
 }
 
 // ── Cliente rápido ────────────────────────────────────────────

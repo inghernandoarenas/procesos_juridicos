@@ -49,6 +49,8 @@ tags:
     description: Documentos adjuntos a un proceso
   - name: Honorarios
     description: Cobros y pagos asociados a un proceso
+  - name: Plantillas
+    description: Biblioteca de plantillas Word y generación de documentos con datos del proceso
   - name: Sincronización
     description: >
       Consulta a los portales judiciales externos (Rama Judicial, SAMAI,
@@ -315,7 +317,9 @@ paths:
           description: >
             `list` → arreglo de anexos, cada uno con `origen_automatico` (1 si
             TYBA/SAMAI lo trajo solo y no se puede eliminar, 0 si fue subido a
-            mano); `categorias` → catálogo de categorías de anexo.
+            mano), `origen` (TYBA / SAMAI / Manual), `actuacion_nombre` y
+            `actuacion_fecha` (actuación a la que pertenece, si es por
+            actuación) y `subido_por`; `categorias` → catálogo de categorías de anexo.
           content:
             application/json:
               schema: { type: object }
@@ -826,6 +830,70 @@ paths:
           description: >
             `{success: boolean}` o `{success:false, message:"El email ya está
             registrado"}` / `"El nombre de usuario ya existe"` si hay duplicados.
+          content: { application/json: { schema: { type: object } } }
+
+  # ══════════════════════════════════════════════════════════════
+  # PLANTILLAS
+  # ══════════════════════════════════════════════════════════════
+  /backend/controllers/PlantillaController.php:
+    get:
+      tags: [Plantillas]
+      summary: Listar plantillas, variables disponibles o descargar una plantilla
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [list, variables, descargar] }
+        - name: todas
+          in: query
+          schema: { type: integer, enum: [0, 1] }
+          description: "Solo `list`: 1 incluye plantillas inactivas"
+        - name: id
+          in: query
+          schema: { type: integer }
+          description: "Solo `descargar`: id de la plantilla (devuelve el .docx original)"
+      responses:
+        "200":
+          description: >
+            `list` → arreglo de plantillas; `variables` → catálogo de variables
+            `{{grupo.campo}}` con su etiqueta; `descargar` → archivo .docx.
+          content: { application/json: { schema: { type: array, items: { type: object } } } }
+    post:
+      tags: [Plantillas]
+      summary: Generar un documento o administrar plantillas
+      description: >
+        `generar` completa las variables `{{grupo.campo}}` de la plantilla con
+        los datos del proceso, su cliente, la firma y el abogado con sesión, y
+        devuelve el .docx. Los datos que no existan quedan como `__________`
+        y se informan en el header `X-Plantilla-Faltantes` (JSON codificado);
+        las variables que no existen en el catálogo, en `X-Plantilla-Desconocidas`.
+        Con `guardar=1` también guarda una copia en los Anexos del proceso
+        (categoría "Documentos generados"; header `X-Plantilla-Guardado: 1`).
+      parameters:
+        - name: action
+          in: query
+          required: true
+          schema: { type: string, enum: [generar, subir, reemplazar, actualizar, eliminar] }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                plantilla_id: { type: integer, description: "generar" }
+                proceso_id:   { type: integer, description: "generar" }
+                guardar:      { type: integer, enum: [0, 1], description: "generar: guarda copia en Anexos" }
+                id:           { type: integer, description: "reemplazar / actualizar / eliminar" }
+                nombre:       { type: string, description: "subir / actualizar" }
+                categoria:    { type: string, description: "subir / actualizar" }
+                descripcion:  { type: string, description: "subir / actualizar" }
+                activo:       { type: integer, enum: [0, 1], description: "actualizar" }
+                archivo:      { type: string, format: binary, description: "subir / reemplazar: .docx, máx. 5 MB" }
+      responses:
+        "200":
+          description: >
+            `generar` → archivo .docx (application/vnd.openxmlformats-officedocument.wordprocessingml.document);
+            las demás acciones → `{success, message?, id?}`.
           content: { application/json: { schema: { type: object } } }
 
   /backend/controllers/Configuracioncontroller.php:

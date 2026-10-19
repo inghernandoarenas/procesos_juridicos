@@ -23,3 +23,112 @@
 [2026-10-16 15:00:16]   ERROR: TYBA no respondió (¿el servicio Node está corriendo?) para 08001333300720260001000
 [2026-10-16 15:00:16] === FIN SINCRO — Nuevas actuaciones: 0, Anexos nuevos: 0, Omitidos: 0, Errores: 9 ===
 
+[2026-10-17 15:00:02] === INICIO SINCRO AUTOMÁTICA ===
+[2026-10-17 15:00:02] Entorno: PHP 8.0.30 (cli), php.ini=C:\xampp\php\php.ini, allow_url_fopen=on, openssl=on, curl=on
+[2026-10-17 15:00:02] samai-service /health: OK
+[2026-10-17 15:00:02] Procesos a revisar: 9
+[2026-10-17 15:00:03] --- Portal: RAMA JUDICIAL (5 procesos) ---
+[2026-10-17 15:00:03] Revisando proceso [rama]: 08001311000320230038501
+[2026-10-17 15:00:05]   [rama] Actuaciones recibidas: 6 — nuevas: 0
+[2026-10-17 15:00:05] Revisando proceso [rama]: 70001333300920260001700
+[2026-10-17 15:00:05]   ERROR: API no respondió para radicado 70001333300920260001700
+[2026-10-17 15:00:05] Revisando proceso [rama]: 08001418900220260035500
+[2026-10-17 15:00:07] Revisando proceso [rama]: 08001405301420260002400
+[2026-10-17 15:00:08] Revisando proceso [rama]: 08001405301420220040400
+[2026-10-17 15:00:11]   [rama] Actuaciones recibidas: 54 — nuevas: 54
+[2026-10-17 15:00:14]     📧 Notificaciones enviadas (Novedad Radicación Y Reparto): 3
+[2026-10-17 15:00:17]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:00:20]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:00:23]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:00:28]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:00:31]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:00:34]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:00:39]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:00:42]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:00:48]     📧 Notificaciones enviadas (Radicación Y Reparto): 3
+[2026-10-17 15:00:53]     📧 Notificaciones enviadas (Incorpora Expediente Digitalizado): 3
+[2026-10-17 15:00:58]     📧 Notificaciones enviadas (Auto Inadmite - Auto No Avoca): 3
+[2026-10-17 15:01:01]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:01:06]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:08]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:14]     📧 Notificaciones enviadas (Auto Libra Mandamiento Ejecutivo-Pago): 3
+[2026-10-17 15:01:19]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:01:24]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:27]     📧 Notificaciones enviadas (Auto Decreta Medidas Cautelares): 3
+[2026-10-17 15:01:33]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:01:38]     📧 Notificaciones enviadas (Elaboración De Oficios Telegramas): 3
+[2026-10-17 15:01:43]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:46]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:50]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:01:55]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:02]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:10]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:13]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:18]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:22]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:27]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:30]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:32]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:36]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:39]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:02:42]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:02:46]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:50]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:54]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:02:57]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:01]     📧 Notificaciones enviadas (Auto Ordena Seguir Adelante Ejecucion): 3
+[2026-10-17 15:03:04]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:03:07]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:10]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:12]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:15]     📧 Notificaciones enviadas (Traslado Secretarial): 3
+[2026-10-17 15:03:18]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:23]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:26]     📧 Notificaciones enviadas (Agregar Memorial): 3
+[2026-10-17 15:03:29]     📧 Notificaciones enviadas (Auto Decide): 3
+[2026-10-17 15:03:33]     📧 Notificaciones enviadas (Auto Ordena): 3
+[2026-10-17 15:03:36]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:03:40]     📧 Notificaciones enviadas (Fijacion Estado): 3
+[2026-10-17 15:03:44]     📧 Notificaciones enviadas (Envía Para Ejecución Civil): 3
+[2026-10-17 15:03:44] --- Portal: SAMAI (3 procesos) ---
+[2026-10-17 15:03:44] Revisando proceso [samai]: 08001333300320260007300
+[2026-10-17 15:03:58]   [samai] Actuaciones recibidas: 5 — nuevas: 5
+[2026-10-17 15:04:03]     📧 Notificaciones enviadas (Radicación Y Reparto): 3
+[2026-10-17 15:04:06]     📧 Notificaciones enviadas (Radicación oa expediente digital al despacho): 3
+[2026-10-17 15:04:08]     📧 Notificaciones enviadas (RECIBE MEMORIALES ONLINE): 3
+[2026-10-17 15:04:11]     📧 Notificaciones enviadas (Auto declara conflicto de competencia): 3
+[2026-10-17 15:04:14]     📧 Notificaciones enviadas (Fijacion estado): 3
+[2026-10-17 15:06:01]   [samai] Documentos del expediente: 22
+[2026-10-17 15:06:01] Revisando proceso [samai]: 08001333300920260005100
+[2026-10-17 15:06:13]   [samai] Actuaciones recibidas: 7 — nuevas: 7
+[2026-10-17 15:06:18]     📧 Notificaciones enviadas (Radicación Y Reparto): 3
+[2026-10-17 15:06:20]     📧 Notificaciones enviadas (Radicación oa expediente digital al despacho): 3
+[2026-10-17 15:06:23]     📧 Notificaciones enviadas (RECIBE MEMORIALES ONLINE): 3
+[2026-10-17 15:06:26]     📧 Notificaciones enviadas (RECIBE MEMORIALES ONLINE): 3
+[2026-10-17 15:06:28]     📧 Notificaciones enviadas (Auto avoca conocimiento): 3
+[2026-10-17 15:06:32]     📧 Notificaciones enviadas (Fijacion estado): 3
+[2026-10-17 15:06:35]     📧 Notificaciones enviadas (Envío de Comunicación): 3
+[2026-10-17 15:21:35]   [samai] ⚠️ Documentos del expediente: el servicio devolvió error/timeout (ver logs/cron_php_errors.log)
+[2026-10-17 15:21:35] Revisando proceso [samai]: 08001333300720260011700
+[2026-10-17 15:21:52]   [samai] Actuaciones recibidas: 3 — nuevas: 3
+[2026-10-17 15:21:55]     📧 Notificaciones enviadas (Radicación Y Reparto): 3
+[2026-10-17 15:21:58]     📧 Notificaciones enviadas (Radicación oa expediente digital al despacho): 3
+[2026-10-17 15:22:00]     📧 Notificaciones enviadas (RECIBE MEMORIALES ONLINE AL DESPACHO): 3
+[2026-10-17 15:22:25]   [samai] Documentos del expediente: 3
+[2026-10-17 15:22:25] --- Portal: TYBA (1 procesos) ---
+[2026-10-17 15:22:25] Revisando proceso [tyba]: 08001333300720260001000
+[2026-10-17 15:22:45]   [tyba] Actuaciones recibidas: 10 — nuevas: 10
+[2026-10-17 15:22:47]     📧 Notificaciones enviadas (Radicación Y Reparto): 3
+[2026-10-17 15:22:50]     📧 Notificaciones enviadas (Auto Admite): 3
+[2026-10-17 15:22:53]     📧 Notificaciones enviadas (Notificación Auto Admisorio): 3
+[2026-10-17 15:22:56]     📧 Notificaciones enviadas (Contestacion): 3
+[2026-10-17 15:22:59]     📧 Notificaciones enviadas (Sentencia): 3
+[2026-10-17 15:23:02]     📧 Notificaciones enviadas (Notificación Auto Admisorio): 3
+[2026-10-17 15:23:05]     📧 Notificaciones enviadas (Solicitud Impugnacion): 3
+[2026-10-17 15:23:07]     📧 Notificaciones enviadas (Auto Concede): 3
+[2026-10-17 15:23:10]     📧 Notificaciones enviadas (Envío De Notificación): 3
+[2026-10-17 15:23:12]     📧 Notificaciones enviadas (Envio A Superior Por Interpuestos Sin Finalizacion): 3
+[2026-10-17 15:23:23]   [tyba] Anexos generales: 1
+[2026-10-17 15:26:51]   [tyba] Anexos por actuación: 10 actuaciones con archivos — resultado: {"insertados":10,"omitidos":0,"sin_actuacion":0}
+[2026-10-17 15:26:51] === FIN SINCRO — Nuevas actuaciones: 79, Anexos nuevos: 36, Omitidos: 0, Errores: 1 ===
+

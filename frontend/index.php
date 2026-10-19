@@ -37,12 +37,14 @@ if (!empty($headers['Authorization'])) {
 </head>
 <body>
 <?php
-    $view = $_GET['view'] ?? 'dashboard';
+    $view = $_GET['view'] ?? 'mi_despacho';
     $views = [
+        'mi_despacho'      => 'views/mi_despacho/index.php',
         'dashboard'        => 'views/dashboard/index.php',
         'clientes'         => 'views/clientes/index.php',
         'procesos'         => 'views/procesos/index.php',
         'honorarios'       => 'views/honorarios/index.php',
+        'plantillas'       => 'views/plantillas/index.php',
         'tipos_proceso'    => 'views/parametrizacion/tipos_proceso.php',
         'estados_proceso'  => 'views/parametrizacion/estados_proceso.php',
         'usuarios'         => 'views/parametrizacion/Usuarios.php',
@@ -56,7 +58,7 @@ if (!empty($headers['Authorization'])) {
         'documentacion'    => 'views/documentacion/index.php',
     ];
 
-    $content = $views[$view] ?? $views['dashboard'];
+    $content = $views[$view] ?? $views['mi_despacho'];
 
     include 'layouts/main_layout.php';
 ?>

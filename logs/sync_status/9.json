@@ -1,1 +1,1 @@
-{"proceso_id":9,"fuente":"tyba","estado":"completado","mensaje":"Expediente disponible en Anexos","actualizado":"2026-10-12 03:24:51","total_anexos":11}
+{"proceso_id":9,"fuente":"tyba","estado":"trayendo_anexos","mensaje":"Trayendo documentos desde TYBA (anexos por actuación)...","actual":10,"total":10,"actualizado":"2026-10-17T13:26:51.156Z"}

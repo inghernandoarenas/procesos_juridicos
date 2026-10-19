@@ -17,13 +17,24 @@ class Anexo {
         // actuacion_id (anexos por actuación) o por el prefijo del archivo
         // guardado (tyba_/samai_, ver Anexo::guardarArchivoBase64) que los
         // anexos subidos manualmente (uniqid() sin prefijo) no tienen.
+        // Extras para la vista de tabla: "origen" (TYBA/SAMAI/Manual),
+        // la actuación a la que pertenece el documento (si aplica) y quién
+        // lo subió (solo los manuales).
         $query = "SELECT a.*, ac.nombre AS categoria_nombre,
                   CASE WHEN a.actuacion_id IS NOT NULL
                        OR a.ruta_archivo LIKE 'uploads/tyba\\_%'
                        OR a.ruta_archivo LIKE 'uploads/samai\\_%'
-                  THEN 1 ELSE 0 END AS origen_automatico
+                  THEN 1 ELSE 0 END AS origen_automatico,
+                  CASE WHEN a.ruta_archivo LIKE 'uploads/tyba\\_%'  THEN 'TYBA'
+                       WHEN a.ruta_archivo LIKE 'uploads/samai\\_%' THEN 'SAMAI'
+                       ELSE 'Manual' END AS origen,
+                  act.actuacion AS actuacion_nombre,
+                  act.fecha     AS actuacion_fecha,
+                  u.nombre      AS subido_por
                   FROM " . $this->table . " a
                   LEFT JOIN anexo_categorias ac ON a.categoria_id = ac.id
+                  LEFT JOIN actuaciones act     ON a.actuacion_id = act.id
+                  LEFT JOIN usuarios u          ON a.usuario_creacion = u.id
                   WHERE a.proceso_id = :proceso_id
                   ORDER BY ac.nombre ASC, a.fecha_subida DESC";
         $stmt = $this->conn->prepare($query);
@@ -61,6 +72,23 @@ class Anexo {
                   VALUES (:proceso_id, :categoria_id, :nombre_archivo, :ruta_archivo, :tipo_archivo)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute($data);
+    }
+
+    /**
+     * Guarda en Anexos la copia de un documento generado desde una plantilla,
+     * en la categoría "Documentos generados" (si existe). Queda como documento
+     * "Manual" (se puede eliminar), no como automático de TYBA/SAMAI.
+     */
+    public function crearDocumentoGenerado(int $proceso_id, string $nombre, string $ruta, ?int $usuario_id = null): bool {
+        $cat = $this->conn->prepare("SELECT id FROM anexo_categorias WHERE nombre = 'Documentos generados' LIMIT 1");
+        $cat->execute();
+        $catId = $cat->fetchColumn() ?: null;
+        $stmt = $this->conn->prepare(
+            "INSERT INTO " . $this->table . "
+             (proceso_id, categoria_id, nombre_archivo, ruta_archivo, tipo_archivo, usuario_creacion)
+             VALUES (:p, :c, :n, :r, 'DOCX', :u)"
+        );
+        return $stmt->execute([':p' => $proceso_id, ':c' => $catId, ':n' => $nombre, ':r' => $ruta, ':u' => $usuario_id]);
     }
 
     public function delete($id) {

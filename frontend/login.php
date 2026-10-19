@@ -115,7 +115,7 @@
     (function() {
         const token = localStorage.getItem('token');
         if (token) {
-            window.location.replace('/procesos_juridicos/frontend/index.php?view=dashboard');
+            window.location.replace('/procesos_juridicos/frontend/index.php?view=mi_despacho');
         }
     })();
 
@@ -178,7 +178,7 @@
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user',  JSON.stringify(data.user));
                 // Redirigir — NO resetear el botón para evitar doble submit
-                window.location.replace('/procesos_juridicos/frontend/index.php?view=dashboard');
+                window.location.replace('/procesos_juridicos/frontend/index.php?view=mi_despacho');
             } else {
                 showError(data.message || 'Credenciales inválidas');
                 resetButton();

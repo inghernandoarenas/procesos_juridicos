@@ -192,6 +192,12 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
 
             <ul>
                 <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=mi_despacho" data-label="Mi Despacho">
+                        <i class="fas fa-briefcase" style="margin-right:10px;width:20px;flex-shrink:0"></i>
+                        <span class="sidebar-label">Mi Despacho</span>
+                    </a>
+                </li>
+                <li>
                     <a href="/procesos_juridicos/frontend/index.php?view=dashboard" data-label="Dashboard">
                         <i class="fas fa-tachometer-alt" style="margin-right:10px;width:20px;flex-shrink:0"></i>
                         <span class="sidebar-label">Dashboard</span>
@@ -207,6 +213,13 @@ $_anioEmp      = $_cfg['anio_copyright']  ?? date('Y');
                     <a href="/procesos_juridicos/frontend/index.php?view=honorarios" data-label="Honorarios">
                         <i class="fas fa-dollar-sign" style="margin-right:10px;width:20px;flex-shrink:0"></i>
                         <span class="sidebar-label">Honorarios</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/procesos_juridicos/frontend/index.php?view=plantillas" data-label="Plantillas">
+                        <i class="fas fa-file-signature" style="margin-right:10px;width:20px;flex-shrink:0"></i>
+                        <span class="sidebar-label">Plantillas</span>
                     </a>
                 </li>
 

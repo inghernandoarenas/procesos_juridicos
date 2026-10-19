@@ -105,3 +105,27 @@
 [15:00:12]   → Llamando servicio Playwright en http://127.0.0.1:3001...
 [15:00:14]   ✗ Servicio no responde en http://127.0.0.1:3001 (2043ms)
 [15:00:14]   Asegúrate de correr: node server.js en samai-service
+[15:03:44] === SAMAI INICIO radicado=08001333300320260007300 ===
+[15:03:44] === SAMAI buscarProceso: 08001333300320260007300 ===
+[15:03:45]   Registros: 2
+[15:03:45]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:03:45]   Health OK (20ms) — iniciando consulta Playwright...
+[15:03:58]   ✓ Servicio devolvió 5 actuaciones (13636ms)
+[15:03:58] === SAMAI FIN — 5 actuaciones ===
+[15:06:01] ✓ 22 anexos del expediente
+[15:06:01] === SAMAI INICIO radicado=08001333300920260005100 ===
+[15:06:01] === SAMAI buscarProceso: 08001333300920260005100 ===
+[15:06:02]   Registros: 2
+[15:06:02]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:06:02]   Health OK (7ms) — iniciando consulta Playwright...
+[15:06:13]   ✓ Servicio devolvió 7 actuaciones (11634ms)
+[15:06:13] === SAMAI FIN — 7 actuaciones ===
+[15:21:35] ✗ Error cURL anexos: Operation timed out after 900007 milliseconds with 0 bytes received
+[15:21:35] === SAMAI INICIO radicado=08001333300720260011700 ===
+[15:21:35] === SAMAI buscarProceso: 08001333300720260011700 ===
+[15:21:36]   Registros: 2
+[15:21:36]   → Llamando servicio Playwright en http://127.0.0.1:3001...
+[15:21:36]   Health OK (12ms) — iniciando consulta Playwright...
+[15:21:52]   ✓ Servicio devolvió 3 actuaciones (15951ms)
+[15:21:52] === SAMAI FIN — 3 actuaciones ===
+[15:22:25] ✓ 3 anexos del expediente
