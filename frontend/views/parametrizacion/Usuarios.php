@@ -79,7 +79,7 @@ function fetchWithAuth(url, options = {}) {
 }
 
 function cargarUsuarios() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/UsuarioController.php?action=list')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=list')
         .then(r => r.json())
         .then(data => {
             const tbody = document.querySelector('#tablaUsuarios tbody');
@@ -130,7 +130,7 @@ function guardarUsuario(event) {
     const id = document.getElementById('usuarioId').value;
     formData.append('action', id ? 'update' : 'create');
 
-    fetchWithAuth('/procesos_juridicos/backend/controllers/UsuarioController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php', {
         method: 'POST', body: formData
     })
     .then(r => r.json())
@@ -147,7 +147,7 @@ function guardarUsuario(event) {
 }
 
 function editarUsuario(id) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/UsuarioController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(u => {
             document.getElementById('usuarioId').value  = u.id;
@@ -166,7 +166,7 @@ function editarUsuario(id) {
 }
 
 function verUsuario(id) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/UsuarioController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(u => {
             document.getElementById('detalleUsuario').innerHTML = `
@@ -200,7 +200,7 @@ function eliminarUsuario(id) {
         const fd = new FormData();
         fd.append('action', 'delete');
         fd.append('id', id);
-        fetchWithAuth('/procesos_juridicos/backend/controllers/UsuarioController.php', {
+        fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php', {
             method: 'POST', body: fd
         })
         .then(r => r.json())

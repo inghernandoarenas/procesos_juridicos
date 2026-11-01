@@ -89,8 +89,7 @@ mysql -u oficina_app -p oficina_juridica < bd/oficina_juridica.sql
 
 ## 5. Credenciales (secrets.php)
 
-**Nunca** pongas credenciales reales directo en el código — así fue como el
-token de Twilio quedó expuesto en el repositorio antes de este despliegue.
+**Nunca** pongas credenciales reales directo en el código.
 
 ```bash
 cp backend/config/secrets.example.php backend/config/secrets.php
@@ -98,9 +97,6 @@ nano backend/config/secrets.php
 ```
 Rellena:
 - `db_username` / `db_password` → los del paso 4.
-- `twilio_account_sid` / `twilio_auth_token` → **genera un token nuevo** en
-  el Twilio Console (Account → API keys & tokens → Auth Token → Create new)
-  y pon ese, no el viejo.
 
 ## 6. Permisos de escritura
 
@@ -164,10 +160,11 @@ sudo certbot --apache -d tu-dominio.com
 
 - ✅ `.htaccess` bloqueando acceso web directo a `bd/`, `logs/`,
   `samai-service/`, `vendor/` y `backend/config/`.
-- ✅ Credenciales (BD y Twilio) movidas a `backend/config/secrets.php`
+- ✅ Credenciales de la BD movidas a `backend/config/secrets.php`
   (fuera del repositorio, vía `.gitignore`).
-- ⚠️ **Pendiente de hacer tú**: rotar el Auth Token de Twilio en su
-  Console — el que estaba en el código ya se dio por comprometido.
+- ✅ Twilio (SMS/WhatsApp) retirado: las notificaciones son solo por email.
+  El Auth Token que estuvo en el historial del repo debe darse por
+  comprometido: revócalo o cierra la cuenta de Twilio en su Console.
 - ⚠️ Antes de anunciar la URL a terceros, considera: contraseña temporal
   distinta por usuario de prueba, y revisar que los datos de ejemplo en la
   BD no sean datos reales de clientes si vas a dejarla pública para demos.

@@ -72,12 +72,6 @@
         <option value="fallido">Fallidos</option>
         <option value="pendiente">Pendientes</option>
     </select>
-    <select id="filtroTipo" onchange="filtrarLog()">
-        <option value="">Todos los tipos</option>
-        <option value="email">Email</option>
-        <option value="whatsapp">WhatsApp</option>
-        <option value="sms">SMS</option>
-    </select>
     <input type="text" id="filtroBuscar" placeholder="Buscar por radicado o destinatario..."
            oninput="filtrarLog()" style="min-width:240px">
 </div>
@@ -118,7 +112,7 @@ const LOG_POR_PAGINA = 8;
 let logPaginaActual = 1;
 
 function cargarLog() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/NotificacionLogController.php?action=list&limite=200')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Notificacionlogcontroller.php?action=list&limite=200')
         .then(r => r.json())
         .then(data => {
             logData = data;
@@ -131,8 +125,6 @@ function renderStats(data) {
     const enviados  = data.filter(d => d.estado === 'enviado').length;
     const fallidos  = data.filter(d => d.estado === 'fallido').length;
     const emails    = data.filter(d => d.tipo_envio === 'email').length;
-    const whatsapps = data.filter(d => d.tipo_envio === 'whatsapp').length;
-    const smss      = data.filter(d => d.tipo_envio === 'sms').length;
 
     document.getElementById('logStats').innerHTML = `
         <div class="log-stat-card verde">
@@ -147,24 +139,15 @@ function renderStats(data) {
             <div class="log-stat-num">${emails}</div>
             <div class="log-stat-label">Email</div>
         </div>
-        <div class="log-stat-card verde2">
-            <div class="log-stat-num">${whatsapps}</div>
-            <div class="log-stat-label">WhatsApp</div>
-        </div>
-        <div class="log-stat-card morado">
-            <div class="log-stat-num">${smss}</div>
-            <div class="log-stat-label">SMS</div>
-        </div>`;
+        `;
 }
 
 function obtenerDatosFiltrados() {
     const estado  = document.getElementById('filtroEstado').value;
-    const tipo    = document.getElementById('filtroTipo').value;
     const buscar  = document.getElementById('filtroBuscar').value.toLowerCase();
 
     return logData.filter(d => {
         if (estado && d.estado    !== estado) return false;
-        if (tipo   && d.tipo_envio !== tipo)  return false;
         if (buscar && !d.numero_radicado?.toLowerCase().includes(buscar)
                    && !d.destinatario?.toLowerCase().includes(buscar)) return false;
         return true;

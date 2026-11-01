@@ -7,9 +7,7 @@
     <thead>
         <tr>
             <th>Usuario</th>
-            <th>Tipo</th>
             <th>Email</th>
-            <th>Teléfono</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -30,38 +28,16 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Tipo de notificación: <span style="color:red">*</span></label>
-                <select id="notifTipo" name="tipo" required>
-                    <option value="email">Solo Email</option>
-                    <option value="sms">Solo SMS</option>
-                    <option value="whatsapp">Solo WhatsApp</option>
-                    <option value="todos">Todos (Email + SMS + WhatsApp)</option>
-                </select>
-            </div>
-
             <div style="border:1px solid #e0e0e0;border-radius:8px;padding:15px;margin-bottom:15px;background:#fafafa">
                 <p style="margin:0 0 12px 0;font-size:13px;color:#666">
                     <i class="fas fa-info-circle"></i>
-                    Datos precargados del usuario. Puedes editarlos si necesitas usar un correo o teléfono diferente.
+                    Las notificaciones de nuevas actuaciones se envían por correo electrónico.
+                    El email se precarga del usuario; puedes editarlo si necesitas usar uno diferente.
                 </p>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
-                    <div class="form-group">
-                        <label>Email:</label>
-                        <input type="email" id="notifEmail" name="email" placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Teléfono (SMS y/o WhatsApp):</label>
-                        <input type="text" id="notifTelefono" name="telefono" placeholder="573001234567">
-                    </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label>Email: <span style="color:red">*</span></label>
+                    <input type="email" id="notifEmail" name="email" placeholder="correo@ejemplo.com" required>
                 </div>
-                <p style="margin:8px 0 0;font-size:12px;color:#888">
-                    <i class="fas fa-info-circle"></i>
-                    Mientras la cuenta de Twilio esté en modo de prueba: para <strong>SMS</strong>, este número debe
-                    estar verificado en el Console (Phone Numbers → Verified Caller IDs). Para <strong>WhatsApp</strong>,
-                    debe haberle mandado "join &lt;código&gt;" al número sandbox de Twilio por WhatsApp (Console →
-                    Messaging → Try it out → Send a WhatsApp message). Sin eso, el envío quedará "fallido" en el log.
-                </p>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -89,23 +65,20 @@ function fetchWithAuth(url, options = {}) {
 }
 
 function cargarNotificaciones() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/NotificacionConfigController.php?action=list')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php?action=list')
         .then(r => r.json())
         .then(data => {
             const tbody = document.querySelector('#tablaNotif tbody');
             tbody.innerHTML = '';
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px">No hay notificaciones configuradas</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:30px">No hay notificaciones configuradas</td></tr>';
                 return;
             }
-            const tipos = { email: 'Solo Email', sms: 'Solo SMS', whatsapp: 'Solo WhatsApp', todos: 'Todos (Email + SMS + WhatsApp)' };
             data.forEach(n => {
                 tbody.innerHTML += `
                     <tr>
                         <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.usuario_nombre} <span style="color:#888">(${n.usuario_login})</span></td>
-                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${tipos[n.tipo] || n.tipo}</td>
                         <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.email || '<span style="color:#bbb">—</span>'}</td>
-                        <td style="padding:8px 12px;font-size:12px;color:#2c3e50">${n.telefono || '<span style="color:#bbb">—</span>'}</td>
                         <td style="padding:8px 12px;white-space:nowrap">
                             <button class="btn-icon" onclick="verNotif(${n.id})"><i class="fas fa-eye"></i></button>
                             <button class="btn-icon" onclick="editarNotif(${n.id})"><i class="fas fa-edit"></i></button>
@@ -118,7 +91,7 @@ function cargarNotificaciones() {
 }
 
 function cargarSelectUsuarios(selectedId = null) {
-    return fetchWithAuth('/procesos_juridicos/backend/controllers/UsuarioController.php?action=list')
+    return fetchWithAuth('/procesos_juridicos/backend/controllers/Usuariocontroller.php?action=list')
         .then(r => r.json())
         .then(data => {
             const sel = document.getElementById('notifUsuarioId');
@@ -135,12 +108,11 @@ function cargarSelectUsuarios(selectedId = null) {
 
 function cargarDatosUsuario(usuarioId) {
     if (!usuarioId) return;
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/NotificacionConfigController.php?action=get_usuario&id=${usuarioId}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php?action=get_usuario&id=${usuarioId}`)
         .then(r => r.json())
         .then(u => {
             if (!u) return;
             document.getElementById('notifEmail').value    = u.email    || '';
-            document.getElementById('notifTelefono').value = u.telefono || '';
         });
 }
 
@@ -162,7 +134,7 @@ function guardarNotif(event) {
     const fd = new FormData(document.getElementById('formNotif'));
     const id = document.getElementById('notifId').value;
     fd.append('action', id ? 'update' : 'create');
-    fetchWithAuth('/procesos_juridicos/backend/controllers/NotificacionConfigController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php', {
         method: 'POST', body: fd
     })
     .then(r => r.json())
@@ -173,14 +145,12 @@ function guardarNotif(event) {
 }
 
 function editarNotif(id) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/NotificacionConfigController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(n => {
             cargarSelectUsuarios(n.usuario_id).then(() => {
                 document.getElementById('notifId').value       = n.id;
-                document.getElementById('notifTipo').value     = n.tipo;
                 document.getElementById('notifEmail').value    = n.email    || '';
-                document.getElementById('notifTelefono').value = n.telefono || '';
                 document.getElementById('modalNotifTitle').textContent = 'Editar Notificación';
                 document.getElementById('modalNotif').style.display = 'block';
             });
@@ -188,27 +158,18 @@ function editarNotif(id) {
 }
 
 function verNotif(id) {
-    fetchWithAuth(`/procesos_juridicos/backend/controllers/NotificacionConfigController.php?action=get&id=${id}`)
+    fetchWithAuth(`/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php?action=get&id=${id}`)
         .then(r => r.json())
         .then(n => {
-            const tipos = { email: 'Solo Email', sms: 'Solo SMS', whatsapp: 'Solo WhatsApp', todos: 'Todos (Email + SMS + WhatsApp)' };
             document.getElementById('detalleNotif').innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:10px">
                     <div style="background:#f8f9fa;padding:15px;border-radius:8px;grid-column:span 2">
                         <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Usuario</strong>
                         <p style="font-size:16px;margin:5px 0">${n.usuario_nombre} <small style="color:#888">(${n.usuario_login})</small></p>
                     </div>
-                    <div style="background:#f8f9fa;padding:15px;border-radius:8px">
-                        <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Tipo</strong>
-                        <p style="margin:5px 0">${tipos[n.tipo] || n.tipo}</p>
-                    </div>
-                    <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+                    <div style="background:#f8f9fa;padding:15px;border-radius:8px;grid-column:span 2">
                         <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Email</strong>
                         <p style="margin:5px 0">${n.email || 'No configurado'}</p>
-                    </div>
-                    <div style="background:#f8f9fa;padding:15px;border-radius:8px;grid-column:span 2">
-                        <strong style="color:#2c3e50;font-size:12px;text-transform:uppercase">Teléfono (SMS/WhatsApp)</strong>
-                        <p style="margin:5px 0">${n.telefono || 'No configurado'}</p>
                     </div>
                 </div>`;
             document.getElementById('modalVerNotif').style.display = 'block';
@@ -220,7 +181,7 @@ function eliminarNotif(id) {
         const fd = new FormData();
         fd.append('action', 'delete');
         fd.append('id', id);
-        fetchWithAuth('/procesos_juridicos/backend/controllers/NotificacionConfigController.php', {
+        fetchWithAuth('/procesos_juridicos/backend/controllers/Notificacionconfigcontroller.php', {
             method: 'POST', body: fd
         })
         .then(r => r.json())

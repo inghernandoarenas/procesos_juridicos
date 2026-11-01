@@ -2,24 +2,17 @@
 require_once __DIR__ . '/EmailService.php';
 require_once __DIR__ . '/../models/NotificacionConfig.php';
 
-// Twilio (SMS + WhatsApp) es opcional: solo se carga si el archivo existe.
-if (file_exists(__DIR__ . '/TwilioService.php')) {
-    require_once __DIR__ . '/TwilioService.php';
-}
-
+/**
+ * Notificaciones de nuevas actuaciones — solo por correo electrónico.
+ * (SMS y WhatsApp vía Twilio se retiraron: el email es gratuito y suficiente.)
+ */
 class NotificacionService {
     private $emailService;
-    private $twilioService;
     private $notificacionModel;
 
     public function __construct() {
         $this->emailService      = new EmailService();
         $this->notificacionModel = new NotificacionConfig();
-
-        // Twilio solo si está disponible
-        $this->twilioService = class_exists('TwilioService')
-            ? new TwilioService()
-            : null;
     }
 
     public function notificarNuevaActuacion($proceso, $actuacion) {
@@ -33,32 +26,17 @@ class NotificacionService {
                  . "Ingrese al sistema para más detalles: " . $this->getSistemaUrl();
 
         $resultados = [];
+        $enviados   = []; // evita mandar dos veces el mismo correo al mismo destinatario
 
         foreach ($destinatarios as $dest) {
-            // tipo: email | sms | whatsapp | todos
-            $tipo = $dest['tipo'] ?? 'email';
+            // Toda configuración activa con email recibe el correo, sin importar
+            // el "tipo" que tuviera antes (sms/whatsapp/todos ya no existen).
+            $email = trim($dest['email'] ?? '');
+            if ($email === '' || isset($enviados[strtolower($email)])) continue;
+            $enviados[strtolower($email)] = true;
 
-            $quiereEmail    = in_array($tipo, ['email', 'todos']);
-            $quiereSms      = in_array($tipo, ['sms', 'todos']);
-            $quiereWhatsapp = in_array($tipo, ['whatsapp', 'todos']);
-
-            // ── Email ──────────────────────────────────────────────────
-            if ($quiereEmail && !empty($dest['email'])) {
-                $ok = $this->emailService->enviar($dest['email'], $asunto, $mensaje);
-                $this->registrarYAcumular($resultados, $proceso, $actuacion, $mensaje, 'email', $dest['email'], $ok);
-            }
-
-            // ── SMS ────────────────────────────────────────────────────
-            if ($quiereSms && !empty($dest['telefono']) && $this->twilioService !== null) {
-                $ok = $this->twilioService->enviarSms($dest['telefono'], $mensaje);
-                $this->registrarYAcumular($resultados, $proceso, $actuacion, $mensaje, 'sms', $dest['telefono'], $ok);
-            }
-
-            // ── WhatsApp ───────────────────────────────────────────────
-            if ($quiereWhatsapp && !empty($dest['telefono']) && $this->twilioService !== null) {
-                $ok = $this->twilioService->enviarWhatsapp($dest['telefono'], $mensaje);
-                $this->registrarYAcumular($resultados, $proceso, $actuacion, $mensaje, 'whatsapp', $dest['telefono'], $ok);
-            }
+            $ok = $this->emailService->enviar($email, $asunto, $mensaje);
+            $this->registrarYAcumular($resultados, $proceso, $actuacion, $mensaje, 'email', $email, $ok);
         }
 
         return $resultados;

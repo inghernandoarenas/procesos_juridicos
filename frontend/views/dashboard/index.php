@@ -644,7 +644,7 @@ function sincronizarPublicaciones() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + segs + 's...';
     }, 1000);
 
-    fetchWithAuth('/procesos_juridicos/backend/controllers/SincronizarPublicacionesController.php')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Sincronizarpublicacionescontroller.php')
         .then(r => r.json())
         .then(data => {
             toast(data.message, data.success ? 'success' : 'warning', 6000);

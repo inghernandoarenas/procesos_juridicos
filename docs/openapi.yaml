@@ -554,9 +554,7 @@ paths:
               properties:
                 id: { type: integer, description: "Requerido para update/delete" }
                 usuario_id: { type: integer }
-                tipo: { type: string, enum: [email, whatsapp, sms] }
-                email: { type: string, nullable: true }
-                telefono: { type: string, nullable: true }
+                email: { type: string, description: "Correo al que se envían las notificaciones de nuevas actuaciones (único canal: email)" }
       responses:
         "200":
           description: "`{success: boolean}`"

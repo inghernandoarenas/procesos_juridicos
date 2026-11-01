@@ -38,9 +38,9 @@ if ($action === 'get_usuario') {
 if ($action === 'create') {
     $data = [
         'usuario_id' => $_POST['usuario_id'],
-        'tipo'       => $_POST['tipo'],
-        'email'      => !empty($_POST['email'])    ? $_POST['email']    : null,
-        'telefono'   => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+        'tipo'       => 'email', // las notificaciones son solo por correo
+        'email'      => !empty($_POST['email']) ? trim($_POST['email']) : null,
+        'telefono'   => null,
     ];
     echo json_encode(['success' => $config->create($data)]);
     exit;
@@ -50,9 +50,9 @@ if ($action === 'update') {
     $data = [
         'id'         => $_POST['id'],
         'usuario_id' => $_POST['usuario_id'],
-        'tipo'       => $_POST['tipo'],
-        'email'      => !empty($_POST['email'])    ? $_POST['email']    : null,
-        'telefono'   => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+        'tipo'       => 'email', // las notificaciones son solo por correo
+        'email'      => !empty($_POST['email']) ? trim($_POST['email']) : null,
+        'telefono'   => null,
     ];
     echo json_encode(['success' => $config->update($data)]);
     exit;

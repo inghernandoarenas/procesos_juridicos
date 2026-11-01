@@ -272,7 +272,7 @@ function fetchWithAuth(url, options = {}) {
 
 // Cargar config al entrar
 function cargarConfig() {
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ConfiguracionController.php?action=get')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Configuracioncontroller.php?action=get')
         .then(r => r.json())
         .then(data => {
             Object.keys(data).forEach(clave => {
@@ -315,7 +315,7 @@ function guardarConfig(event) {
     const fd = new FormData(document.getElementById('formConfig'));
     fd.append('action', 'save');
 
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ConfiguracionController.php', {
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Configuracioncontroller.php', {
         method: 'POST', body: fd
     })
     .then(r => r.json())
@@ -339,7 +339,7 @@ function probarSamai() {
         return;
     }
     res.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando...';
-    fetchWithAuth('/procesos_juridicos/backend/controllers/ConfiguracionController.php?action=test_samai')
+    fetchWithAuth('/procesos_juridicos/backend/controllers/Configuracioncontroller.php?action=test_samai')
         .then(r => r.json())
         .then(d => {
             res.innerHTML = d.success
