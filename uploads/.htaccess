@@ -1,0 +1,17 @@
+# Carpeta de archivos subidos: jamás se ejecuta código aquí y no se lista.
+Options -Indexes -ExecCGI
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pht
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pht
+<FilesMatch "\.(php|phtml|php[0-9]|phar|pht|cgi|pl|py|sh|exe|bat|cmd|js|html?|svg)$">
+    Require all denied
+</FilesMatch>
+Header set X-Content-Type-Options "nosniff"

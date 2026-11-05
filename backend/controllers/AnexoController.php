@@ -10,7 +10,7 @@ $anexo      = new Anexo();
 $upload_dir = __DIR__ . '/../../uploads/';
 
 if (!file_exists($upload_dir)) {
-    mkdir($upload_dir, 0777, true);
+    mkdir($upload_dir, 0755, true);
 }
 
 // Listar anexos de un proceso
@@ -37,7 +37,36 @@ if ($action === 'upload') {
         exit;
     }
 
-    $extension    = pathinfo($file['name'], PATHINFO_EXTENSION);
+    // ── Validación de seguridad (lista blanca + tamaño, del lado del servidor) ──
+    $maxBytes   = 10 * 1024 * 1024; // 10 MB
+    $permitidas = ['pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','txt','rtf','csv',
+                   'jpg','jpeg','png','gif','bmp','tif','tiff','webp','zip','rar','7z',
+                   'mp3','wav','mp4','avi','mov','wmv','mpeg','mpg','m4a','ogg','msg','eml'];
+
+    if ($file['size'] > $maxBytes) {
+        echo json_encode(['success' => false, 'error' => 'El archivo supera el máximo de 10 MB']);
+        exit;
+    }
+
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($extension, $permitidas, true)) {
+        echo json_encode(['success' => false, 'error' => 'Tipo de archivo no permitido (.' . htmlspecialchars($extension) . ')']);
+        exit;
+    }
+
+    // Doble extensión tipo "x.php.pdf": se rechaza si alguna parte es ejecutable
+    if (preg_match('/\.(php\d?|phtml|phar|pht|cgi|pl|py|sh|exe|bat|cmd|js|html?|svg)(\.|$)/i', $file['name'])) {
+        echo json_encode(['success' => false, 'error' => 'Nombre de archivo no permitido']);
+        exit;
+    }
+
+    // El contenido real no puede ser código ejecutable ni HTML, aunque la extensión sea inocente
+    $mime = function_exists('finfo_open') ? (string)finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file['tmp_name']) : '';
+    if (preg_match('#^(text/x-php|application/x-httpd-php|text/html|application/x-sh|application/x-dosexec|image/svg\+xml)#', $mime)) {
+        echo json_encode(['success' => false, 'error' => 'El contenido del archivo no está permitido']);
+        exit;
+    }
+
     $nombre_unico = uniqid() . '.' . $extension;
     $ruta_destino = $upload_dir . $nombre_unico;
 

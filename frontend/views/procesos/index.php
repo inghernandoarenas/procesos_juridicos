@@ -1613,6 +1613,12 @@ function renderAnexos(data) {
         const fecha = new Date(a.fecha_subida).toLocaleDateString('es-CO',
             { day:'2-digit', month:'short', year:'numeric' });
         const nombre = escHtml(a.nombre_archivo);
+        // Nombre de descarga: los portales (SAMAI) mandan nombres sin extensión o
+        // terminados en el tamaño ("... 255000 kb"). La extensión real es la del
+        // archivo guardado (ruta_archivo), así que se agrega si el nombre no la trae.
+        const extReal = ((a.ruta_archivo || '').split('.').pop() || '').toLowerCase();
+        const nombreDescarga = (extReal && extReal !== 'bin' && !(a.nombre_archivo || '').toLowerCase().endsWith('.' + extReal))
+            ? nombre + '.' + extReal : nombre;
         const actuacion = a.actuacion_nombre
             ? `<div class="anexo-act">${escHtml(a.actuacion_nombre)}<small>${a.actuacion_fecha ? new Date(a.actuacion_fecha + 'T00:00:00').toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) : ''}</small></div>`
             : `<span style="color:#95a5a6">${a.origen === 'Manual' ? '—' : 'Expediente general'}</span>`;
@@ -1634,7 +1640,7 @@ function renderAnexos(data) {
             <td>
                 <div class="anexo-acciones">
                     <a href="/procesos_juridicos/${a.ruta_archivo}" target="_blank"
-                       class="anexo-btn descargar" download="${nombre}">
+                       class="anexo-btn descargar" download="${nombreDescarga}">
                         <i class="fas fa-download"></i> Ver
                     </a>
                     ${Number(a.origen_automatico) === 1

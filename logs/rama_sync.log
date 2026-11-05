@@ -510,3 +510,42 @@
 [15:30:14] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0
 [03:15:56] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
 [14:31:39] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:13:21] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[23:13:23] === INICIO radicado=08001311000320230038501 ===
+[23:13:23] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[23:13:24]   OK 1191ms — 867 bytes
+[23:13:24]   Pag 1 — despachos en esta pagina: 1
+[23:13:24]   totalPaginas=1 (registros=1, porPagina=20)
+[23:13:24] Total despachos encontrados: 1
+[23:13:24] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[23:13:24] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[23:13:25]   OK 720ms — 2560 bytes
+[23:13:25]   Pag 1 — actuaciones recibidas: 6
+[23:13:25]   totalPaginas=1 (registros=6, porPagina=40)
+[23:13:25]   Pag 1 completada. totalPaginas=1
+[23:13:25]   Despacho 3283876501 — total actuaciones extraidas: 6
+[23:13:25] === FIN — total resultado: 6 actuaciones ===
+[23:13:25] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[23:13:42] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[17:00:06] list proceso_id=9 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[17:00:19] list proceso_id=9 — filas BD: 10 — nulas_fecha: 0 — nulos_id: 0
+[17:24:18] list proceso_id=8 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[17:24:20] === INICIO radicado=08001311000320230038501 ===
+[17:24:20] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion?numero=08001311000320230038501&SoloActivos=false&pagina=1
+[17:24:21]   OK 780ms — 867 bytes
+[17:24:21]   Pag 1 — despachos en esta pagina: 1
+[17:24:21]   totalPaginas=1 (registros=1, porPagina=20)
+[17:24:21] Total despachos encontrados: 1
+[17:24:21] -- Despacho 0: idProceso=3283876501 | DESPACHO 000 - TRIBUNAL SUPERIOR - CIVIL - FAMILIA - BARRANQUILLA *
+[17:24:21] GET https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Proceso/Actuaciones/3283876501?pagina=1
+[17:24:22]   OK 920ms — 2560 bytes
+[17:24:22]   Pag 1 — actuaciones recibidas: 6
+[17:24:22]   totalPaginas=1 (registros=6, porPagina=40)
+[17:24:22]   Pag 1 completada. totalPaginas=1
+[17:24:22]   Despacho 3283876501 — total actuaciones extraidas: 6
+[17:24:22] === FIN — total resultado: 6 actuaciones ===
+[17:24:22] SYNC FIN proceso_id=8 — API:6 insertadas:6 ya_existian:0
+[17:24:36] list proceso_id=8 — filas BD: 6 — nulas_fecha: 0 — nulos_id: 0
+[17:25:05] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[17:25:14] list proceso_id=7 — filas BD: 0 — nulas_fecha: 0 — nulos_id: 0
+[17:25:30] list proceso_id=7 — filas BD: 5 — nulas_fecha: 0 — nulos_id: 0

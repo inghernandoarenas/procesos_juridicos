@@ -1,0 +1,13 @@
+# Archivos subidos / descargados de los portales (datos de clientes: NO van al repo)
+uploads/*
+!uploads/.htaccess
+
+# Credenciales y entorno
+backend/config/secrets.php
+
+# Logs generados en ejecución
+logs/*.log
+logs/sync_status/
+
+# Dependencias
+node_modules/

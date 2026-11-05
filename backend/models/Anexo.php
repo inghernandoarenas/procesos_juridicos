@@ -335,7 +335,7 @@ class Anexo {
             return null;
         }
 
-        $extension    = pathinfo($nombre, PATHINFO_EXTENSION) ?: strtolower($tipoSugerido ?: 'pdf');
+        $extension    = $this->detectarExtension($contenido, $nombre, $tipoSugerido);
         $nombre_unico = uniqid($prefijo) . '.' . $extension;
         $ruta_destino = $upload_dir . $nombre_unico;
         if (file_put_contents($ruta_destino, $contenido) === false) {
@@ -344,6 +344,54 @@ class Anexo {
         }
 
         return ['ruta' => 'uploads/' . $nombre_unico, 'tipo' => strtoupper($extension)];
+    }
+
+    /**
+     * Determina la extensión REAL del archivo. Antes se tomaba del nombre que
+     * enviaba el portal y salían cosas como ".674 kb" (el nombre incluía el
+     * tamaño) o extensiones peligrosas. Ahora: 1) contenido real (finfo),
+     * 2) extensión del nombre solo si está en la lista permitida,
+     * 3) tipo sugerido si está permitido, 4) "bin" (nunca ejecutable).
+     */
+    private function detectarExtension(string $contenido, string $nombre, ?string $tipoSugerido): string {
+        $permitidas = ['pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','txt','rtf','csv',
+                       'jpg','jpeg','png','gif','bmp','tif','tiff','webp','zip','rar','7z',
+                       'mp3','wav','mp4','avi','mov','wmv','mpeg','mpg','m4a','ogg','msg','eml'];
+        $porMime = [
+            'application/pdf' => 'pdf', 'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif',
+            'image/bmp' => 'bmp', 'image/tiff' => 'tif', 'image/webp' => 'webp', 'application/zip' => 'zip',
+            'application/x-rar' => 'rar', 'application/vnd.rar' => 'rar', 'application/x-7z-compressed' => '7z',
+            'audio/mpeg' => 'mp3', 'audio/x-wav' => 'wav', 'video/mp4' => 'mp4', 'video/x-msvideo' => 'avi',
+            'video/quicktime' => 'mov', 'text/plain' => 'txt', 'application/rtf' => 'rtf', 'text/rtf' => 'rtf',
+            'application/msword' => 'doc', 'application/vnd.ms-excel' => 'xls', 'application/vnd.ms-powerpoint' => 'ppt',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
+        ];
+
+        $extNombre = strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
+        $extNombre = in_array($extNombre, $permitidas, true) ? $extNombre : '';
+
+        $mime = '';
+        if (function_exists('finfo_open')) {
+            $f = finfo_open(FILEINFO_MIME_TYPE);
+            if ($f) { $mime = (string)finfo_buffer($f, $contenido); finfo_close($f); }
+        }
+        $extMime = $porMime[$mime] ?? '';
+
+        // Si el contenido es un contenedor genérico (zip/ole/texto) y el nombre
+        // aporta una extensión permitida compatible (docx, xlsx, csv...), se respeta el nombre.
+        if ($extMime === 'zip' && in_array($extNombre, ['docx','xlsx','pptx','odt','ods','zip'], true)) return $extNombre;
+        if ($extMime === 'txt' && in_array($extNombre, ['txt','csv','eml'], true)) return $extNombre;
+        if ($extMime !== '') return $extMime;
+        if ($mime === 'application/x-ole-storage' || $mime === 'application/CDFV2') {
+            if (in_array($extNombre, ['doc','xls','ppt','msg'], true)) return $extNombre;
+        }
+        if ($extNombre !== '') return $extNombre;
+
+        $sug = strtolower(trim((string)$tipoSugerido));
+        if (in_array($sug, $permitidas, true)) return $sug;
+        return 'bin';
     }
 
     /** Determina categoria_id a partir del nombre/tipo del documento. */
